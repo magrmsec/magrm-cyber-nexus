@@ -98,11 +98,11 @@ function CourseDetail() {
           <div className="min-w-0">
             <h2 className="text-xl font-extrabold md:text-2xl">منهج الدورة</h2>
             <div className="mt-6 space-y-4">
-              {c.curriculum.map((m, i) => (
+              {c.curriculum.map((m: { title: string; items: string[] }, i: number) => (
                 <div key={m.title} className="card-surface p-5">
                   <h3 className="font-bold text-primary">{m.title}</h3>
                   <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                    {m.items.map((it, j) => (
+                    {m.items.map((it: string, j: number) => (
                       <li key={it} className="flex items-center gap-2">
                         <span className="grid size-6 shrink-0 place-items-center rounded-md bg-surface-2 text-[11px] font-bold text-foreground">
                           {i + 1}.{j + 1}

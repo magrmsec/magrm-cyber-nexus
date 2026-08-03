@@ -59,7 +59,7 @@ function PortDetail() {
                   <Wrench className="size-4 text-primary" /> الأدوات المستخدمة
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {p.tools.map((t) => (
+                  {p.tools.map((t: string) => (
                     <span key={t} className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-bold">
                       {t}
                     </span>

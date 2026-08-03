@@ -10,33 +10,193 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AppsRouteImport } from './routes/apps'
+import { Route as CertificatesRouteImport } from './routes/certificates'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as VideosRouteImport } from './routes/videos'
+import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
+import { Route as PortsIndexRouteImport } from './routes/ports.index'
+import { Route as PortsPortIdRouteImport } from './routes/ports.$portId'
+import { Route as VulnerabilitiesIndexRouteImport } from './routes/vulnerabilities.index'
+import { Route as VulnerabilitiesVulnIdRouteImport } from './routes/vulnerabilities.$vulnId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppsRoute = AppsRouteImport.update({
+  id: '/apps',
+  path: '/apps',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificatesRoute = CertificatesRouteImport.update({
+  id: '/certificates',
+  path: '/certificates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideosRoute = VideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortsIndexRoute = PortsIndexRouteImport.update({
+  id: '/ports/',
+  path: '/ports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortsPortIdRoute = PortsPortIdRouteImport.update({
+  id: '/ports/$portId',
+  path: '/ports/$portId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VulnerabilitiesIndexRoute = VulnerabilitiesIndexRouteImport.update({
+  id: '/vulnerabilities/',
+  path: '/vulnerabilities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VulnerabilitiesVulnIdRoute = VulnerabilitiesVulnIdRouteImport.update({
+  id: '/vulnerabilities/$vulnId',
+  path: '/vulnerabilities/$vulnId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/apps': typeof AppsRoute
+  '/certificates': typeof CertificatesRoute
+  '/contact': typeof ContactRoute
+  '/tools': typeof ToolsRoute
+  '/videos': typeof VideosRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/ports/': typeof PortsIndexRoute
+  '/vulnerabilities/': typeof VulnerabilitiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/apps': typeof AppsRoute
+  '/certificates': typeof CertificatesRoute
+  '/contact': typeof ContactRoute
+  '/tools': typeof ToolsRoute
+  '/videos': typeof VideosRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/courses': typeof CoursesIndexRoute
+  '/ports': typeof PortsIndexRoute
+  '/vulnerabilities': typeof VulnerabilitiesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/apps': typeof AppsRoute
+  '/certificates': typeof CertificatesRoute
+  '/contact': typeof ContactRoute
+  '/tools': typeof ToolsRoute
+  '/videos': typeof VideosRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/ports/': typeof PortsIndexRoute
+  '/vulnerabilities/': typeof VulnerabilitiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/apps'
+    | '/certificates'
+    | '/contact'
+    | '/tools'
+    | '/videos'
+    | '/courses/$courseId'
+    | '/ports/$portId'
+    | '/vulnerabilities/$vulnId'
+    | '/courses/'
+    | '/ports/'
+    | '/vulnerabilities/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/apps'
+    | '/certificates'
+    | '/contact'
+    | '/tools'
+    | '/videos'
+    | '/courses/$courseId'
+    | '/ports/$portId'
+    | '/vulnerabilities/$vulnId'
+    | '/courses'
+    | '/ports'
+    | '/vulnerabilities'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/apps'
+    | '/certificates'
+    | '/contact'
+    | '/tools'
+    | '/videos'
+    | '/courses/$courseId'
+    | '/ports/$portId'
+    | '/vulnerabilities/$vulnId'
+    | '/courses/'
+    | '/ports/'
+    | '/vulnerabilities/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AppsRoute: typeof AppsRoute
+  CertificatesRoute: typeof CertificatesRoute
+  ContactRoute: typeof ContactRoute
+  ToolsRoute: typeof ToolsRoute
+  VideosRoute: typeof VideosRoute
+  CoursesCourseIdRoute: typeof CoursesCourseIdRoute
+  PortsPortIdRoute: typeof PortsPortIdRoute
+  VulnerabilitiesVulnIdRoute: typeof VulnerabilitiesVulnIdRoute
+  CoursesIndexRoute: typeof CoursesIndexRoute
+  PortsIndexRoute: typeof PortsIndexRoute
+  VulnerabilitiesIndexRoute: typeof VulnerabilitiesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +208,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apps': {
+      id: '/apps'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof AppsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certificates': {
+      id: '/certificates'
+      path: '/certificates'
+      fullPath: '/certificates'
+      preLoaderRoute: typeof CertificatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/videos': {
+      id: '/videos'
+      path: '/videos'
+      fullPath: '/videos'
+      preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$courseId': {
+      id: '/courses/$courseId'
+      path: '/courses/$courseId'
+      fullPath: '/courses/$courseId'
+      preLoaderRoute: typeof CoursesCourseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ports/': {
+      id: '/ports/'
+      path: '/ports'
+      fullPath: '/ports/'
+      preLoaderRoute: typeof PortsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ports/$portId': {
+      id: '/ports/$portId'
+      path: '/ports/$portId'
+      fullPath: '/ports/$portId'
+      preLoaderRoute: typeof PortsPortIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vulnerabilities/': {
+      id: '/vulnerabilities/'
+      path: '/vulnerabilities'
+      fullPath: '/vulnerabilities/'
+      preLoaderRoute: typeof VulnerabilitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vulnerabilities/$vulnId': {
+      id: '/vulnerabilities/$vulnId'
+      path: '/vulnerabilities/$vulnId'
+      fullPath: '/vulnerabilities/$vulnId'
+      preLoaderRoute: typeof VulnerabilitiesVulnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AppsRoute: AppsRoute,
+  CertificatesRoute: CertificatesRoute,
+  ContactRoute: ContactRoute,
+  ToolsRoute: ToolsRoute,
+  VideosRoute: VideosRoute,
+  CoursesCourseIdRoute: CoursesCourseIdRoute,
+  PortsPortIdRoute: PortsPortIdRoute,
+  VulnerabilitiesVulnIdRoute: VulnerabilitiesVulnIdRoute,
+  CoursesIndexRoute: CoursesIndexRoute,
+  PortsIndexRoute: PortsIndexRoute,
+  VulnerabilitiesIndexRoute: VulnerabilitiesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

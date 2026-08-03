@@ -143,10 +143,10 @@ export const allPorts = (): Port[] =>
 /* ---------------- Videos ---------------- */
 export const VIDEO_CATEGORIES = ["شروحات أدوات", "اختراق مواقع", "اختراق شبكات", "CTF", "تحليل ثغرات"];
 const YT_IDS = [
-  "4t4kBkMsDbQ", "QiNLNDSLuJY", "qTaOZrDnMzQ", "xuYZNJCvHgQ", "2OPVViV-GQk",
-  "z4LhLJnmoZ0", "0VJyfJzbPE4", "evyxNUzl-HA", "WfYxrLaqlN8", "csxy3LQB4X0",
-  "fNzpcB7ODxQ", "B7tTQ272OHE", "qA0YcYMRWyI", "W6SIU-ggTDI", "qwA6MmbeGNo",
-  "VXxH4n684HE", "oTD_ki86c9I", "ZTnwg3qCdVM", "Uk3DEgY5Ue8", "4EMWBYVggQI",
+  "4t4kBkMsDbQ", "2OPVViV-GQk", "WfYxrLaqlN8", "0VJyfJzbPE4", "B7tTQ272OHE",
+  "QiNLNDSLuJY", "csxy3LQB4X0", "xuYZNJCvHgQ", "qTaOZrDnMzQ", "ZTnwg3qCdVM",
+  "qwA6MmbeGNo", "z4LhLJnmoZ0", "evyxNUzl-HA", "fNzpcB7ODxQ", "W6SIU-ggTDI",
+  "Uk3DEgY5Ue8", "4EMWBYVggQI", "VXxH4n684HE", "qA0YcYMRWyI", "oTD_ki86c9I",
 ];
 export interface Video {
   id: number;

@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
+import { Route as PortsIndexRouteImport } from './routes/ports.index'
+import { Route as PortsPortIdRouteImport } from './routes/ports.$portId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +25,65 @@ const CoursesIndexRoute = CoursesIndexRouteImport.update({
   path: '/courses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortsIndexRoute = PortsIndexRouteImport.update({
+  id: '/ports/',
+  path: '/ports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortsPortIdRoute = PortsPortIdRouteImport.update({
+  id: '/ports/$portId',
+  path: '/ports/$portId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
   '/courses/': typeof CoursesIndexRoute
+  '/ports/': typeof PortsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
   '/courses': typeof CoursesIndexRoute
+  '/ports': typeof PortsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/courses/$courseId': typeof CoursesCourseIdRoute
+  '/ports/$portId': typeof PortsPortIdRoute
   '/courses/': typeof CoursesIndexRoute
+  '/ports/': typeof PortsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/courses/'
+  fullPaths:
+    '/' | '/courses/$courseId' | '/ports/$portId' | '/courses/' | '/ports/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/courses'
-  id: '__root__' | '/' | '/courses/'
+  to: '/' | '/courses/$courseId' | '/ports/$portId' | '/courses' | '/ports'
+  id:
+    | '__root__'
+    | '/'
+    | '/courses/$courseId'
+    | '/ports/$portId'
+    | '/courses/'
+    | '/ports/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CoursesCourseIdRoute: typeof CoursesCourseIdRoute
+  PortsPortIdRoute: typeof PortsPortIdRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
+  PortsIndexRoute: typeof PortsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +102,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/$courseId': {
+      id: '/courses/$courseId'
+      path: '/courses/$courseId'
+      fullPath: '/courses/$courseId'
+      preLoaderRoute: typeof CoursesCourseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ports/': {
+      id: '/ports/'
+      path: '/ports'
+      fullPath: '/ports/'
+      preLoaderRoute: typeof PortsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ports/$portId': {
+      id: '/ports/$portId'
+      path: '/ports/$portId'
+      fullPath: '/ports/$portId'
+      preLoaderRoute: typeof PortsPortIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CoursesCourseIdRoute: CoursesCourseIdRoute,
+  PortsPortIdRoute: PortsPortIdRoute,
   CoursesIndexRoute: CoursesIndexRoute,
+  PortsIndexRoute: PortsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

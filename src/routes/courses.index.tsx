@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { allCourses, COURSE_CATEGORIES, LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 
-export const Route = createFileRoute("/courses")({
+export const Route = createFileRoute("/courses/")({
   head: () => ({
     meta: [
       { title: "الدورات المدفوعة | Magrm Cyber Security" },

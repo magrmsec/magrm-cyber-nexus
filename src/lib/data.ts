@@ -7,7 +7,7 @@ function rng(seed: number) {
     return s / 233280;
   };
 }
-const pick = <T,>(arr: T[], r: number) => arr[Math.floor(r * arr.length) % arr.length];
+const pick = <T,>(arr: T[], r: number) => arr[Math.floor(r * arr.length) % arr.length] as T;
 
 export const LEVELS = ["مبتدئ", "متوسط", "متقدم"] as const;
 export type Level = (typeof LEVELS)[number];
@@ -61,10 +61,10 @@ export interface Course {
 
 export function makeCourse(id: number): Course {
   const r = rng(id * 17 + 3);
-  const category = COURSE_CATEGORIES[id % COURSE_CATEGORIES.length];
-  const topics = COURSE_TOPICS[category];
-  const topic = topics[Math.floor(r() * topics.length)];
-  const level = LEVELS[Math.floor(r() * 3)];
+  const category = COURSE_CATEGORIES[id % COURSE_CATEGORIES.length] as string;
+  const topics = COURSE_TOPICS[category] as string[];
+  const topic = topics[Math.floor(r() * topics.length)] as string;
+  const level = LEVELS[Math.floor(r() * 3)] as Level;
   const part = Math.floor(id / (COURSE_CATEGORIES.length * topics.length)) + 1;
   const title = `${topic} — ${level} · الجزء ${part}`;
   const hours = 3 + Math.floor(r() * 38);
@@ -133,7 +133,7 @@ export const allPorts = (): Port[] =>
       name,
       description,
       price: 29 + Math.floor(r() * 20) * 10,
-      level: LEVELS[i % 3],
+      level: LEVELS[i % 3] as Level,
       objective: `الوصول إلى العلم النهائي (Root Flag) وتوثيق كل خطوة في تقرير احترافي.`,
       tools,
       flags: 2 + (i % 3),
@@ -166,8 +166,8 @@ const VIDEO_TOPICS = [
 export const VIDEOS_COUNT = 700;
 export function makeVideo(id: number): Video {
   const r = rng(id * 13 + 5);
-  const category = VIDEO_CATEGORIES[id % VIDEO_CATEGORIES.length];
-  const topic = VIDEO_TOPICS[id % VIDEO_TOPICS.length];
+  const category = VIDEO_CATEGORIES[id % VIDEO_CATEGORIES.length] as string;
+  const topic = VIDEO_TOPICS[id % VIDEO_TOPICS.length] as string;
   const part = Math.floor(id / VIDEO_TOPICS.length) + 1;
   return {
     id,
@@ -175,8 +175,8 @@ export function makeVideo(id: number): Video {
     description: `فيديو شرح ضمن سلسلة ${category}. نغطي فيه ${topic} بشكل عملي مع أمثلة حية داخل بيئة مختبر آمنة.`,
     minutes: 5 + Math.floor(r() * 55),
     category,
-    level: LEVELS[Math.floor(r() * 3)],
-    youtubeId: YT_IDS[id % YT_IDS.length],
+    level: LEVELS[Math.floor(r() * 3)] as Level,
+    youtubeId: YT_IDS[id % YT_IDS.length] as string,
   };
 }
 export const allVideos = (): Video[] => Array.from({ length: VIDEOS_COUNT }, (_, i) => makeVideo(i + 1));
@@ -212,9 +212,9 @@ const VULN_TYPES = [
 export const VULNS_COUNT = 1000;
 export function makeVuln(id: number): Vuln {
   const r = rng(id * 23 + 11);
-  const [product, version] = VULN_PRODUCTS[id % VULN_PRODUCTS.length];
-  const type = VULN_TYPES[Math.floor(r() * VULN_TYPES.length)];
-  const sev = SEVERITIES[Math.floor(r() * 4)];
+  const [product, version] = VULN_PRODUCTS[id % VULN_PRODUCTS.length] as [string, string];
+  const type = VULN_TYPES[Math.floor(r() * VULN_TYPES.length)] as string;
+  const sev = SEVERITIES[Math.floor(r() * 4)] as Severity;
   const cvss =
     sev === "حرج" ? 9 + Math.round(r() * 10) / 10 : sev === "عالي" ? 7 + Math.round(r() * 19) / 10 : sev === "متوسط" ? 4 + Math.round(r() * 29) / 10 : 1 + Math.round(r() * 29) / 10;
   const year = 2019 + (id % 6);
@@ -305,7 +305,7 @@ export const TOOLS: Tool[] = [
   ["Hashid", "مساعدة", "التعرف على نوع الهاش تلقائياً.", "https://github.com/psypanda/hashID"],
   ["CyberChef", "مساعدة", "سكين الجيش السويسري للتشفير والترميز.", "https://gchq.github.io/CyberChef/"],
   ["Proxychains", "مساعدة", "تمرير أي أداة عبر سلسلة بروكسيات.", "https://github.com/haad/proxychains"],
-].map(([name, category, description, url]) => ({ name, category, description, url }));
+].map((t) => ({ name: t[0] as string, category: t[1] as string, description: t[2] as string, url: t[3] as string }));
 
 export const TOOL_CATEGORIES = Array.from(new Set(TOOLS.map((t) => t.category)));
 
@@ -329,4 +329,4 @@ export const APPS: App[] = [
   ["Signal", "Android / iOS", "مراسلة مشفّرة طرف لطرف بمعايير أمنية عالية.", "https://signal.org/download/"],
   ["Hacker's Keyboard", "Android", "لوحة مفاتيح كاملة بأزرار Ctrl و Esc للطرفية.", "https://f-droid.org/packages/org.pocketworkstation.pckeyboard/"],
   ["PortDroid", "Android", "مجموعة أدوات تحليل شبكات ومسح منافذ.", "https://play.google.com/store/apps/details?id=com.stealthcopter.portdroid"],
-].map(([name, platform, description, url]) => ({ name, platform, description, url }));
+].map((t) => ({ name: t[0] as string, platform: t[1] as string, description: t[2] as string, url: t[3] as string }));

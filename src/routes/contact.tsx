@@ -113,7 +113,7 @@ function ContactPage() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
   return (
     <div>
       <Label className="mb-2 block text-sm font-bold">{label}</Label>
@@ -132,7 +132,7 @@ function InfoCard({
   icon: typeof Mail;
   title: string;
   value: string;
-  href?: string;
+  href?: string | undefined;
 }) {
   const body = (
     <div className="card-surface p-6">

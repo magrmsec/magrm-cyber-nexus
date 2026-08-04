@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { allVulns, SEVERITIES } from "@/lib/data";
 import { SeverityBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
+import { useCmsVulns } from "@/lib/cms";
 
 export const Route = createFileRoute("/vulnerabilities/")({
   head: () => ({
@@ -20,7 +21,9 @@ export const Route = createFileRoute("/vulnerabilities/")({
 });
 
 function VulnsPage() {
-  const vulns = useMemo(() => allVulns(), []);
+  const base = useMemo(() => allVulns(), []);
+  const cmsVulns = useCmsVulns();
+  const vulns = cmsVulns.length ? [...cmsVulns, ...base] : base;
   const [q, setQ] = useState("");
   const [sev, setSev] = useState("الكل");
   const [page, setPage] = useState(1);

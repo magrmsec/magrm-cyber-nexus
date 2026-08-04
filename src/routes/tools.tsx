@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { TOOLS, TOOL_CATEGORIES } from "@/lib/data";
 import { PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
+import { useCmsTools } from "@/lib/cms";
 
 export const Route = createFileRoute("/tools")({
   head: () => ({
@@ -21,8 +22,10 @@ export const Route = createFileRoute("/tools")({
 function ToolsPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
+  const cmsTools = useCmsTools();
+  const tools = cmsTools.length ? [...cmsTools, ...TOOLS] : TOOLS;
 
-  const filtered = TOOLS.filter(
+  const filtered = tools.filter(
     (t) =>
       (cat === "الكل" || t.category === cat) &&
       (!q.trim() || t.name.toLowerCase().includes(q.trim().toLowerCase()) || t.description.includes(q.trim())),
@@ -31,7 +34,7 @@ function ToolsPage() {
   return (
     <>
       <PageHero
-        eyebrow={`${TOOLS.length} أداة`}
+        eyebrow={`${tools.length} أداة`}
         title="الأدوات والبرامج"
         description="ترسانة الأدوات التي يعتمد عليها محترفو الأمن السيبراني حول العالم — مع روابط التحميل الرسمية."
       />

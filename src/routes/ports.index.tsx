@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { allPorts, LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
+import { useCmsPorts } from "@/lib/cms";
 
 export const Route = createFileRoute("/ports/")({
   head: () => ({
@@ -19,7 +20,9 @@ export const Route = createFileRoute("/ports/")({
 });
 
 function PortsPage() {
-  const ports = useMemo(() => allPorts(), []);
+  const base = useMemo(() => allPorts(), []);
+  const cmsPorts = useCmsPorts();
+  const ports = cmsPorts.length ? [...cmsPorts, ...base] : base;
   const [q, setQ] = useState("");
   const [level, setLevel] = useState("الكل");
 

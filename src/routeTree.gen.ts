@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AppsRouteImport } from './routes/apps'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ToolsRouteImport } from './routes/tools'
@@ -36,6 +37,11 @@ const AboutRoute = AboutRouteImport.update({
 const AppsRoute = AppsRouteImport.update({
   id: '/apps',
   path: '/apps',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CertificatesRoute = CertificatesRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
+  '/auth': typeof AuthRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
+  '/auth': typeof AuthRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
+  '/auth': typeof AuthRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/apps'
+    | '/auth'
     | '/certificates'
     | '/contact'
     | '/tools'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/apps'
+    | '/auth'
     | '/certificates'
     | '/contact'
     | '/tools'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/apps'
+    | '/auth'
     | '/certificates'
     | '/contact'
     | '/tools'
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AppsRoute: typeof AppsRoute
+  AuthRoute: typeof AuthRoute
   CertificatesRoute: typeof CertificatesRoute
   ContactRoute: typeof ContactRoute
   ToolsRoute: typeof ToolsRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/apps'
       fullPath: '/apps'
       preLoaderRoute: typeof AppsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/certificates': {
@@ -299,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AppsRoute: AppsRoute,
+  AuthRoute: AuthRoute,
   CertificatesRoute: CertificatesRoute,
   ContactRoute: ContactRoute,
   ToolsRoute: ToolsRoute,

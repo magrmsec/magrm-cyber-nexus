@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AppsRouteImport } from './routes/apps'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -17,6 +18,7 @@ import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as VideosRouteImport } from './routes/videos'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
 import { Route as PortsIndexRouteImport } from './routes/ports.index'
@@ -27,6 +29,10 @@ import { Route as VulnerabilitiesVulnIdRouteImport } from './routes/vulnerabilit
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -63,6 +69,11 @@ const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/courses/',
@@ -104,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -120,6 +132,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -130,6 +143,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
   '/auth': typeof AuthRoute
@@ -137,6 +151,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -155,6 +170,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/tools'
     | '/videos'
+    | '/admin'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -171,6 +187,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/tools'
     | '/videos'
+    | '/admin'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -180,6 +197,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/apps'
     | '/auth'
@@ -187,6 +205,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/tools'
     | '/videos'
+    | '/_authenticated/admin'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -197,6 +216,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AppsRoute: typeof AppsRoute
   AuthRoute: typeof AuthRoute
@@ -219,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -270,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VideosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/courses/': {
       id: '/courses/'
       path: '/courses'
@@ -315,8 +349,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AppsRoute: AppsRoute,
   AuthRoute: AuthRoute,
@@ -334,13 +380,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

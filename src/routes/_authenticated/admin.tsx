@@ -44,7 +44,10 @@ function AdminPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return setIsAdmin(false);
+      if (!data.user) {
+        setIsAdmin(false);
+        return;
+      }
       const { data: rows } = await supabase
         .from("user_roles")
         .select("role")
@@ -96,14 +99,14 @@ function AdminPage() {
         else payload[f.key] = String(raw ?? "");
       }
       if (editing) {
-        const { error } = await supabase.from("cms_items").update({ data: payload }).eq("id", editing.id);
+        const { error } = await supabase.from("cms_items").update({ data: payload as never }).eq("id", editing.id);
         if (error) throw error;
         toast.success("تم حفظ التعديلات");
       } else {
         const { data: userData } = await supabase.auth.getUser();
         const { error } = await supabase
           .from("cms_items")
-          .insert({ kind, data: payload, created_by: userData.user?.id ?? null });
+          .insert({ kind, data: payload as never, created_by: userData.user?.id ?? null });
         if (error) throw error;
         toast.success("تمت الإضافة بنجاح");
       }
@@ -119,7 +122,10 @@ function AdminPage() {
 
   const togglePublish = async (row: CmsRow) => {
     const { error } = await supabase.from("cms_items").update({ published: !row.published }).eq("id", row.id);
-    if (error) return toast.error("تعذّر تغيير حالة النشر");
+    if (error) {
+      toast.error("تعذّر تغيير حالة النشر");
+      return;
+    }
     toast.success(row.published ? "تم إخفاء العنصر" : "تم نشر العنصر");
     refresh();
   };
@@ -127,7 +133,10 @@ function AdminPage() {
   const remove = async (row: CmsRow) => {
     if (!window.confirm("هل تريد حذف هذا العنصر نهائياً؟")) return;
     const { error } = await supabase.from("cms_items").delete().eq("id", row.id);
-    if (error) return toast.error("تعذّر الحذف");
+    if (error) {
+      toast.error("تعذّر الحذف");
+      return;
+    }
     toast.success("تم الحذف");
     if (editing?.id === row.id) {
       setEditing(null);

@@ -51,7 +51,12 @@ function ToolsPage() {
             />
           </div>
           <div className="mt-5">
-            <FilterRow label="التصنيف" options={["الكل", ...TOOL_CATEGORIES]} value={cat} onChange={setCat} />
+            <FilterRow
+              label="التصنيف"
+              options={["الكل", ...new Set([...TOOL_CATEGORIES, ...tools.map((t) => t.category)])]}
+              value={cat}
+              onChange={setCat}
+            />
           </div>
         </div>
 

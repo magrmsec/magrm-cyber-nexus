@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, ShieldCheck, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 export const NAV_LINKS = [
@@ -18,6 +19,13 @@ export const NAV_LINKS = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
@@ -46,7 +54,12 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden items-center gap-2 lg:flex">
+          {signedIn ? (
+            <Button asChild size="sm" variant="outline">
+              <Link to="/admin">لوحة الإدارة</Link>
+            </Button>
+          ) : null}
           <Button asChild size="sm">
             <Link to="/courses">ابدأ التعلم</Link>
           </Button>
@@ -76,6 +89,15 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
+            {signedIn ? (
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-bold text-primary"
+              >
+                لوحة الإدارة
+              </Link>
+            ) : null}
           </nav>
         </div>
       ) : null}

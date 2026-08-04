@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { allVideos, VIDEO_CATEGORIES, LEVELS, type Video } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
+import { useCmsVideos } from "@/lib/cms";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -20,7 +21,9 @@ export const Route = createFileRoute("/videos")({
 });
 
 function VideosPage() {
-  const videos = useMemo(() => allVideos(), []);
+  const base = useMemo(() => allVideos(), []);
+  const cmsVideos = useCmsVideos();
+  const videos = cmsVideos.length ? [...cmsVideos, ...base] : base;
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");

@@ -3,11 +3,18 @@ import { toast } from "sonner";
 import { Flag, Target, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { allPorts } from "@/lib/data";
+import { CMS_ID_OFFSET, fetchCmsRowBySeq, rowToPort } from "@/lib/cms";
 import { LevelBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/ports/$portId")({
-  loader: ({ params }) => {
-    const port = allPorts().find((p) => p.id === Number(params.portId));
+  loader: async ({ params }) => {
+    const id = Number(params.portId);
+    if (id >= CMS_ID_OFFSET) {
+      const row = await fetchCmsRowBySeq("port", id - CMS_ID_OFFSET);
+      if (!row || !row.published) throw notFound();
+      return { port: rowToPort(row) };
+    }
+    const port = allPorts().find((p) => p.id === id);
     if (!port) throw notFound();
     return { port };
   },

@@ -3,12 +3,19 @@ import { toast } from "sonner";
 import { BadgeCheck, Clock, GraduationCap, Star, Users, Award, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { makeCourse, COURSES_COUNT } from "@/lib/data";
+import { CMS_ID_OFFSET, fetchCmsRowBySeq, rowToCourse } from "@/lib/cms";
 import { LevelBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/courses/$courseId")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const id = Number(params.courseId);
-    if (!Number.isInteger(id) || id < 1 || id > COURSES_COUNT) throw notFound();
+    if (!Number.isInteger(id) || id < 1) throw notFound();
+    if (id >= CMS_ID_OFFSET) {
+      const row = await fetchCmsRowBySeq("course", id - CMS_ID_OFFSET);
+      if (!row || !row.published) throw notFound();
+      return { course: rowToCourse(row) };
+    }
+    if (id > COURSES_COUNT) throw notFound();
     return { course: makeCourse(id) };
   },
   head: ({ loaderData }) => {

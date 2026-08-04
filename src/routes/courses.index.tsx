@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { allCourses, COURSE_CATEGORIES, LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
+import { useCmsCourses } from "@/lib/cms";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
@@ -26,7 +27,9 @@ const PRICES = [
 ];
 
 function CoursesPage() {
-  const courses = useMemo(() => allCourses(), []);
+  const base = useMemo(() => allCourses(), []);
+  const cmsCourses = useCmsCourses();
+  const courses = cmsCourses.length ? [...cmsCourses, ...base] : base;
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");

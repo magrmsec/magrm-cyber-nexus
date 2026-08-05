@@ -19,6 +19,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
 import { Route as PortsIndexRouteImport } from './routes/ports.index'
@@ -75,6 +76,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRolesRoute = AuthenticatedRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/courses/',
   path: '/courses/',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/roles': typeof AuthenticatedRolesRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/roles': typeof AuthenticatedRolesRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/roles': typeof AuthenticatedRolesRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/videos'
     | '/admin'
+    | '/roles'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/videos'
     | '/admin'
+    | '/roles'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/videos'
     | '/_authenticated/admin'
+    | '/_authenticated/roles'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/vulnerabilities/$vulnId'
@@ -304,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/roles': {
+      id: '/_authenticated/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof AuthenticatedRolesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/courses/': {
       id: '/courses/'
       path: '/courses'
@@ -351,10 +370,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedRolesRoute: typeof AuthenticatedRolesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedRolesRoute: AuthenticatedRolesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

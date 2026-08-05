@@ -1,12 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, LogOut, Pencil, Plus, Trash2, Eye, EyeOff, ShieldAlert } from "lucide-react";
+import { Loader2, LogOut, Pencil, Plus, Trash2, Eye, EyeOff, ShieldAlert, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { ROLE_LABELS, useMyPermissions } from "@/lib/roles";
 import {
   CMS_KINDS,
   FIELDS,
@@ -17,6 +18,7 @@ import {
   type CmsRow,
   type FieldDef,
 } from "@/lib/cms";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({

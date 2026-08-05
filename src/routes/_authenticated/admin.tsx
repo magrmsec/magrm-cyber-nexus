@@ -1,12 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, LogOut, Pencil, Plus, Trash2, Eye, EyeOff, ShieldAlert } from "lucide-react";
+import { Loader2, LogOut, Pencil, Plus, Trash2, Eye, EyeOff, ShieldAlert, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { ROLE_LABELS, useMyPermissions } from "@/lib/roles";
 import {
   CMS_KINDS,
   FIELDS,
@@ -17,6 +18,7 @@ import {
   type CmsRow,
   type FieldDef,
 } from "@/lib/cms";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -37,25 +39,15 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<CmsKind>("course");
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const { permissions, isLoading: loadingPerms } = useMyPermissions();
   const [editing, setEditing] = useState<CmsRow | null>(null);
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) {
-        setIsAdmin(false);
-        return;
-      }
-      const { data: rows } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id)
-        .eq("role", "admin");
-      setIsAdmin((rows?.length ?? 0) > 0);
-    });
-  }, []);
+    if (!permissions.canEdit && editing) setEditing(null);
+  }, [permissions.canEdit, editing]);
+
 
   const { data: rows, isLoading } = useQuery({
     queryKey: ["cms", kind],
@@ -121,6 +113,10 @@ function AdminPage() {
   };
 
   const togglePublish = async (row: CmsRow) => {
+    if (!permissions.canPublish) {
+      toast.error("النشر متاح للمدير فقط");
+      return;
+    }
     const { error } = await supabase.from("cms_items").update({ published: !row.published }).eq("id", row.id);
     if (error) {
       toast.error("تعذّر تغيير حالة النشر");
@@ -131,6 +127,10 @@ function AdminPage() {
   };
 
   const remove = async (row: CmsRow) => {
+    if (!permissions.canDelete) {
+      toast.error("الحذف متاح للمدير فقط");
+      return;
+    }
     if (!window.confirm("هل تريد حذف هذا العنصر نهائياً؟")) return;
     const { error } = await supabase.from("cms_items").delete().eq("id", row.id);
     if (error) {
@@ -152,13 +152,21 @@ function AdminPage() {
     navigate({ to: "/auth", replace: true });
   };
 
-  if (isAdmin === false) {
+  if (loadingPerms) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" /> جاري التحميل…
+      </div>
+    );
+  }
+
+  if (!permissions.isStaff) {
     return (
       <section className="mx-auto max-w-xl px-4 py-24 text-center">
         <ShieldAlert className="mx-auto size-10 text-warning" />
-        <h1 className="mt-4 text-2xl font-black">لا تملك صلاحية الإدارة</h1>
+        <h1 className="mt-4 text-2xl font-black">لا تملك صلاحية الدخول للوحة</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          هذا الحساب ليس مديراً للموقع. سجّل الدخول بحساب المدير للوصول إلى لوحة التحكم.
+          هذا الحساب بدون صلاحيات. اطلب من مدير الموقع منحك صلاحية محرر أو مشاهد.
         </p>
         <Button className="mt-6" variant="outline" onClick={signOut}>
           تسجيل الخروج
@@ -166,6 +174,8 @@ function AdminPage() {
       </section>
     );
   }
+
+  const myRole = permissions.isAdmin ? "admin" : permissions.isEditor ? "editor" : "viewer";
 
   return (
     <>
@@ -177,14 +187,29 @@ function AdminPage() {
               <span className="text-gradient">إدارة محتوى الموقع</span>
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              أضف وعدّل الدورات والبورتات والفيديوهات والثغرات والأدوات مباشرة بدون تعديل الكود.
+              صلاحيتك الحالية: <strong className="text-primary">{ROLE_LABELS[myRole]}</strong> —{" "}
+              {permissions.canPublish
+                ? "تضيف وتعدّل وتنشر وتحذف."
+                : permissions.canEdit
+                  ? "تضيف وتعدّل، والنشر والحذف للمدير."
+                  : "عرض فقط بدون تعديل."}
             </p>
           </div>
-          <Button variant="outline" onClick={signOut}>
-            <LogOut className="size-4" /> خروج
-          </Button>
+          <div className="flex gap-2">
+            {permissions.canManageRoles ? (
+              <Button asChild variant="outline">
+                <Link to="/roles">
+                  <Users className="size-4" /> الصلاحيات
+                </Link>
+              </Button>
+            ) : null}
+            <Button variant="outline" onClick={signOut}>
+              <LogOut className="size-4" /> خروج
+            </Button>
+          </div>
         </div>
       </section>
+
 
       <section className="mx-auto max-w-7xl px-4 py-10">
         <div className="flex flex-wrap gap-2">
@@ -203,40 +228,48 @@ function AdminPage() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <form onSubmit={save} className="card-surface h-fit p-6 lg:sticky lg:top-24">
-            <h2 className="text-lg font-extrabold">
-              {editing ? `تعديل عنصر في ${KIND_LABELS[kind]}` : `إضافة إلى ${KIND_LABELS[kind]}`}
-            </h2>
-            <div className="mt-5 space-y-4">
-              {fields.map((f) => (
-                <FieldInput
-                  key={f.key}
-                  field={f}
-                  value={form[f.key]}
-                  onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))}
-                />
-              ))}
-            </div>
-            <div className="mt-6 flex gap-3">
-              <Button type="submit" className="glow flex-1 font-bold" disabled={saving}>
-                {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                {editing ? "حفظ التعديلات" : "إضافة"}
-              </Button>
-              {editing ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setEditing(null);
-                    setForm(emptyFor(kind));
-                  }}
-                >
-                  إلغاء
-                </Button>
+        <div className={`mt-8 grid gap-8 ${permissions.canEdit ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""}`}>
+          {permissions.canEdit ? (
+            <form onSubmit={save} className="card-surface h-fit p-6 lg:sticky lg:top-24">
+              <h2 className="text-lg font-extrabold">
+                {editing ? `تعديل عنصر في ${KIND_LABELS[kind]}` : `إضافة إلى ${KIND_LABELS[kind]}`}
+              </h2>
+              {!permissions.canPublish ? (
+                <p className="mt-2 rounded-lg bg-surface-2 p-3 text-xs text-muted-foreground">
+                  كمحرر، العناصر التي تضيفها تبقى مخفية حتى يعتمدها المدير وينشرها.
+                </p>
               ) : null}
-            </div>
-          </form>
+              <div className="mt-5 space-y-4">
+                {fields.map((f) => (
+                  <FieldInput
+                    key={f.key}
+                    field={f}
+                    value={form[f.key]}
+                    onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))}
+                  />
+                ))}
+              </div>
+              <div className="mt-6 flex gap-3">
+                <Button type="submit" className="glow flex-1 font-bold" disabled={saving}>
+                  {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                  {editing ? "حفظ التعديلات" : "إضافة"}
+                </Button>
+                {editing ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(null);
+                      setForm(emptyFor(kind));
+                    }}
+                  >
+                    إلغاء
+                  </Button>
+                ) : null}
+              </div>
+            </form>
+          ) : null}
+
 
           <div>
             <h2 className="text-lg font-extrabold">
@@ -271,21 +304,28 @@ function AdminPage() {
                       {row.published ? "منشور" : "مخفي"}
                     </span>
                     <div className="flex gap-1.5">
-                      <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label="نشر أو إخفاء"
-                        onClick={() => togglePublish(row)}
-                      >
-                        {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </Button>
-                      <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
-                        <Trash2 className="size-4 text-destructive" />
-                      </Button>
+                      {permissions.canEdit ? (
+                        <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
+                          <Pencil className="size-4" />
+                        </Button>
+                      ) : null}
+                      {permissions.canPublish ? (
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          aria-label="نشر أو إخفاء"
+                          onClick={() => togglePublish(row)}
+                        >
+                          {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        </Button>
+                      ) : null}
+                      {permissions.canDelete ? (
+                        <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      ) : null}
                     </div>
+
                   </div>
                 ))}
               </div>

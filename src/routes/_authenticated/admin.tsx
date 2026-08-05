@@ -228,40 +228,48 @@ function AdminPage() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <form onSubmit={save} className="card-surface h-fit p-6 lg:sticky lg:top-24">
-            <h2 className="text-lg font-extrabold">
-              {editing ? `تعديل عنصر في ${KIND_LABELS[kind]}` : `إضافة إلى ${KIND_LABELS[kind]}`}
-            </h2>
-            <div className="mt-5 space-y-4">
-              {fields.map((f) => (
-                <FieldInput
-                  key={f.key}
-                  field={f}
-                  value={form[f.key]}
-                  onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))}
-                />
-              ))}
-            </div>
-            <div className="mt-6 flex gap-3">
-              <Button type="submit" className="glow flex-1 font-bold" disabled={saving}>
-                {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                {editing ? "حفظ التعديلات" : "إضافة"}
-              </Button>
-              {editing ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setEditing(null);
-                    setForm(emptyFor(kind));
-                  }}
-                >
-                  إلغاء
-                </Button>
+        <div className={`mt-8 grid gap-8 ${permissions.canEdit ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""}`}>
+          {permissions.canEdit ? (
+            <form onSubmit={save} className="card-surface h-fit p-6 lg:sticky lg:top-24">
+              <h2 className="text-lg font-extrabold">
+                {editing ? `تعديل عنصر في ${KIND_LABELS[kind]}` : `إضافة إلى ${KIND_LABELS[kind]}`}
+              </h2>
+              {!permissions.canPublish ? (
+                <p className="mt-2 rounded-lg bg-surface-2 p-3 text-xs text-muted-foreground">
+                  كمحرر، العناصر التي تضيفها تبقى مخفية حتى يعتمدها المدير وينشرها.
+                </p>
               ) : null}
-            </div>
-          </form>
+              <div className="mt-5 space-y-4">
+                {fields.map((f) => (
+                  <FieldInput
+                    key={f.key}
+                    field={f}
+                    value={form[f.key]}
+                    onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))}
+                  />
+                ))}
+              </div>
+              <div className="mt-6 flex gap-3">
+                <Button type="submit" className="glow flex-1 font-bold" disabled={saving}>
+                  {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                  {editing ? "حفظ التعديلات" : "إضافة"}
+                </Button>
+                {editing ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(null);
+                      setForm(emptyFor(kind));
+                    }}
+                  >
+                    إلغاء
+                  </Button>
+                ) : null}
+              </div>
+            </form>
+          ) : null}
+
 
           <div>
             <h2 className="text-lg font-extrabold">

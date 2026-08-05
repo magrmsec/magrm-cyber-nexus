@@ -113,6 +113,10 @@ function AdminPage() {
   };
 
   const togglePublish = async (row: CmsRow) => {
+    if (!permissions.canPublish) {
+      toast.error("النشر متاح للمدير فقط");
+      return;
+    }
     const { error } = await supabase.from("cms_items").update({ published: !row.published }).eq("id", row.id);
     if (error) {
       toast.error("تعذّر تغيير حالة النشر");
@@ -123,6 +127,10 @@ function AdminPage() {
   };
 
   const remove = async (row: CmsRow) => {
+    if (!permissions.canDelete) {
+      toast.error("الحذف متاح للمدير فقط");
+      return;
+    }
     if (!window.confirm("هل تريد حذف هذا العنصر نهائياً؟")) return;
     const { error } = await supabase.from("cms_items").delete().eq("id", row.id);
     if (error) {
@@ -144,13 +152,21 @@ function AdminPage() {
     navigate({ to: "/auth", replace: true });
   };
 
-  if (isAdmin === false) {
+  if (loadingPerms) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" /> جاري التحميل…
+      </div>
+    );
+  }
+
+  if (!permissions.isStaff) {
     return (
       <section className="mx-auto max-w-xl px-4 py-24 text-center">
         <ShieldAlert className="mx-auto size-10 text-warning" />
-        <h1 className="mt-4 text-2xl font-black">لا تملك صلاحية الإدارة</h1>
+        <h1 className="mt-4 text-2xl font-black">لا تملك صلاحية الدخول للوحة</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          هذا الحساب ليس مديراً للموقع. سجّل الدخول بحساب المدير للوصول إلى لوحة التحكم.
+          هذا الحساب بدون صلاحيات. اطلب من مدير الموقع منحك صلاحية محرر أو مشاهد.
         </p>
         <Button className="mt-6" variant="outline" onClick={signOut}>
           تسجيل الخروج
@@ -158,6 +174,8 @@ function AdminPage() {
       </section>
     );
   }
+
+  const myRole = permissions.isAdmin ? "admin" : permissions.isEditor ? "editor" : "viewer";
 
   return (
     <>
@@ -169,14 +187,29 @@ function AdminPage() {
               <span className="text-gradient">إدارة محتوى الموقع</span>
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              أضف وعدّل الدورات والبورتات والفيديوهات والثغرات والأدوات مباشرة بدون تعديل الكود.
+              صلاحيتك الحالية: <strong className="text-primary">{ROLE_LABELS[myRole]}</strong> —{" "}
+              {permissions.canPublish
+                ? "تضيف وتعدّل وتنشر وتحذف."
+                : permissions.canEdit
+                  ? "تضيف وتعدّل، والنشر والحذف للمدير."
+                  : "عرض فقط بدون تعديل."}
             </p>
           </div>
-          <Button variant="outline" onClick={signOut}>
-            <LogOut className="size-4" /> خروج
-          </Button>
+          <div className="flex gap-2">
+            {permissions.canManageRoles ? (
+              <Button asChild variant="outline">
+                <Link to="/roles">
+                  <Users className="size-4" /> الصلاحيات
+                </Link>
+              </Button>
+            ) : null}
+            <Button variant="outline" onClick={signOut}>
+              <LogOut className="size-4" /> خروج
+            </Button>
+          </div>
         </div>
       </section>
+
 
       <section className="mx-auto max-w-7xl px-4 py-10">
         <div className="flex flex-wrap gap-2">

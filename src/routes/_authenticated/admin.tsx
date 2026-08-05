@@ -39,25 +39,15 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<CmsKind>("course");
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const { permissions, isLoading: loadingPerms } = useMyPermissions();
   const [editing, setEditing] = useState<CmsRow | null>(null);
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) {
-        setIsAdmin(false);
-        return;
-      }
-      const { data: rows } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id)
-        .eq("role", "admin");
-      setIsAdmin((rows?.length ?? 0) > 0);
-    });
-  }, []);
+    if (!permissions.canEdit && editing) setEditing(null);
+  }, [permissions.canEdit, editing]);
+
 
   const { data: rows, isLoading } = useQuery({
     queryKey: ["cms", kind],

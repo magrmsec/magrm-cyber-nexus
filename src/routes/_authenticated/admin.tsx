@@ -304,21 +304,28 @@ function AdminPage() {
                       {row.published ? "منشور" : "مخفي"}
                     </span>
                     <div className="flex gap-1.5">
-                      <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label="نشر أو إخفاء"
-                        onClick={() => togglePublish(row)}
-                      >
-                        {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </Button>
-                      <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
-                        <Trash2 className="size-4 text-destructive" />
-                      </Button>
+                      {permissions.canEdit ? (
+                        <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
+                          <Pencil className="size-4" />
+                        </Button>
+                      ) : null}
+                      {permissions.canPublish ? (
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          aria-label="نشر أو إخفاء"
+                          onClick={() => togglePublish(row)}
+                        >
+                          {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        </Button>
+                      ) : null}
+                      {permissions.canDelete ? (
+                        <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      ) : null}
                     </div>
+
                   </div>
                 ))}
               </div>

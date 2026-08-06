@@ -1,0 +1,2 @@
+ALTER TABLE public.cms_items DROP CONSTRAINT cms_items_kind_check;
+ALTER TABLE public.cms_items ADD CONSTRAINT cms_items_kind_check CHECK (kind = ANY (ARRAY['course','port','video','vuln','tool','app']));

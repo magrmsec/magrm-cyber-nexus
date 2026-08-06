@@ -2,21 +2,16 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Flag, Target, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { allPorts } from "@/lib/data";
-import { CMS_ID_OFFSET, fetchCmsRowBySeq, rowToPort } from "@/lib/cms";
+import { fetchCmsRowBySeq, rowToPort } from "@/lib/cms";
 import { LevelBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/ports/$portId")({
   loader: async ({ params }) => {
     const id = Number(params.portId);
-    if (id >= CMS_ID_OFFSET) {
-      const row = await fetchCmsRowBySeq("port", id - CMS_ID_OFFSET);
-      if (!row || !row.published) throw notFound();
-      return { port: rowToPort(row) };
-    }
-    const port = allPorts().find((p) => p.id === id);
-    if (!port) throw notFound();
-    return { port };
+    if (!Number.isInteger(id) || id < 1) throw notFound();
+    const row = await fetchCmsRowBySeq("port", id);
+    if (!row || !row.published) throw notFound();
+    return { port: rowToPort(row) };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "البورت غير متوفر | Magrm" }, { name: "robots", content: "noindex" }] };

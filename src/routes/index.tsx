@@ -13,8 +13,8 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { allCourses, allVulns, VIDEOS_COUNT } from "@/lib/data";
 import { LevelBadge, SeverityBadge } from "@/components/ui-bits";
+import { useCmsCourses, useCmsVideos, useCmsVulns } from "@/lib/cms";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,22 +47,26 @@ const AWARDS = [
 const SECTIONS = [
   { to: "/courses", label: "الدورات المدفوعة", desc: "1000 دورة في كل تخصصات الأمن السيبراني", icon: BookOpen },
   { to: "/ports", label: "البورتات العملية", desc: "20 تحدي اختراق واقعي بشهادة إنجاز", icon: ServerCog },
-  { to: "/videos", label: "مكتبة الفيديو", desc: `${VIDEOS_COUNT} فيديو شرح عملي مجاني`, icon: PlayCircle },
+  { to: "/videos", label: "مكتبة الفيديو", desc: "فيديوهات شرح عملية مجانية", icon: PlayCircle },
   { to: "/vulnerabilities", label: "قاعدة الثغرات", desc: "1000 ثغرة CVE مع التفاصيل والحلول", icon: Bug },
   { to: "/tools", label: "الأدوات", desc: "60+ أداة اختراق وتحليل مع روابط التحميل", icon: Cpu },
   { to: "/certificates", label: "الشهادات", desc: "شهادات Magrm المهنية والاعتمادات", icon: Award },
 ] as const;
 
-const STATS = [
-  { value: "1000+", label: "دورة تدريبية" },
-  { value: "700+", label: "فيديو شرح" },
-  { value: "1000+", label: "ثغرة موثّقة" },
-  { value: "45K+", label: "متدرّب" },
-];
-
 function Index() {
-  const featured = allCourses().slice(0, 6);
-  const latestVulns = allVulns().slice(0, 5);
+  const { items: courses } = useCmsCourses();
+  const { items: videos } = useCmsVideos();
+  const { items: vulns } = useCmsVulns();
+  const featured = courses.slice(0, 6);
+  const latestVulns = [...vulns].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const students = courses.reduce((sum, c) => sum + c.students, 0);
+  const nf = (n: number) => n.toLocaleString("en-US");
+  const STATS = [
+    { value: `${nf(courses.length)}+`, label: "دورة تدريبية" },
+    { value: `${nf(videos.length)}+`, label: "فيديو شرح" },
+    { value: `${nf(vulns.length)}+`, label: "ثغرة موثّقة" },
+    { value: students > 1000 ? `${Math.round(students / 1000)}K+` : `${nf(students)}+`, label: "متدرّب" },
+  ];
 
   return (
     <>

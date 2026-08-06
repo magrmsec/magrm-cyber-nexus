@@ -1,20 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { CalendarDays, Layers, ShieldAlert, ShieldCheck } from "lucide-react";
-import { makeVuln, VULNS_COUNT } from "@/lib/data";
-import { CMS_ID_OFFSET, fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
+import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 import { SeverityBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/vulnerabilities/$vulnId")({
   loader: async ({ params }) => {
     const id = Number(params.vulnId);
     if (!Number.isInteger(id) || id < 1) throw notFound();
-    if (id >= CMS_ID_OFFSET) {
-      const row = await fetchCmsRowBySeq("vuln", id - CMS_ID_OFFSET);
-      if (!row || !row.published) throw notFound();
-      return { vuln: rowToVuln(row) };
-    }
-    if (id > VULNS_COUNT) throw notFound();
-    return { vuln: makeVuln(id) };
+    const row = await fetchCmsRowBySeq("vuln", id);
+    if (!row || !row.published) throw notFound();
+    return { vuln: rowToVuln(row) };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "الثغرة غير متوفرة | Magrm" }, { name: "robots", content: "noindex" }] };

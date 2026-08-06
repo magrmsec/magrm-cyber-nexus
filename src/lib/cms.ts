@@ -10,13 +10,14 @@ import {
   type Port,
   type Severity,
   type Tool,
+  type App as AppItem,
   type Video,
   type Vuln,
 } from "@/lib/data";
 
 /** كل المحتوى يأتي من قاعدة البيانات؛ معرف العنصر هو رقم التسلسل (seq). */
 
-export const CMS_KINDS = ["course", "port", "video", "vuln", "tool"] as const;
+export const CMS_KINDS = ["course", "port", "video", "vuln", "tool", "app"] as const;
 export type CmsKind = (typeof CMS_KINDS)[number];
 
 export const KIND_LABELS: Record<CmsKind, string> = {
@@ -25,6 +26,7 @@ export const KIND_LABELS: Record<CmsKind, string> = {
   video: "الفيديوهات",
   vuln: "الثغرات",
   tool: "الأدوات",
+  app: "التطبيقات",
 };
 
 export type CmsData = Record<string, unknown>;
@@ -92,6 +94,12 @@ export const FIELDS: Record<CmsKind, FieldDef[]> = {
   tool: [
     { key: "name", label: "اسم الأداة", type: "text", required: true },
     { key: "category", label: "التصنيف", type: "text", required: true },
+    { key: "description", label: "الوصف", type: "textarea", required: true },
+    { key: "url", label: "رابط التحميل", type: "text", required: true },
+  ],
+  app: [
+    { key: "name", label: "اسم التطبيق", type: "text", required: true },
+    { key: "platform", label: "المنصة", type: "text", required: true },
     { key: "description", label: "الوصف", type: "textarea", required: true },
     { key: "url", label: "رابط التحميل", type: "text", required: true },
   ],
@@ -186,6 +194,17 @@ export function rowToTool(row: CmsRow): Tool {
 const PAGE = 1000;
 
 /** يجلب كل صفوف النوع المطلوب (مع تقسيم داخلي لتجاوز حد 1000 صف). */
+export function rowToApp(row: CmsRow): AppItem {
+  const d = row.data;
+  return {
+    id: row.seq,
+    name: str(d["name"], "تطبيق"),
+    platform: str(d["platform"], "Android"),
+    description: str(d["description"]),
+    url: str(d["url"], "#"),
+  };
+}
+
 export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
   const all: CmsRow[] = [];
   for (let from = 0; ; from += PAGE) {
@@ -243,4 +262,8 @@ export function useCmsVulns() {
 export function useCmsTools() {
   const q = useCmsRows("tool");
   return { items: (q.data ?? []).filter((r) => r.published).map(rowToTool), isLoading: q.isLoading };
+}
+export function useCmsApps() {
+  const q = useCmsRows("app");
+  return { items: (q.data ?? []).filter((r) => r.published).map(rowToApp), isLoading: q.isLoading };
 }

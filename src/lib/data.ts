@@ -237,6 +237,7 @@ export const allVulns = (): Vuln[] => Array.from({ length: VULNS_COUNT }, (_, i)
 
 /* ---------------- Tools ---------------- */
 export interface Tool {
+  id?: number;
   name: string;
   category: string;
   description: string;
@@ -311,6 +312,7 @@ export const TOOL_CATEGORIES = Array.from(new Set(TOOLS.map((t) => t.category)))
 
 /* ---------------- Mobile apps ---------------- */
 export interface App {
+  id?: number;
   name: string;
   platform: string;
   description: string;

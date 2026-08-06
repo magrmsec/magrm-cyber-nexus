@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Download, Smartphone } from "lucide-react";
-import { APPS } from "@/lib/data";
+import { useCmsApps } from "@/lib/cms";
+import { EmptyState } from "@/components/ui-bits";
 import { PageHero } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/apps")({
@@ -16,18 +17,22 @@ export const Route = createFileRoute("/apps")({
 });
 
 function AppsPage() {
+  const { items: apps, isLoading } = useCmsApps();
   return (
     <>
       <PageHero
-        eyebrow={`${APPS.length} تطبيق`}
+        eyebrow={`${apps.length} تطبيق`}
         title="تطبيقات الجوال"
         description="أدوات الأمن السيبراني التي تعمل مباشرة من هاتفك: طرفيات، ماسحات شبكات، خصوصية وتشفير."
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12">
+        {apps.length === 0 ? (
+          <EmptyState text={isLoading ? "جاري تحميل التطبيقات…" : "لا توجد تطبيقات بعد."} />
+        ) : null}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {APPS.map((a) => (
-            <div key={a.name} className="card-surface animate-rise flex flex-col p-6">
+          {apps.map((a) => (
+            <div key={a.id ?? a.name} className="card-surface animate-rise flex flex-col p-6">
               <div className="flex items-center gap-3">
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/30">
                   <Smartphone className="size-5" />

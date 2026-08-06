@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Search, Star, Users, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { allCourses, COURSE_CATEGORIES, LEVELS } from "@/lib/data";
+import { COURSE_CATEGORIES, LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { useCmsCourses } from "@/lib/cms";
 
@@ -27,9 +27,7 @@ const PRICES = [
 ];
 
 function CoursesPage() {
-  const base = useMemo(() => allCourses(), []);
-  const cmsCourses = useCmsCourses();
-  const courses = cmsCourses.length ? [...cmsCourses, ...base] : base;
+  const { items: courses, isLoading } = useCmsCourses();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");
@@ -57,7 +55,7 @@ function CoursesPage() {
   return (
     <>
       <PageHero
-        eyebrow="1000 دورة"
+        eyebrow={`${courses.length.toLocaleString("en-US")} دورة`}
         title="مكتبة الدورات المدفوعة"
         description="مسارات تدريبية عملية بالكامل في الاختراق الأخلاقي والأمن السيبراني، من المستوى المبتدئ حتى الاحتراف."
       />
@@ -102,7 +100,7 @@ function CoursesPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text="لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر." />
+            <EmptyState text={isLoading ? "جاري تحميل الدورات…" : "لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر."} />
           </div>
         ) : (
           <>

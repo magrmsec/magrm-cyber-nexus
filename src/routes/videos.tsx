@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Clock, PlayCircle, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { allVideos, VIDEO_CATEGORIES, LEVELS, type Video } from "@/lib/data";
+import { VIDEO_CATEGORIES, LEVELS, type Video } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsVideos } from "@/lib/cms";
@@ -21,9 +21,7 @@ export const Route = createFileRoute("/videos")({
 });
 
 function VideosPage() {
-  const base = useMemo(() => allVideos(), []);
-  const cmsVideos = useCmsVideos();
-  const videos = cmsVideos.length ? [...cmsVideos, ...base] : base;
+  const { items: videos, isLoading } = useCmsVideos();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");
@@ -45,7 +43,7 @@ function VideosPage() {
   return (
     <>
       <PageHero
-        eyebrow="700 فيديو"
+        eyebrow={`${videos.length.toLocaleString("en-US")} فيديو`}
         title="مكتبة الفيديوهات"
         description="شروحات عملية مجانية بالفيديو: أدوات الاختراق، ثغرات الويب، الشبكات، وتحديات CTF."
       />
@@ -73,7 +71,7 @@ function VideosPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text="لا توجد فيديوهات مطابقة." />
+            <EmptyState text={isLoading ? "جاري تحميل الفيديوهات…" : "لا توجد فيديوهات مطابقة."} />
           </div>
         ) : (
           <>

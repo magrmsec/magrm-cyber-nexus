@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { TOOLS, TOOL_CATEGORIES } from "@/lib/data";
+
 import { PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsTools } from "@/lib/cms";
@@ -22,8 +22,7 @@ export const Route = createFileRoute("/tools")({
 function ToolsPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
-  const cmsTools = useCmsTools();
-  const tools = cmsTools.length ? [...cmsTools, ...TOOLS] : TOOLS;
+  const { items: tools, isLoading } = useCmsTools();
 
   const filtered = tools.filter(
     (t) =>
@@ -53,7 +52,7 @@ function ToolsPage() {
           <div className="mt-5">
             <FilterRow
               label="التصنيف"
-              options={["الكل", ...new Set([...TOOL_CATEGORIES, ...tools.map((t) => t.category)])]}
+              options={["الكل", ...new Set(tools.map((t) => t.category))]}
               value={cat}
               onChange={setCat}
             />
@@ -62,12 +61,12 @@ function ToolsPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-8">
-            <EmptyState text="لا توجد أدوات مطابقة." />
+            <EmptyState text={isLoading ? "جاري تحميل الأدوات…" : "لا توجد أدوات مطابقة."} />
           </div>
         ) : (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((t) => (
-              <div key={t.name} className="card-surface animate-rise flex flex-col p-6">
+              <div key={t.id ?? t.name} className="card-surface animate-rise flex flex-col p-6">
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="min-w-0 truncate text-base font-bold">{t.name}</h2>
                   <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">

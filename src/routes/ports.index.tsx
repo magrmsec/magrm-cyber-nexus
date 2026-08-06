@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Search, Flag, Wrench } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { allPorts, LEVELS } from "@/lib/data";
+import { LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsPorts } from "@/lib/cms";
@@ -20,9 +20,7 @@ export const Route = createFileRoute("/ports/")({
 });
 
 function PortsPage() {
-  const base = useMemo(() => allPorts(), []);
-  const cmsPorts = useCmsPorts();
-  const ports = cmsPorts.length ? [...cmsPorts, ...base] : base;
+  const { items: ports, isLoading } = useCmsPorts();
   const [q, setQ] = useState("");
   const [level, setLevel] = useState("الكل");
 
@@ -35,7 +33,7 @@ function PortsPage() {
   return (
     <>
       <PageHero
-        eyebrow="20 بورت"
+        eyebrow={`${ports.length} بورت`}
         title="البورتات — تحديات اختراق عملية"
         description="بيئات معزولة واقعية تحاكي شبكات وشركات حقيقية. اخترق، التقط الأعلام، واكتب تقريرك الاحترافي."
       />
@@ -58,7 +56,7 @@ function PortsPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-8">
-            <EmptyState text="لا توجد بورتات مطابقة." />
+            <EmptyState text={isLoading ? "جاري تحميل البورتات…" : "لا توجد بورتات مطابقة."} />
           </div>
         ) : (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

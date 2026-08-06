@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { allVulns, SEVERITIES } from "@/lib/data";
+import { SEVERITIES } from "@/lib/data";
 import { SeverityBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsVulns } from "@/lib/cms";
@@ -21,9 +21,7 @@ export const Route = createFileRoute("/vulnerabilities/")({
 });
 
 function VulnsPage() {
-  const base = useMemo(() => allVulns(), []);
-  const cmsVulns = useCmsVulns();
-  const vulns = cmsVulns.length ? [...cmsVulns, ...base] : base;
+  const { items: vulns, isLoading } = useCmsVulns();
   const [q, setQ] = useState("");
   const [sev, setSev] = useState("الكل");
   const [page, setPage] = useState(1);
@@ -44,7 +42,7 @@ function VulnsPage() {
   return (
     <>
       <PageHero
-        eyebrow="1000 ثغرة"
+        eyebrow={`${vulns.length.toLocaleString("en-US")} ثغرة`}
         title="قاعدة الثغرات الأمنية"
         description="أرشيف ثغرات CVE مصنّف حسب الخطورة والنوع، مع الأنظمة المتأثرة وتاريخ الاكتشاف وطرق الحماية."
       />
@@ -82,7 +80,7 @@ function VulnsPage() {
 
         {rows.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text="لا توجد ثغرات مطابقة." />
+            <EmptyState text={isLoading ? "جاري تحميل الثغرات…" : "لا توجد ثغرات مطابقة."} />
           </div>
         ) : (
           <>

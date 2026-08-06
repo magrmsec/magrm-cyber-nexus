@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.enforce_publish_permission() FROM PUBLIC, anon, authenticated;

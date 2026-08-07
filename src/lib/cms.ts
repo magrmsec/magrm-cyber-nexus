@@ -285,3 +285,83 @@ export function useCmsApps() {
   const q = useCmsRows("app");
   return { items: (q.data ?? []).filter((r) => r.published).map(rowToApp), isLoading: q.isLoading };
 }
+
+/* ————— جلب من الخادم بنظام "تحميل المزيد" (بدون صفحات مرقّمة) ————— */
+
+export interface CmsFilter {
+  search?: string;
+  category?: string;
+  level?: string;
+  severity?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  searchKeys?: string[];
+  publishedOnly?: boolean;
+}
+
+const sel = (s: string): string => s;
+const ANY = "الكل";
+const clean = (s: string) => s.replace(/[,()%]/g, " ").trim();
+
+function buildQuery(kind: CmsKind, f: CmsFilter, count?: "exact") {
+  let q = supabase
+    .from("cms_items")
+    .select(sel("id, seq, kind, data, published, created_at"), count ? { count } : undefined)
+    .eq("kind", kind);
+  if (f.publishedOnly !== false) q = q.eq("published", true);
+  if (f.category && f.category !== ANY) q = q.eq("data->>category", f.category);
+  if (f.level && f.level !== ANY) q = q.eq("data->>level", f.level);
+  if (f.severity && f.severity !== ANY) q = q.eq("data->>severity", f.severity);
+  if (typeof f.minPrice === "number" && f.minPrice > 0) q = q.gte("data->price", f.minPrice);
+  if (typeof f.maxPrice === "number" && Number.isFinite(f.maxPrice)) q = q.lte("data->price", f.maxPrice);
+  const term = clean(f.search ?? "");
+  if (term) {
+    const keys = f.searchKeys?.length ? f.searchKeys : ["title", "name", "description"];
+    q = q.or(keys.map((k) => `data->>${k}.ilike.%${term}%`).join(","));
+  }
+  return q;
+}
+
+export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
+  const { data, error } = await buildQuery(kind, f)
+    .order("seq", { ascending: true })
+    .range(from, from + size - 1);
+  if (error) throw error;
+  return (data ?? []) as unknown as CmsRow[];
+}
+
+export async function countCms(kind: CmsKind, f: CmsFilter = {}): Promise<number> {
+  const { count, error } = await buildQuery(kind, f, "exact").limit(1);
+  if (error) return 0;
+  return count ?? 0;
+}
+
+/** تحميل تدريجي: كل دفعة تجلب `size` عنصراً إضافياً. */
+export function useCmsInfinite(kind: CmsKind, filter: CmsFilter = {}, size = 24) {
+  return useInfiniteQuery({
+    queryKey: ["cms-slice", kind, filter, size],
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => fetchCmsSlice(kind, filter, pageParam as number, size),
+    getNextPageParam: (last, pages) => (last.length < size ? undefined : pages.length * size),
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useCmsCount(kind: CmsKind, filter: CmsFilter = {}) {
+  return useQuery({
+    queryKey: ["cms-count", kind, filter],
+    queryFn: () => countCms(kind, filter),
+    staleTime: 30_000,
+  });
+}
+
+/** أول N عنصر منشور من نوع معيّن (للصفحة الرئيسية). */
+export function useCmsPreview(kind: CmsKind, limit: number, filter: CmsFilter = {}) {
+  const q = useQuery({
+    queryKey: ["cms-preview", kind, limit, filter],
+    queryFn: () => fetchCmsSlice(kind, filter, 0, limit),
+    staleTime: 0,
+  });
+  return { rows: q.data ?? [], isLoading: q.isLoading };
+}

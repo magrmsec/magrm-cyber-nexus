@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PageHero } from "@/components/ui-bits";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -29,6 +30,7 @@ const schema = z.object({
 });
 
 function ContactPage() {
+  const { s: cfg } = useSiteSettings();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -103,9 +105,19 @@ function ContactPage() {
           </form>
 
           <aside className="space-y-4">
-            <InfoCard icon={Mail} title="البريد الإلكتروني" value="contact@magrm.security" href="mailto:contact@magrm.security" />
-            <InfoCard icon={MessageSquare} title="الدعم الفني" value="support@magrm.security" href="mailto:support@magrm.security" />
-            <InfoCard icon={MapPin} title="العمل" value="عن بُعد — خدمة كل الدول العربية" />
+            <InfoCard
+              icon={Mail}
+              title="البريد الإلكتروني"
+              value={sv(cfg, "contactEmail")}
+              href={`mailto:${sv(cfg, "contactEmail")}`}
+            />
+            <InfoCard
+              icon={MessageSquare}
+              title="الدعم الفني"
+              value={sv(cfg, "supportEmail")}
+              href={`mailto:${sv(cfg, "supportEmail")}`}
+            />
+            <InfoCard icon={MapPin} title="العمل" value={sv(cfg, "contactLocation")} />
           </aside>
         </div>
       </section>

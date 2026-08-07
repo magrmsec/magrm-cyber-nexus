@@ -51,11 +51,28 @@ export interface FieldDef {
   required?: boolean;
 }
 
+/** الأقسام الرئيسية الاثنا عشر لمحتوى الدورات. */
+export const SECTIONS = [
+  "الأساسيات",
+  "أمن الشبكات",
+  "أمن تطبيقات الويب",
+  "أمن الأنظمة",
+  "التشفير",
+  "الهندسة العكسية",
+  "التحليل الجنائي الرقمي",
+  "أمن الجوّال",
+  "أمن السحابة",
+  "الهندسة الاجتماعية والوعي",
+  "الحوكمة والامتثال",
+  "الأدوات",
+] as const;
+
 export const FIELDS: Record<CmsKind, FieldDef[]> = {
   course: [
     { key: "title", label: "عنوان الدورة", type: "text", required: true },
-    { key: "category", label: "التصنيف", type: "select", options: COURSE_CATEGORIES },
+    { key: "category", label: "القسم", type: "select", options: SECTIONS },
     { key: "level", label: "المستوى", type: "select", options: LEVELS },
+
     { key: "description", label: "الوصف", type: "textarea", required: true },
     { key: "price", label: "السعر ($)", type: "number" },
     { key: "hours", label: "عدد الساعات", type: "number" },

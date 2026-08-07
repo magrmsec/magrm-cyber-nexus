@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SEVERITIES } from "@/lib/data";
 import { SeverityBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
-import { useCmsVulns } from "@/lib/cms";
+import { rowToVuln, useCmsCount, useCmsInfinite, type CmsFilter } from "@/lib/cms";
 
 export const Route = createFileRoute("/vulnerabilities/")({
   head: () => ({
@@ -20,29 +20,26 @@ export const Route = createFileRoute("/vulnerabilities/")({
   component: VulnsPage,
 });
 
+const BATCH = 25;
+
 function VulnsPage() {
-  const { items: vulns, isLoading } = useCmsVulns();
   const [q, setQ] = useState("");
   const [sev, setSev] = useState("الكل");
-  const [page, setPage] = useState(1);
-  const perPage = 20;
 
-  const filtered = vulns.filter(
-    (v) =>
-      (sev === "الكل" || v.severity === sev) &&
-      (!q.trim() ||
-        v.cve.toLowerCase().includes(q.trim().toLowerCase()) ||
-        v.name.includes(q.trim()) ||
-        v.type.toLowerCase().includes(q.trim().toLowerCase())),
+  const filter = useMemo<CmsFilter>(
+    () => ({ search: q.trim(), severity: sev, searchKeys: ["cve", "name", "type"] }),
+    [q, sev],
   );
-  const pages = Math.max(1, Math.ceil(filtered.length / perPage));
-  const current = Math.min(page, pages);
-  const rows = filtered.slice((current - 1) * perPage, current * perPage);
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useCmsInfinite("vuln", filter, BATCH);
+  const { data: total } = useCmsCount("vuln", filter);
+  const { data: grandTotal } = useCmsCount("vuln");
+  const rows = (data?.pages.flat() ?? []).map(rowToVuln);
 
   return (
     <>
       <PageHero
-        eyebrow={`${vulns.length.toLocaleString("en-US")} ثغرة`}
+        eyebrow={`${(grandTotal ?? 0).toLocaleString("en-US")} ثغرة`}
         title="قاعدة الثغرات الأمنية"
         description="أرشيف ثغرات CVE مصنّف حسب الخطورة والنوع، مع الأنظمة المتأثرة وتاريخ الاكتشاف وطرق الحماية."
       />
@@ -53,34 +50,27 @@ function VulnsPage() {
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={q}
-              onChange={(e) => {
-                setQ(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => setQ(e.target.value)}
               placeholder="ابحث برقم CVE أو نوع الثغرة… مثال: RCE، Apache"
               className="h-12 pr-10 text-sm"
             />
           </div>
           <div className="mt-5">
-            <FilterRow
-              label="مستوى الخطورة"
-              options={["الكل", ...SEVERITIES]}
-              value={sev}
-              onChange={(v) => {
-                setSev(v);
-                setPage(1);
-              }}
-            />
+            <FilterRow label="مستوى الخطورة" options={["الكل", ...SEVERITIES]} value={sev} onChange={setSev} />
           </div>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          عدد النتائج: <span className="font-bold text-primary">{filtered.length.toLocaleString("en-US")}</span> ثغرة
+          عدد النتائج: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> ثغرة
         </p>
 
-        {rows.length === 0 ? (
+        {isLoading ? (
+          <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" /> جاري تحميل الثغرات…
+          </div>
+        ) : rows.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text={isLoading ? "جاري تحميل الثغرات…" : "لا توجد ثغرات مطابقة."} />
+            <EmptyState text="لا توجد ثغرات مطابقة." />
           </div>
         ) : (
           <>
@@ -108,17 +98,15 @@ function VulnsPage() {
               ))}
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Button variant="outline" disabled={current === 1} onClick={() => setPage(current - 1)}>
-                السابق
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                صفحة <span className="font-bold text-primary">{current}</span> من {pages}
-              </span>
-              <Button variant="outline" disabled={current === pages} onClick={() => setPage(current + 1)}>
-                التالي
-              </Button>
-            </div>
+            {hasNextPage ? (
+              <div className="mt-10 text-center">
+                <Button size="lg" variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>
+                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} تحميل المزيد
+                </Button>
+              </div>
+            ) : (
+              <p className="mt-10 text-center text-xs text-muted-foreground">وصلت إلى نهاية النتائج.</p>
+            )}
           </>
         )}
       </section>

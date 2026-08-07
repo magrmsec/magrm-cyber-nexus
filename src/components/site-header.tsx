@@ -39,8 +39,9 @@ export function SiteHeader() {
             <ShieldCheck className="size-5" />
           </span>
           <span className="truncate text-base font-extrabold tracking-tight sm:text-lg">
-            <span className="text-gradient">Magrm</span> Cyber Security
+            <span className="text-gradient">{sv(s, "brandPrefix")}</span> {sv(s, "brandSuffix")}
           </span>
+
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

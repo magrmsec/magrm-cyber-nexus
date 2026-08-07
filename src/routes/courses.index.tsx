@@ -1,19 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Star, Users, Clock } from "lucide-react";
+import { Search, Star, Users, Clock, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { COURSE_CATEGORIES, LEVELS } from "@/lib/data";
+import { LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
-import { useCmsCourses } from "@/lib/cms";
+import { SECTIONS, rowToCourse, useCmsCount, useCmsInfinite, type CmsFilter } from "@/lib/cms";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
     meta: [
       { title: "الدورات المدفوعة | Magrm Cyber Security" },
-      { name: "description", content: "أكثر من 1000 دورة مدفوعة في الاختراق الأخلاقي والأمن السيبراني بالعربي." },
+      { name: "description", content: "أكثر من 12000 دورة في 12 قسماً رئيسياً بالاختراق الأخلاقي والأمن السيبراني بالعربي." },
       { property: "og:title", content: "مكتبة الدورات | Magrm Cyber Security" },
-      { property: "og:description", content: "1000 دورة في اختبار الاختراق، أمن الشبكات، Bug Bounty وأكثر." },
+      { property: "og:description", content: "12 قسماً رئيسياً وأكثر من 1000 دورة في كل قسم." },
     ],
   }),
   component: CoursesPage,
@@ -26,36 +26,36 @@ const PRICES = [
   { label: "أكثر من $200", min: 201, max: Infinity },
 ];
 
+const BATCH = 24;
+
 function CoursesPage() {
-  const { items: courses, isLoading } = useCmsCourses();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");
   const [price, setPrice] = useState(0);
-  const [shown, setShown] = useState(12);
 
-  const filtered = useMemo(() => {
+  const filter = useMemo<CmsFilter>(() => {
     const p = PRICES[price]!;
-    const term = q.trim().toLowerCase();
-    return courses.filter(
-      (c) =>
-        (cat === "الكل" || c.category === cat) &&
-        (level === "الكل" || c.level === level) &&
-        c.price >= p.min &&
-        c.price <= p.max &&
-        (!term || c.title.toLowerCase().includes(term) || c.description.toLowerCase().includes(term)),
-    );
-  }, [courses, q, cat, level, price]);
+    return {
+      search: q.trim(),
+      category: cat,
+      level,
+      minPrice: p.min,
+      ...(Number.isFinite(p.max) ? { maxPrice: p.max } : {}),
+      searchKeys: ["title", "description"],
+    };
+  }, [q, cat, level, price]);
 
-  const reset = (fn: () => void) => {
-    fn();
-    setShown(12);
-  };
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useCmsInfinite("course", filter, BATCH);
+  const { data: total } = useCmsCount("course", filter);
+  const { data: grandTotal } = useCmsCount("course");
+
+  const courses = (data?.pages.flat() ?? []).map(rowToCourse);
 
   return (
     <>
       <PageHero
-        eyebrow={`${courses.length.toLocaleString("en-US")} دورة`}
+        eyebrow={`${(grandTotal ?? 0).toLocaleString("en-US")} دورة في 12 قسماً`}
         title="مكتبة الدورات المدفوعة"
         description="مسارات تدريبية عملية بالكامل في الاختراق الأخلاقي والأمن السيبراني، من المستوى المبتدئ حتى الاحتراف."
       />
@@ -66,46 +66,40 @@ function CoursesPage() {
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={q}
-              onChange={(e) => reset(() => setQ(e.target.value))}
-              placeholder="ابحث عن دورة… مثال: Metasploit، XSS، Cloud"
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="ابحث عن دورة… مثال: التشفير، أمن السحابة"
               className="h-12 pr-10 text-sm"
             />
           </div>
 
           <div className="mt-5 space-y-4">
-            <FilterRow
-              label="التصنيف"
-              options={["الكل", ...COURSE_CATEGORIES]}
-              value={cat}
-              onChange={(v) => reset(() => setCat(v))}
-            />
-            <FilterRow
-              label="المستوى"
-              options={["الكل", ...LEVELS]}
-              value={level}
-              onChange={(v) => reset(() => setLevel(v))}
-            />
+            <FilterRow label="القسم" options={["الكل", ...SECTIONS]} value={cat} onChange={setCat} />
+            <FilterRow label="المستوى" options={["الكل", ...LEVELS]} value={level} onChange={setLevel} />
             <FilterRow
               label="السعر"
               options={PRICES.map((p) => p.label)}
               value={PRICES[price]!.label}
-              onChange={(v) => reset(() => setPrice(PRICES.findIndex((p) => p.label === v)))}
+              onChange={(v) => setPrice(PRICES.findIndex((p) => p.label === v))}
             />
           </div>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          عدد النتائج: <span className="font-bold text-primary">{filtered.length.toLocaleString("en-US")}</span> دورة
+          عدد النتائج: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> دورة
         </p>
 
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" /> جاري تحميل الدورات…
+          </div>
+        ) : courses.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text={isLoading ? "جاري تحميل الدورات…" : "لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر."} />
+            <EmptyState text="لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر." />
           </div>
         ) : (
           <>
             <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.slice(0, shown).map((c) => (
+              {courses.map((c) => (
                 <Link
                   key={c.id}
                   to="/courses/$courseId"
@@ -141,13 +135,15 @@ function CoursesPage() {
               ))}
             </div>
 
-            {shown < filtered.length ? (
+            {hasNextPage ? (
               <div className="mt-10 text-center">
-                <Button size="lg" variant="outline" onClick={() => setShown((s) => s + 12)}>
-                  عرض المزيد ({(filtered.length - shown).toLocaleString("en-US")} متبقية)
+                <Button size="lg" variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>
+                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} تحميل المزيد
                 </Button>
               </div>
-            ) : null}
+            ) : (
+              <p className="mt-10 text-center text-xs text-muted-foreground">وصلت إلى نهاية النتائج.</p>
+            )}
           </>
         )}
       </section>

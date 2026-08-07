@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bug, GraduationCap, ShieldCheck, Users, Target, Terminal, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui-bits";
+import { sl, sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -15,40 +16,35 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const STATS = [
-  { icon: ShieldCheck, value: "+12", label: "سنة خبرة" },
-  { icon: GraduationCap, value: "+1000", label: "دورة تدريبية" },
-  { icon: Users, value: "+45,000", label: "طالب" },
-  { icon: Bug, value: "+320", label: "ثغرة مكتشفة" },
-];
-
-const SKILLS = [
-  "اختبار اختراق الشبكات والأنظمة",
-  "أمن تطبيقات الويب و API",
-  "عمليات الفريق الأحمر (Red Teaming)",
-  "الهندسة العكسية وتحليل البرمجيات الخبيثة",
-  "التحقيق الجنائي الرقمي والاستجابة للحوادث",
-  "أمن السحابة والحاويات",
-];
+const STAT_ICONS = [ShieldCheck, GraduationCap, Users, Bug];
 
 function AboutPage() {
+  const { s } = useSiteSettings();
+  const stats = STAT_ICONS.map((icon, i) => ({
+    icon,
+    value: sv(s, `aboutStat${i + 1}Value`),
+    label: sv(s, `aboutStat${i + 1}Label`),
+  })).filter((x) => x.value || x.label);
+  const skills = sl(s, "aboutSkills");
+  const certs = sl(s, "aboutCertificates");
+
   return (
     <>
       <PageHero
-        eyebrow="من أنا"
-        title="Magrm — باحث أمن سيبراني"
-        description="أعمل منذ أكثر من عقد في مجال الأمن الهجومي والدفاعي: اختبار اختراق للمؤسسات، أبحاث ثغرات، وبناء برامج تدريب عربية بمعايير عالمية."
+        eyebrow={sv(s, "aboutEyebrow")}
+        title={sv(s, "aboutName")}
+        description={sv(s, "aboutIntro")}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="card-surface animate-rise p-6 text-center">
+          {stats.map((st) => (
+            <div key={st.label} className="card-surface animate-rise p-6 text-center">
               <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary ring-1 ring-primary/30">
-                <s.icon className="size-6" />
+                <st.icon className="size-6" />
               </span>
-              <div className="mt-4 text-2xl font-black text-primary">{s.value}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
+              <div className="mt-4 text-2xl font-black text-primary">{st.value}</div>
+              <div className="mt-1 text-xs text-muted-foreground">{st.label}</div>
             </div>
           ))}
         </div>
@@ -58,15 +54,8 @@ function AboutPage() {
             <h2 className="flex items-center gap-2 text-xl font-extrabold">
               <Target className="size-5 text-primary" /> الرسالة
             </h2>
-            <p className="mt-4 text-sm leading-9 text-muted-foreground">
-              هدفي بناء جيل عربي قادر على الدفاع عن بنيته الرقمية. أؤمن بأن التعلم الحقيقي يحدث داخل المختبر لا في
-              الشرائح النظرية، لذلك بُنيت كل مادة في هذه المنصة حول التطبيق العملي: بيئات حقيقية، أدوات حقيقية، وثغرات
-              حقيقية موثّقة بمعرّفات CVE.
-            </p>
-            <p className="mt-4 text-sm leading-9 text-muted-foreground">
-              عملت مع فرق أمنية في قطاعات المصارف والاتصالات والحكومة، وشاركت في برامج مكافآت اكتشاف الثغرات مع شركات
-              عالمية، إضافة إلى تدريب فرق SOC والفرق الحمراء داخل المؤسسات.
-            </p>
+            <p className="mt-4 text-sm leading-9 text-muted-foreground">{sv(s, "aboutMission")}</p>
+            <p className="mt-4 text-sm leading-9 text-muted-foreground">{sv(s, "aboutExperience")}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
                 <Link to="/courses">تصفح دوراتي</Link>
@@ -82,14 +71,14 @@ function AboutPage() {
               <Terminal className="size-5 text-primary" /> التخصصات
             </h2>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-              {SKILLS.map((s) => (
-                <li key={s} className="flex items-start gap-2">
-                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" /> {s}
+              {skills.map((sk) => (
+                <li key={sk} className="flex items-start gap-2">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" /> {sk}
                 </li>
               ))}
             </ul>
             <div className="mt-6 flex items-center gap-2 text-xs font-bold text-primary">
-              <Award className="size-4" /> OSCP · OSCE · CEH · CISSP
+              <Award className="size-4" /> {certs.join(" · ")}
             </div>
           </div>
         </div>

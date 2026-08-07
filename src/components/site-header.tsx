@@ -3,6 +3,8 @@ import { Menu, ShieldCheck, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { sv, useSiteSettings } from "@/lib/settings";
+
 
 export const NAV_LINKS = [
   { to: "/", label: "الرئيسية" },
@@ -20,6 +22,8 @@ export const NAV_LINKS = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
+  const { s } = useSiteSettings();
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
@@ -35,8 +39,9 @@ export function SiteHeader() {
             <ShieldCheck className="size-5" />
           </span>
           <span className="truncate text-base font-extrabold tracking-tight sm:text-lg">
-            <span className="text-gradient">Magrm</span> Cyber Security
+            <span className="text-gradient">{sv(s, "brandPrefix")}</span> {sv(s, "brandSuffix")}
           </span>
+
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

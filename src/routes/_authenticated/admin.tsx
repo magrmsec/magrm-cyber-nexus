@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { ROLE_LABELS, useMyPermissions } from "@/lib/roles";
+import { SettingsPanel } from "@/components/admin-settings";
 import {
   CMS_KINDS,
   FIELDS,
   KIND_LABELS,
-  fetchCmsRows,
+  fetchCmsSlice,
   type CmsData,
   type CmsKind,
   type CmsRow,
@@ -39,6 +40,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<CmsKind>("course");
+  const [tab, setTab] = useState<"content" | "settings">("content");
   const { permissions, isLoading: loadingPerms } = useMyPermissions();
   const [editing, setEditing] = useState<CmsRow | null>(null);
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
@@ -51,7 +53,7 @@ function AdminPage() {
 
   const { data: rows, isLoading } = useQuery({
     queryKey: ["cms", kind],
-    queryFn: () => fetchCmsRows(kind),
+    queryFn: () => fetchCmsSlice(kind, { publishedOnly: false }, 0, 200),
   });
 
   const fields = useMemo(() => FIELDS[kind], [kind]);
@@ -211,7 +213,30 @@ function AdminPage() {
       </section>
 
 
-      <section className="mx-auto max-w-7xl px-4 py-10">
+      <section className="mx-auto max-w-7xl px-4 pt-8">
+        <div className="flex flex-wrap gap-2">
+          {([["content", "المحتوى"], ["settings", "إعدادات الموقع"]] as const).map(([t, label]) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`rounded-xl border px-5 py-2.5 text-sm font-extrabold transition-colors ${
+                tab === t
+                  ? "border-primary bg-primary/15 text-primary"
+                  : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {tab === "settings" ? (
+          <div className="mt-8">
+            <SettingsPanel canEdit={permissions.canPublish} />
+          </div>
+        ) : null}
+      </section>
+
+      <section hidden={tab !== "content"} className="mx-auto max-w-7xl px-4 py-10">
         <div className="flex flex-wrap gap-2">
           {CMS_KINDS.map((k) => (
             <button

@@ -1,16 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { Github, Globe, Mail, Send, ShieldCheck, Twitter, Youtube } from "lucide-react";
+import { Github, Instagram, Mail, Send, ShieldCheck, Twitter, Youtube } from "lucide-react";
 import { NAV_LINKS } from "./site-header";
-
-const SOCIALS = [
-  { icon: Twitter, label: "X / Twitter", href: "https://x.com" },
-  { icon: Github, label: "GitHub", href: "https://github.com" },
-  { icon: Youtube, label: "YouTube", href: "https://youtube.com" },
-  { icon: Send, label: "Telegram", href: "https://telegram.org" },
-  { icon: Globe, label: "الموقع", href: "https://lovable.dev" },
-];
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export function SiteFooter() {
+  const { s } = useSiteSettings();
+  const email = sv(s, "contactEmail");
+  const socials = [
+    { icon: Twitter, label: "X / Twitter", href: sv(s, "twitter") },
+    { icon: Github, label: "GitHub", href: sv(s, "github") },
+    { icon: Youtube, label: "YouTube", href: sv(s, "youtube") },
+    { icon: Send, label: "Telegram", href: sv(s, "telegram") },
+    { icon: Instagram, label: "Instagram", href: sv(s, "instagram") },
+  ].filter((x) => x.href);
+
   return (
     <footer className="mt-24 border-t border-border bg-card/40">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-3">
@@ -20,24 +23,21 @@ export function SiteFooter() {
               <ShieldCheck className="size-5" />
             </span>
             <span className="text-lg font-extrabold">
-              <span className="text-gradient">Magrm</span> Cyber Security
+              <span className="text-gradient">{sv(s, "brandPrefix")}</span> {sv(s, "brandSuffix")}
             </span>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-7 text-muted-foreground">
-            منصة عربية متخصصة في الأمن السيبراني والاختراق الأخلاقي: دورات، مختبرات عملية، فيديوهات، أدوات، وقاعدة
-            ثغرات محدّثة.
-          </p>
+          <p className="mt-4 max-w-sm text-sm leading-7 text-muted-foreground">{sv(s, "footerAbout")}</p>
           <div className="mt-5 flex flex-wrap gap-2">
-            {SOCIALS.map((s) => (
+            {socials.map((soc) => (
               <a
-                key={s.label}
-                href={s.href}
+                key={soc.label}
+                href={soc.href}
                 target="_blank"
                 rel="noreferrer noopener"
-                aria-label={s.label}
+                aria-label={soc.label}
                 className="grid size-10 place-items-center rounded-xl border border-border bg-surface text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
               >
-                <s.icon className="size-4" />
+                <soc.icon className="size-4" />
               </a>
             ))}
           </div>
@@ -59,25 +59,23 @@ export function SiteFooter() {
         <div>
           <h3 className="text-sm font-bold text-foreground">تواصل</h3>
           <a
-            href="mailto:contact@magrm.security"
+            href={`mailto:${email}`}
             className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            <Mail className="size-4" /> contact@magrm.security
+            <Mail className="size-4" /> {email}
           </a>
-          <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            للاستشارات الأمنية، اختبار الاختراق، أو التدريب المؤسسي — راسلنا عبر صفحة التواصل.
-          </p>
+          <p className="mt-4 text-sm leading-7 text-muted-foreground">{sv(s, "footerContactNote")}</p>
           <Link
             to="/contact"
             className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            أرسل رسالة
+            {sv(s, "footerCtaText")}
           </Link>
         </div>
       </div>
 
       <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        جميع الحقوق محفوظة © Magrm Cyber Security 2024
+        {sv(s, "footerCopyright")}
       </div>
     </footer>
   );

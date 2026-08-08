@@ -101,7 +101,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { key: "paymentNote", label: "ملاحظة بعد التحويل", type: "textarea" },
     ],
   },
-
+  {
     id: "colors",
     title: "ألوان الموقع",
     fields: [

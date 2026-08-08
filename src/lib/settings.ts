@@ -91,6 +91,17 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    id: "payment",
+    title: "طريقة الدفع",
+    fields: [
+      { key: "paymentTitle", label: "عنوان قسم الدفع", type: "text" },
+      { key: "paymentInstructions", label: "نص تعليمات الدفع", type: "textarea" },
+      { key: "paymentAccount", label: "رقم الحساب البنكي / IBAN", type: "text" },
+      { key: "paymentWallet", label: "رقم المحفظة الإلكترونية", type: "text" },
+      { key: "paymentNote", label: "ملاحظة بعد التحويل", type: "textarea" },
+    ],
+  },
+
     id: "colors",
     title: "ألوان الموقع",
     fields: [

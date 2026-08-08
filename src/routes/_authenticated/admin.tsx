@@ -215,35 +215,15 @@ function AdminPage() {
 
       <section className="mx-auto max-w-7xl px-4 pt-8">
         <div className="flex flex-wrap gap-2">
-          {([["content", "المحتوى"], ["settings", "إعدادات الموقع"]] as const).map(([t, label]) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`rounded-xl border px-5 py-2.5 text-sm font-extrabold transition-colors ${
-                tab === t
-                  ? "border-primary bg-primary/15 text-primary"
-                  : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        {tab === "settings" ? (
-          <div className="mt-8">
-            <SettingsPanel canEdit={permissions.canPublish} />
-          </div>
-        ) : null}
-      </section>
-
-      <section hidden={tab !== "content"} className="mx-auto max-w-7xl px-4 py-10">
-        <div className="flex flex-wrap gap-2">
           {CMS_KINDS.map((k) => (
             <button
               key={k}
-              onClick={() => switchKind(k)}
+              onClick={() => {
+                setTab("content");
+                switchKind(k);
+              }}
               className={`rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                kind === k
+                tab === "content" && kind === k
                   ? "border-primary bg-primary/15 text-primary"
                   : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
               }`}
@@ -251,7 +231,26 @@ function AdminPage() {
               {KIND_LABELS[k]}
             </button>
           ))}
+          <button
+            onClick={() => setTab("settings")}
+            className={`rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
+              tab === "settings"
+                ? "border-primary bg-primary/15 text-primary"
+                : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
+            }`}
+          >
+            إعدادات الموقع
+          </button>
         </div>
+        {tab === "settings" ? (
+          <div className="mt-8 pb-10">
+            <SettingsPanel canEdit={permissions.canPublish} />
+          </div>
+        ) : null}
+      </section>
+
+      <section hidden={tab !== "content"} className="mx-auto max-w-7xl px-4 py-10">
+
 
         <div className={`mt-8 grid gap-8 ${permissions.canEdit ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""}`}>
           {permissions.canEdit ? (

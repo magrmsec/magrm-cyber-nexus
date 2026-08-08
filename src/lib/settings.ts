@@ -183,6 +183,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   github: "https://github.com/magrm",
   contactLocation: "عن بُعد — خدمة كل الدول العربية",
 
+  paymentTitle: "طريقة الدفع",
+  paymentInstructions:
+    "لتفعيل أي دورة أو بورت مدفوع، حوّل قيمة الاشتراك على الحساب أو المحفظة أدناه، ثم أرسل صورة الإيصال عبر نموذج التواصل أو البريد الإلكتروني.",
+  paymentAccount: "SA00 0000 0000 0000 0000 0000",
+  paymentWallet: "+000 000 000 000",
+  paymentNote: "يتم تفعيل الوصول خلال 24 ساعة كحد أقصى بعد التحقق من التحويل.",
+
+
   colorPrimary: "",
   colorSecondary: "",
   colorBackground: "",

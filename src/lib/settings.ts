@@ -91,6 +91,17 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    id: "payment",
+    title: "طريقة الدفع",
+    fields: [
+      { key: "paymentTitle", label: "عنوان قسم الدفع", type: "text" },
+      { key: "paymentInstructions", label: "نص تعليمات الدفع", type: "textarea" },
+      { key: "paymentAccount", label: "رقم الحساب البنكي / IBAN", type: "text" },
+      { key: "paymentWallet", label: "رقم المحفظة الإلكترونية", type: "text" },
+      { key: "paymentNote", label: "ملاحظة بعد التحويل", type: "textarea" },
+    ],
+  },
+  {
     id: "colors",
     title: "ألوان الموقع",
     fields: [
@@ -171,6 +182,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   twitter: "https://x.com/magrm",
   github: "https://github.com/magrm",
   contactLocation: "عن بُعد — خدمة كل الدول العربية",
+
+  paymentTitle: "طريقة الدفع",
+  paymentInstructions:
+    "لتفعيل أي دورة أو بورت مدفوع، حوّل قيمة الاشتراك على الحساب أو المحفظة أدناه، ثم أرسل صورة الإيصال عبر نموذج التواصل أو البريد الإلكتروني.",
+  paymentAccount: "SA00 0000 0000 0000 0000 0000",
+  paymentWallet: "+000 000 000 000",
+  paymentNote: "يتم تفعيل الوصول خلال 24 ساعة كحد أقصى بعد التحقق من التحويل.",
+
 
   colorPrimary: "",
   colorSecondary: "",

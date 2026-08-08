@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Mail, MapPin, MessageSquare, Send } from "lucide-react";
+import { CreditCard, Mail, MapPin, MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -118,6 +118,28 @@ function ContactPage() {
               href={`mailto:${sv(cfg, "supportEmail")}`}
             />
             <InfoCard icon={MapPin} title="العمل" value={sv(cfg, "contactLocation")} />
+            {sv(cfg, "paymentInstructions") || sv(cfg, "paymentAccount") ? (
+              <div className="card-surface p-6">
+                <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/30">
+                  <CreditCard className="size-5" />
+                </span>
+                <h3 className="mt-4 text-sm font-bold">{sv(cfg, "paymentTitle")}</h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">{sv(cfg, "paymentInstructions")}</p>
+                {sv(cfg, "paymentAccount") ? (
+                  <p className="mt-3 break-all font-mono text-sm text-primary" dir="ltr">
+                    {sv(cfg, "paymentAccount")}
+                  </p>
+                ) : null}
+                {sv(cfg, "paymentWallet") ? (
+                  <p className="mt-1 break-all font-mono text-sm text-primary" dir="ltr">
+                    {sv(cfg, "paymentWallet")}
+                  </p>
+                ) : null}
+                {sv(cfg, "paymentNote") ? (
+                  <p className="mt-3 text-xs text-muted-foreground">{sv(cfg, "paymentNote")}</p>
+                ) : null}
+              </div>
+            ) : null}
           </aside>
         </div>
       </section>

@@ -23,6 +23,23 @@ export const Route = createFileRoute("/courses/$courseId")({
         { property: "og:title", content: c.title },
         { property: "og:description", content: c.description.slice(0, 150) },
       ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: c.title,
+            description: c.description,
+            inLanguage: "ar",
+            provider: {
+              "@type": "Organization",
+              name: "Magrm Cyber Security",
+              url: "https://magrm-cyber-nexus.lovable.app",
+            },
+          }),
+        },
+      ],
     };
   },
   component: CourseDetail,

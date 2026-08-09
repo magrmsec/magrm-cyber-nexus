@@ -20,6 +20,26 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId")({
         { name: "description", content: v.description.slice(0, 150) },
         { property: "og:title", content: `${v.cve} — ${v.name}` },
         { property: "og:description", content: v.description.slice(0, 150) },
+        { property: "og:type", content: "article" },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "TechArticle",
+            headline: `${v.cve} — ${v.name}`,
+            description: v.description,
+            articleBody: v.description,
+            inLanguage: "ar",
+            about: v.cve,
+            publisher: {
+              "@type": "Organization",
+              name: "Magrm Cyber Security",
+              url: "https://magrm-cyber-nexus.lovable.app",
+            },
+          }),
+        },
       ],
     };
   },

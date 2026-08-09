@@ -53,6 +53,7 @@ function VideosPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              aria-label="البحث في الفيديوهات"
               value={q}
               onChange={(e) => set<string>(setQ)(e.target.value)}
               placeholder="ابحث في الفيديوهات… مثال: Nmap، CTF"

@@ -61,8 +61,9 @@ function ContactPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <form onSubmit={submit} className="card-surface space-y-5 p-7">
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="الاسم" error={errors["name"]}>
+              <Field label="الاسم" htmlFor="contact-name" error={errors["name"]}>
                 <Input
+                  id="contact-name"
                   value={form.name}
                   maxLength={100}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -70,8 +71,9 @@ function ContactPage() {
                   className="h-11"
                 />
               </Field>
-              <Field label="البريد الإلكتروني" error={errors["email"]}>
+              <Field label="البريد الإلكتروني" htmlFor="contact-email" error={errors["email"]}>
                 <Input
+                  id="contact-email"
                   value={form.email}
                   maxLength={255}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -81,8 +83,9 @@ function ContactPage() {
                 />
               </Field>
             </div>
-            <Field label="الموضوع" error={errors["subject"]}>
+            <Field label="الموضوع" htmlFor="contact-subject" error={errors["subject"]}>
               <Input
+                id="contact-subject"
                 value={form.subject}
                 maxLength={150}
                 onChange={(e) => setForm({ ...form, subject: e.target.value })}
@@ -90,8 +93,9 @@ function ContactPage() {
                 className="h-11"
               />
             </Field>
-            <Field label="الرسالة" error={errors["message"]}>
+            <Field label="الرسالة" htmlFor="contact-message" error={errors["message"]}>
               <Textarea
+                id="contact-message"
                 value={form.message}
                 maxLength={1000}
                 rows={6}
@@ -147,10 +151,22 @@ function ContactPage() {
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
+function Field({
+  label,
+  htmlFor,
+  error,
+  children,
+}: {
+  label: string;
+  htmlFor?: string | undefined;
+  error?: string | undefined;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <Label className="mb-2 block text-sm font-bold">{label}</Label>
+      <Label htmlFor={htmlFor} className="mb-2 block text-sm font-bold">
+        {label}
+      </Label>
       {children}
       {error ? <p className="mt-1.5 text-xs font-bold text-destructive">{error}</p> : null}
     </div>

@@ -93,6 +93,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://magrm-cyber-nexus.lovable.app/#organization",
+              name: "Magrm Cyber Security",
+              url: "https://magrm-cyber-nexus.lovable.app",
+              description: "منصة Magrm للأمن السيبراني: دورات، مختبرات اختراق، أدوات، وقاعدة ثغرات CVE بالعربي.",
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://magrm-cyber-nexus.lovable.app/#website",
+              name: "Magrm Cyber Security",
+              url: "https://magrm-cyber-nexus.lovable.app",
+              inLanguage: "ar",
+              publisher: { "@id": "https://magrm-cyber-nexus.lovable.app/#organization" },
+            },
+          ],
+        }),
+      },
+    ],
     links: [
       {
         rel: "stylesheet",

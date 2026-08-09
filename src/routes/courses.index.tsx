@@ -65,6 +65,7 @@ function CoursesPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              aria-label="البحث في الدورات"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="ابحث عن دورة… مثال: التشفير، أمن السحابة"

@@ -80,6 +80,8 @@ function CertificatesPage() {
           </h2>
           <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
             <Input
+              id="cert-title"
+              aria-label="عنوان الشهادة"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="عنوان الشهادة… مثال: OSCP - Offensive Security"
@@ -87,6 +89,8 @@ function CertificatesPage() {
               className="h-11"
             />
             <Input
+              id="cert-file"
+              aria-label="صورة الشهادة"
               type="file"
               accept="image/*"
               className="h-11 cursor-pointer"

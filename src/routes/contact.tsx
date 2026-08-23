@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MessageCircle, Mail, Send, ShieldCheck, Headphones } from "lucide-react";
+import { MessageCircle, Mail } from "lucide-react";
 import { useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/contact")({
@@ -60,100 +60,5 @@ function ContactPage() {
         </div>
       </div>
     </div>
-  );
-}
-          </form>
-
-          <aside className="space-y-4">
-            <InfoCard
-              icon={Mail}
-              title="البريد الإلكتروني"
-              value={sv(cfg, "contactEmail")}
-              href={`mailto:${sv(cfg, "contactEmail")}`}
-            />
-            <InfoCard
-              icon={MessageSquare}
-              title="الدعم الفني"
-              value={sv(cfg, "supportEmail")}
-              href={`mailto:${sv(cfg, "supportEmail")}`}
-            />
-            <InfoCard icon={MapPin} title="العمل" value={sv(cfg, "contactLocation")} />
-            {sv(cfg, "paymentInstructions") || sv(cfg, "paymentAccount") ? (
-              <div className="card-surface p-6">
-                <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/30">
-                  <CreditCard className="size-5" />
-                </span>
-                <h3 className="mt-4 text-sm font-bold">{sv(cfg, "paymentTitle")}</h3>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">{sv(cfg, "paymentInstructions")}</p>
-                {sv(cfg, "paymentAccount") ? (
-                  <p className="mt-3 break-all font-mono text-sm text-primary" dir="ltr">
-                    {sv(cfg, "paymentAccount")}
-                  </p>
-                ) : null}
-                {sv(cfg, "paymentWallet") ? (
-                  <p className="mt-1 break-all font-mono text-sm text-primary" dir="ltr">
-                    {sv(cfg, "paymentWallet")}
-                  </p>
-                ) : null}
-                {sv(cfg, "paymentNote") ? (
-                  <p className="mt-3 text-xs text-muted-foreground">{sv(cfg, "paymentNote")}</p>
-                ) : null}
-              </div>
-            ) : null}
-          </aside>
-        </div>
-      </section>
-    </>
-  );
-}
-
-function Field({
-  label,
-  htmlFor,
-  error,
-  children,
-}: {
-  label: string;
-  htmlFor?: string | undefined;
-  error?: string | undefined;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <Label htmlFor={htmlFor} className="mb-2 block text-sm font-bold">
-        {label}
-      </Label>
-      {children}
-      {error ? <p className="mt-1.5 text-xs font-bold text-destructive">{error}</p> : null}
-    </div>
-  );
-}
-
-function InfoCard({
-  icon: Icon,
-  title,
-  value,
-  href,
-}: {
-  icon: typeof Mail;
-  title: string;
-  value: string;
-  href?: string | undefined;
-}) {
-  const body = (
-    <div className="card-surface p-6">
-      <span className="grid size-10 place-items-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/30">
-        <Icon className="size-5" />
-      </span>
-      <h3 className="mt-4 text-sm font-bold">{title}</h3>
-      <p className="mt-1 break-all text-sm text-muted-foreground">{value}</p>
-    </div>
-  );
-  return href ? (
-    <a href={href} className="block">
-      {body}
-    </a>
-  ) : (
-    body
   );
 }

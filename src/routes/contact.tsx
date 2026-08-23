@@ -1,111 +1,67 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { z } from "zod";
-import { toast } from "sonner";
-import { CreditCard, Mail, MapPin, MessageSquare, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { PageHero } from "@/components/ui-bits";
-import { sv, useSiteSettings } from "@/lib/settings";
+import { MessageCircle, Mail, Send, ShieldCheck, Headphones } from "lucide-react";
+import { useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "تواصل معنا | Magrm Cyber Security" },
-      { name: "description", content: "تواصل مع فريق Magrm للاستشارات الأمنية، اختبار الاختراق، أو التدريب المؤسسي." },
-      { property: "og:title", content: "تواصل معنا | Magrm" },
-      { property: "og:description", content: "أرسل رسالتك لفريق Magrm للأمن السيبراني." },
-    ],
-  }),
   component: ContactPage,
 });
 
-const schema = z.object({
-  name: z.string().trim().min(2, "الاسم قصير جداً").max(100, "الاسم طويل جداً"),
-  email: z.string().trim().email("بريد إلكتروني غير صالح").max(255),
-  subject: z.string().trim().min(3, "اكتب موضوعاً واضحاً").max(150),
-  message: z.string().trim().min(10, "الرسالة قصيرة جداً").max(1000, "الرسالة طويلة جداً"),
-});
-
 function ContactPage() {
-  const { s: cfg } = useSiteSettings();
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = schema.safeParse(form);
-    if (!res.success) {
-      const next: Record<string, string> = {};
-      for (const issue of res.error.issues) next[String(issue.path[0])] = issue.message;
-      setErrors(next);
-      toast.error("راجع الحقول المطلوبة");
-      return;
-    }
-    setErrors({});
-    setForm({ name: "", email: "", subject: "", message: "" });
-    toast.success("تم إرسال رسالتك بنجاح", { description: "سيتواصل معك فريق Magrm قريباً." });
-  };
+  const { settings: s } = useSiteSettings();
+  const whatsappNumber = "967733570889";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
 
   return (
-    <>
-      <PageHero
-        eyebrow="تواصل"
-        title="تواصل معنا"
-        description="استشارات أمنية، اختبار اختراق، تدريب مؤسسي، أو استفسار عن الدورات — نحن هنا."
-      />
+    <div className="min-h-screen py-16 px-4">
+      <div className="mx-auto max-w-4xl text-center">
+        <h1 className="text-3xl font-extrabold sm:text-4xl text-foreground">
+          تواصل معنا مباشرة
+        </h1>
+        <p className="mt-4 text-muted-foreground text-base leading-7">
+          نحن هنا لمساعدتك في أي استفسار، أو لإتمام عمليات الشراء والدفع بكل سهولة عبر الواتساب.
+        </p>
 
-      <section className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-          <form onSubmit={submit} className="card-surface space-y-5 p-7">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="الاسم" htmlFor="contact-name" error={errors["name"]}>
-                <Input
-                  id="contact-name"
-                  value={form.name}
-                  maxLength={100}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="اسمك الكامل"
-                  className="h-11"
-                />
-              </Field>
-              <Field label="البريد الإلكتروني" htmlFor="contact-email" error={errors["email"]}>
-                <Input
-                  id="contact-email"
-                  value={form.email}
-                  maxLength={255}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="you@example.com"
-                  className="h-11"
-                  dir="ltr"
-                />
-              </Field>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          {/* زر الواتساب المباشر */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card transition-all group shadow-sm"
+          >
+            <div className="grid size-14 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
+              <MessageCircle className="size-7" />
             </div>
-            <Field label="الموضوع" htmlFor="contact-subject" error={errors["subject"]}>
-              <Input
-                id="contact-subject"
-                value={form.subject}
-                maxLength={150}
-                onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                placeholder="موضوع الرسالة"
-                className="h-11"
-              />
-            </Field>
-            <Field label="الرسالة" htmlFor="contact-message" error={errors["message"]}>
-              <Textarea
-                id="contact-message"
-                value={form.message}
-                maxLength={1000}
-                rows={6}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                placeholder="اكتب تفاصيل طلبك هنا…"
-              />
-            </Field>
-            <Button type="submit" size="lg" className="glow w-full font-bold sm:w-auto">
-              <Send className="size-4" /> إرسال الرسالة
-            </Button>
+            <h3 className="mt-5 text-lg font-bold text-foreground">التواصل عبر الواتساب</h3>
+            <p className="mt-2 text-sm text-muted-foreground text-center">
+              اضغط هنا للمراسلة الفورية وشراء الدورات والملفات مباشرة
+            </p>
+            <span className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors">
+              مراسلة عبر الواتساب
+            </span>
+          </a>
+
+          {/* البريد الإلكتروني والدعم */}
+          <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card/60 shadow-sm">
+            <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <Mail className="size-7" />
+            </div>
+            <h3 className="mt-5 text-lg font-bold text-foreground">البريد الإلكتروني</h3>
+            <p className="mt-2 text-sm text-muted-foreground text-center">
+              للاستفسارات الرسمية والدعم الفني عبر البريد
+            </p>
+            <a
+              href={`mailto:${s("contactEmail")}`}
+              className="mt-6 inline-flex items-center gap-2 rounded-xl border border-border px-6 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+            >
+              {s("contactEmail")}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
           </form>
 
           <aside className="space-y-4">

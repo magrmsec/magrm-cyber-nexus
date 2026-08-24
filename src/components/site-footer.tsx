@@ -14,14 +14,14 @@ export function SiteFooter() {
   const { settings: s } = useSiteSettings();
 
   const socialLinks = [
-    { label: "تويتر / X", href: s("twitterUrl"), icon: Twitter },
-    { label: "GitHub", href: s("githubUrl"), icon: Github },
-    { label: "يوتيوب", href: s("youtubeUrl"), icon: Youtube },
-    { label: "تلجرام", href: s("telegramUrl"), icon: Send },
-    { label: "انستغرام", href: s("instagramUrl"), icon: Instagram },
+    { label: "تويتر / X", href: s("twitter"), icon: Twitter },
+    { label: "GitHub", href: s("github"), icon: Github },
+    { label: "يوتيوب", href: s("youtube"), icon: Youtube },
+    { label: "تلجرام", href: s("telegram"), icon: Send },
+    { label: "انستغرام", href: s("instagram"), icon: Instagram },
     {
       label: "واتساب",
-      href: withWhatsAppMessage(s("whatsappUrl"), "مرحباً، أريد الاستفسار عن خدماتكم في Magrm Cyber Security"),
+      href: withWhatsAppMessage(s("whatsapp"), "مرحباً، أريد الاستفسار عن خدماتكم في Magrm Cyber Security"),
       icon: MessageCircle,
     },
   ].filter(x => x.href);
@@ -78,7 +78,7 @@ export function SiteFooter() {
           </p>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">{s("footerContactNote")}</p>
           <a
-            href={withWhatsAppMessage(s("whatsappUrl"), "مرحباً، أريد التواصل معكم بخصوص Magrm Cyber Security")}
+            href={withWhatsAppMessage(s("whatsapp"), "مرحباً، أريد التواصل معكم بخصوص Magrm Cyber Security")}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:bg-primary/90"

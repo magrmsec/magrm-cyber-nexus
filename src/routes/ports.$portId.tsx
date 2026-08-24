@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Flag, Target, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchCmsRowBySeq, rowToPort } from "@/lib/cms";
+import { useSiteSettings } from "@/lib/settings";
 import { LevelBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/ports/$portId")({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/ports/$portId")({
 
 function PortDetail() {
   const { port: p } = Route.useLoaderData();
+  const { settings: s } = useSiteSettings();
 
   return (
     <>
@@ -98,7 +100,7 @@ function PortDetail() {
               <Button
                 className="glow mt-5 w-full text-base font-bold"
                 size="lg"
-                onClick={() => toast.success("تم تسجيل طلب الشراء", { description: `${p.name} — $${p.price}` })}
+                onClick={() => window.open(`${s("whatsapp")}?text=${encodeURIComponent(`السلام عليكم، أريد شراء/الاشتراك في البورت التالي:\nالاسم: ${p.name}\nالسعر: $${p.price}`)}`, "_blank")}
               >
                 اشترِ الآن
               </Button>

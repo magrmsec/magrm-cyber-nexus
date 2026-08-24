@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BadgeCheck, Clock, GraduationCap, Star, Users, Award, PlayCircle, MessageCircle } from "lucide-react";
 import { fetchCmsRowBySeq, rowToCourse } from "@/lib/cms";
 import { LevelBadge } from "@/components/ui-bits";
+import { useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/courses/$courseId")({
   loader: async ({ params }) => {
@@ -16,8 +17,10 @@ export const Route = createFileRoute("/courses/$courseId")({
 
 function CourseDetail() {
   const { course } = Route.useLoaderData();
-  const whatsappNumber = "967733570889";
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`السلام عليكم، أريد الاشتراك وشراء الدورة التالية: ${course.title}`)}`;
+  const { settings: s } = useSiteSettings();
+
+  const message = `السلام عليكم، أريد شراء/الاشتراك في التالي:\nالاسم: ${course.title}\nالسعر: ${course.price}$`;
+  const whatsappUrl = `${s("whatsappUrl")}?text=${encodeURIComponent(message)}`;
 
   return (
     <section className="hero-bg border-b border-border">
@@ -35,7 +38,7 @@ function CourseDetail() {
               <span className="text-gradient">{course.title}</span>
             </h1>
             <p className="mt-4 text-sm leading-8 text-muted-foreground md:text-base">{course.description}</p>
-            
+
             <div className="mt-8">
               <a
                 href={whatsappUrl}

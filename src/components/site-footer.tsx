@@ -3,16 +3,27 @@ import { Youtube, Twitter, Github, Send, Instagram, MessageCircle } from "lucide
 import { NAV_LINKS } from "./site-header";
 import { useSiteSettings } from "@/lib/settings";
 
+// يضيف رسالة جاهزة تلقائيًا لأي رابط واتساب
+function withWhatsAppMessage(url?: string, message?: string) {
+  if (!url) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}text=${encodeURIComponent(message ?? "")}`;
+}
+
 export function SiteFooter() {
   const { settings: s } = useSiteSettings();
-  
+
   const socialLinks = [
     { label: "تويتر / X", href: s("twitterUrl"), icon: Twitter },
     { label: "GitHub", href: s("githubUrl"), icon: Github },
     { label: "يوتيوب", href: s("youtubeUrl"), icon: Youtube },
     { label: "تلجرام", href: s("telegramUrl"), icon: Send },
     { label: "انستغرام", href: s("instagramUrl"), icon: Instagram },
-    { label: "واتساب", href: s("whatsappUrl"), icon: MessageCircle },
+    {
+      label: "واتساب",
+      href: withWhatsAppMessage(s("whatsappUrl"), "مرحباً، أريد الاستفسار عن خدماتكم في Magrm Cyber Security"),
+      icon: MessageCircle,
+    },
   ].filter(x => x.href);
 
   return (
@@ -67,7 +78,7 @@ export function SiteFooter() {
           </p>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">{s("footerContactNote")}</p>
           <a
-            href="https://wa.me/967770000000"
+            href={withWhatsAppMessage(s("whatsappUrl"), "مرحباً، أريد التواصل معكم بخصوص Magrm Cyber Security")}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:bg-primary/90"

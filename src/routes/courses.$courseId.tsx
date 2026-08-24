@@ -20,7 +20,7 @@ function CourseDetail() {
   const { settings: s } = useSiteSettings();
 
   const message = `السلام عليكم، أريد شراء/الاشتراك في التالي:\nالاسم: ${course.title}\nالسعر: ${course.price}$`;
-  const whatsappUrl = `${s("whatsappUrl")}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `${s("whatsapp")}?text=${encodeURIComponent(message)}`;
 
   return (
     <section className="hero-bg border-b border-border">
@@ -56,4 +56,3 @@ function CourseDetail() {
     </section>
   );
 }
-

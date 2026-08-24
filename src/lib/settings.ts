@@ -175,9 +175,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
 
   contactEmail: "contact@magrm.security",
   supportEmail: "support@magrm.security",
-  whatsapp: "https://wa.me/000000000",
-  telegram: "https://t.me/magrm",
-  instagram: "https://instagram.com/magrm",
+  whatsapp: "https://wa.me/967733570889",
+  telegram: "https://t.me/T_akx",
+  instagram: "https://instagram.com/m0_qd",
   youtube: "https://youtube.com/@magrm",
   twitter: "https://x.com/magrm",
   github: "https://github.com/magrm",
@@ -189,7 +189,6 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   paymentAccount: "SA00 0000 0000 0000 0000 0000",
   paymentWallet: "+000 000 000 000",
   paymentNote: "يتم تفعيل الوصول خلال 24 ساعة كحد أقصى بعد التحقق من التحويل.",
-
 
   colorPrimary: "",
   colorSecondary: "",
@@ -215,15 +214,6 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
   return merged;
 }
 
-export function useSiteSettings() {
-  const q = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: fetchSiteSettings,
-    staleTime: 30_000,
-  });
-  return { s: q.data ?? DEFAULT_SETTINGS, isLoading: q.isLoading };
-}
-
 /** قراءة قيمة نصية بأمان. */
 export const sv = (s: SiteSettings, key: string): string => {
   const v = s[key];
@@ -236,3 +226,16 @@ export const sl = (s: SiteSettings, key: string): string[] => {
   if (Array.isArray(v)) return v;
   return typeof v === "string" && v.trim() ? v.split(/[,،]/).map((x) => x.trim()).filter(Boolean) : [];
 };
+
+export function useSiteSettings() {
+  const q = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: fetchSiteSettings,
+    staleTime: 30_000,
+  });
+  const data = q.data ?? DEFAULT_SETTINGS;
+  // دالة قابلة للاستدعاء: settings("whatsapp") ترجع نص القيمة مباشرة
+  const settings = (key: string): string => sv(data, key);
+  const settingsList = (key: string): string[] => sl(data, key);
+  return { settings, settingsList, s: data, isLoading: q.isLoading };
+}

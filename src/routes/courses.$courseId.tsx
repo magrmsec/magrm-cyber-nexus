@@ -1,13 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BadgeCheck, Clock, GraduationCap, Star, Users, Award, PlayCircle, MessageCircle } from "lucide-react";
-import { fetchCnsRowBySeq, rowToCourse } from "@/lib/cms";
+import { fetchCmsRowBySeq, rowToCourse } from "@/lib/cms";
 import { LevelBadge } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/courses/$courseId")({
   loader: async ({ params }) => {
     const id = Number(params.courseId);
     if (Number.isNaN(id) || id < 1) throw notFound();
-    const row = await fetchCnsRowBySeq("course", id);
+    const row = await fetchCmsRowBySeq("course", id);
     if (!row || !row.published) throw notFound();
     return { course: rowToCourse(row) };
   },

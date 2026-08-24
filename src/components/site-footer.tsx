@@ -12,7 +12,7 @@ export function SiteFooter() {
     { label: "يوتيوب", href: s("youtubeUrl"), icon: Youtube },
     { label: "تلجرام", href: s("telegramUrl"), icon: Send },
     { label: "انستغرام", href: s("instagramUrl"), icon: Instagram },
-    { label: "واتساب", href: "https://wa.me/967770000000", icon: MessageCircle },
+    { label: "واتساب", href: s("whatsappUrl"), icon: MessageCircle },
   ].filter(x => x.href);
 
   return (

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHero } from "@/components/ui-bits";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -29,6 +30,10 @@ function CertificatesPage() {
   const [certs, setCerts] = useState<Cert[]>([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+      supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    }, []);
 
   useEffect(() => {
     try {
@@ -49,6 +54,7 @@ function CertificatesPage() {
   };
 
   const add = () => {
+    if (!signedIn) { toast.error("سجّل الدخول أولاً"); return; }
     if (!title.trim()) {
       toast.error("اكتب عنوان الشهادة أولاً");
       return;
@@ -74,7 +80,7 @@ function CertificatesPage() {
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12">
-        <div className="card-surface p-6">
+        {signedIn && (<div className="card-surface p-6">
           <h2 className="flex items-center gap-2 font-bold">
             <ImagePlus className="size-4 text-primary" /> إضافة شهادة جديدة
           </h2>
@@ -106,7 +112,7 @@ function CertificatesPage() {
           {image ? (
             <img src={image} alt="معاينة الشهادة" className="mt-4 h-40 rounded-xl border border-border object-contain" />
           ) : null}
-        </div>
+        </div>)} 
 
         {certs.length === 0 ? (
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

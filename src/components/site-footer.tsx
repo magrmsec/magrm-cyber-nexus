@@ -61,7 +61,7 @@ export function SiteFooter() {
           <ul className="mt-4 grid grid-cols-2 gap-2 text-sm">
             {NAV_LINKS.map((item) => (
               <li key={item.label}>
-                <Link to={item.href} className="text-muted-foreground transition-colors hover:text-primary">
+                <Link to={item.to} className="text-muted-foreground transition-colors hover:text-primary">
                   {item.label}
                 </Link>
               </li>

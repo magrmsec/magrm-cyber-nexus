@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
 
 import {
   COURSE_CATEGORIES,
@@ -285,7 +286,19 @@ export function useCmsTools() {
 }
 export function useCmsApps() {
   const q = useCmsRows("app");
-  return { items: (q.data ?? []).filter((r) => r.published).map(rowToApp), isLoading: q.isLoading };
+  const cmsApps = (q.data ?? []).filter((r) => r.published).map(rowToApp);
+  const seen = new Set<string>();
+  const items = [...cmsApps, ...SECURITY_APP_CATALOG]
+    .filter((app) => {
+      const nameKey = app.name.trim().toLocaleLowerCase();
+      const urlKey = app.url.trim().toLocaleLowerCase();
+      if (seen.has(nameKey) || seen.has(urlKey)) return false;
+      seen.add(nameKey);
+      seen.add(urlKey);
+      return true;
+    })
+    .map((app, index) => ({ ...app, id: app.id ?? index + 1 }));
+  return { items, isLoading: q.isLoading };
 }
 
 /* ————— جلب من الخادم بنظام "تحميل المزيد" (بدون صفحات مرقّمة) ————— */

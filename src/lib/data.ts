@@ -317,6 +317,7 @@ export interface App {
   platform: string;
   description: string;
   url: string;
+  category?: string;
 }
 export const APPS: App[] = [
   ["Termux", "Android", "طرفية لينكس كاملة على الأندرويد لتشغيل أدوات الاختراق.", "https://f-droid.org/packages/com.termux/"],

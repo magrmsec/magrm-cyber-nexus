@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CalendarDays, Download, Layers, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
+import { CalendarDays, Layers, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
 import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 import { SeverityBadge } from "@/components/ui-bits";
 import { useSiteSettings } from "@/lib/settings";
@@ -51,7 +51,6 @@ function VulnDetail() {
   const { vuln: v } = Route.useLoaderData();
   const { settings: s } = useSiteSettings();
   const isPaid = Boolean(v.price && v.price > 0);
-  const downloadUrl = `/vulnerabilities/${v.id}/download`;
   const whatsappMessage = `السلام عليكم، أريد طلب الخدمة المرتبطة بالثغرة التالية:\nرقم الثغرة: ${v.cve}\nالاسم: ${v.name}\nالخطورة: ${v.severity}\nدرجة CVSS: ${v.cvss}\nالسعر: $${v.price}`;
   const whatsappUrl = `${s("whatsapp")}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -123,7 +122,7 @@ function VulnDetail() {
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
               ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
-              : "مختبر أمني حقيقي للتدريب على الثغرات متاح مجانًا، وسيتم تنزيله مباشرة من موقع Magrm دون الانتقال إلى موقع آخر. شغّله محليًا ومعزولًا فقط."}
+              : "لا يوجد ملف أصلي مطابق لهذه الثغرة متاح للتنزيل حاليًا. لن نعرض ملفًا عامًا أو غير متعلق بها حفاظًا على دقة المحتوى."}
           </p>
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -142,12 +141,9 @@ function VulnDetail() {
                 <MessageCircle className="size-5" /> تواصل معنا عبر الواتساب
               </a>
             ) : (
-              <a
-                href={downloadUrl}
-                className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
-              >
-                <Download className="size-5" /> تحميل الأداة
-              </a>
+              <div className="rounded-2xl border border-border bg-surface-2 px-5 py-3.5 text-sm font-bold text-muted-foreground">
+                لا يوجد تحميل متاح لهذه الثغرة حاليًا
+              </div>
             )}
           </div>
         </div>

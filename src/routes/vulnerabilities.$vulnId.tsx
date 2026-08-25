@@ -146,7 +146,7 @@ function VulnDetail() {
                 href={downloadUrl}
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
-                <Download className="size-5" /> تحميل المختبر الحقيقي
+                <Download className="size-5" /> تحميل الأداة
               </a>
             )}
           </div>

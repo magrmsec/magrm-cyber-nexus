@@ -123,7 +123,7 @@ function VulnDetail() {
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
               ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
-              : "ملف بيانات هذه الثغرة متاح مجانًا، ويمكن تنزيله مباشرة من هذه الصفحة دون الانتقال إلى موقع آخر."}
+              : "مختبر أمني حقيقي للتدريب على الثغرات متاح مجانًا، وسيتم تنزيله مباشرة من موقع Magrm دون الانتقال إلى موقع آخر. شغّله محليًا ومعزولًا فقط."}
           </p>
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -146,7 +146,7 @@ function VulnDetail() {
                 href={downloadUrl}
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
-                <Download className="size-5" /> تحميل ملف الثغرة
+                <Download className="size-5" /> تحميل المختبر الحقيقي
               </a>
             )}
           </div>

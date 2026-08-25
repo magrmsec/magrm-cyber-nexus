@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 
+const DVWA_SOURCE = "https://github.com/digininja/DVWA/archive/refs/heads/master.zip";
+
 export const Route = createFileRoute("/vulnerabilities/$vulnId/download")({
   server: {
     handlers: {
@@ -20,24 +22,19 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId/download")({
           return new Response("Download unavailable for paid vulnerabilities", { status: 403 });
         }
 
-        const payload = {
-          cve: vulnerability.cve,
-          name: vulnerability.name,
-          severity: vulnerability.severity,
-          cvss: vulnerability.cvss,
-          date: vulnerability.date,
-          type: vulnerability.type,
-          affected: vulnerability.affected,
-          description: vulnerability.description,
-          mitigation: vulnerability.mitigation,
-          usage: "بيانات دفاعية للتوعية والحماية ضمن نطاق مصرح به فقط",
-        };
+        const upstream = await fetch(DVWA_SOURCE, {
+          headers: { "User-Agent": "Magrm-Security-Lab-Downloader/1.0" },
+        });
+        if (!upstream.ok || !upstream.body) {
+          return new Response("Security lab download is temporarily unavailable", { status: 502 });
+        }
 
-        return new Response(JSON.stringify(payload, null, 2), {
+        return new Response(upstream.body, {
           headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Content-Disposition": `attachment; filename="${vulnerability.cve}.json"`,
+            "Content-Type": "application/zip",
+            "Content-Disposition": `attachment; filename="Magrm-DVWA-Lab-${vulnerability.cve}.zip"`,
             "Cache-Control": "public, max-age=86400",
+            "X-Content-Source": "DVWA official repository",
           },
         });
       },

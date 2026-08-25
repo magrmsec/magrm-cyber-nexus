@@ -281,6 +281,30 @@ export function useCmsVulns() {
   const q = useCmsRows("vuln");
   return { items: (q.data ?? []).filter((r) => r.published).map(rowToVuln), isLoading: q.isLoading };
 }
+const PREMIUM_TOOL_PRICES: Array<[string, number]> = [
+  ["nessus", 4790],
+  ["cobalt strike", 2500],
+  ["burp suite", 499],
+  ["ida pro", 1995],
+  ["binary ninja", 1499],
+  ["invicti", 3000],
+  ["acunetix", 3000],
+  ["metasploit pro", 3000],
+  ["metasploit", 350],
+  ["maltego", 999],
+  ["qualys", 5000],
+  ["crowdstrike", 2000],
+  ["checkmarx", 2000],
+  ["veracode", 3000],
+  ["rapid7", 3000],
+];
+const TOOL_PRICE_STEPS = [0, 10, 20, 5, 15, 30, 10, 25, 40];
+function getToolPrice(name: string, existingPrice: number | undefined, index: number) {
+  const normalized = name.trim().toLocaleLowerCase();
+  const premium = PREMIUM_TOOL_PRICES.find(([needle]) => normalized.includes(needle));
+  return premium?.[1] ?? existingPrice ?? 100 + (TOOL_PRICE_STEPS[index % TOOL_PRICE_STEPS.length] ?? 0);
+}
+
 export function useCmsTools() {
   const q = useCmsRows("tool");
   const cmsTools = (q.data ?? []).filter((r) => r.published).map(rowToTool);
@@ -294,7 +318,7 @@ export function useCmsTools() {
       seen.add(urlKey);
       return true;
     })
-    .map((tool, index) => ({ ...tool, id: tool.id ?? index + 1, price: tool.price ?? 100 + (index % 9) * 50 }));
+    .map((tool, index) => ({ ...tool, id: tool.id ?? index + 1, price: getToolPrice(tool.name, tool.price, index) }));
   return { items, isLoading: q.isLoading };
 }
 export function useCmsApps() {

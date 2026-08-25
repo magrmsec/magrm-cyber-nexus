@@ -51,23 +51,7 @@ function VulnDetail() {
   const { vuln: v } = Route.useLoaderData();
   const { settings: s } = useSiteSettings();
   const isPaid = Boolean(v.price && v.price > 0);
-  const downloadFile = JSON.stringify(
-    {
-      cve: v.cve,
-      name: v.name,
-      severity: v.severity,
-      cvss: v.cvss,
-      date: v.date,
-      type: v.type,
-      affected: v.affected,
-      description: v.description,
-      mitigation: v.mitigation,
-      usage: "بيانات دفاعية للتوعية والحماية ضمن نطاق مصرح به فقط",
-    },
-    null,
-    2,
-  );
-  const downloadUrl = `data:application/json;charset=utf-8,${encodeURIComponent(downloadFile)}`;
+  const downloadUrl = `/vulnerabilities/${v.id}/download`;
   const whatsappMessage = `السلام عليكم، أريد طلب الخدمة المرتبطة بالثغرة التالية:\nرقم الثغرة: ${v.cve}\nالاسم: ${v.name}\nالخطورة: ${v.severity}\nدرجة CVSS: ${v.cvss}\nالسعر: $${v.price}`;
   const whatsappUrl = `${s("whatsapp")}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -160,7 +144,6 @@ function VulnDetail() {
             ) : (
               <a
                 href={downloadUrl}
-                download={`${v.cve}.json`}
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
                 <Download className="size-5" /> تحميل ملف الثغرة

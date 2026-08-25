@@ -51,18 +51,23 @@ function VulnDetail() {
   const { vuln: v } = Route.useLoaderData();
   const { settings: s } = useSiteSettings();
   const isPaid = Boolean(v.price && v.price > 0);
-  const report = [
-    `${v.cve} — ${v.name}`,
-    `مستوى الخطورة: ${v.severity}`,
-    `درجة CVSS: ${v.cvss}`,
-    `تاريخ النشر: ${v.date}`,
-    `النوع: ${v.type}`,
-    `\nالأنظمة المتأثرة:\n- ${v.affected.join("\n- ")}`,
-    `\nالوصف:\n${v.description}`,
-    `\nالحماية والتوصيات:\n${v.mitigation}`,
-    "\nهذا تقرير دفاعي للتوعية والحماية، ويجب استخدامه ضمن نطاق مصرح به فقط.",
-  ].join("\n");
-  const downloadUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(report)}`;
+  const downloadFile = JSON.stringify(
+    {
+      cve: v.cve,
+      name: v.name,
+      severity: v.severity,
+      cvss: v.cvss,
+      date: v.date,
+      type: v.type,
+      affected: v.affected,
+      description: v.description,
+      mitigation: v.mitigation,
+      usage: "بيانات دفاعية للتوعية والحماية ضمن نطاق مصرح به فقط",
+    },
+    null,
+    2,
+  );
+  const downloadUrl = `data:application/json;charset=utf-8,${encodeURIComponent(downloadFile)}`;
   const whatsappMessage = `السلام عليكم، أريد طلب الخدمة المرتبطة بالثغرة التالية:\nرقم الثغرة: ${v.cve}\nالاسم: ${v.name}\nالخطورة: ${v.severity}\nدرجة CVSS: ${v.cvss}\nالسعر: $${v.price}`;
   const whatsappUrl = `${s("whatsapp")}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -134,9 +139,9 @@ function VulnDetail() {
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
               ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
-              : "هذا التقرير متاح مجانًا للتوعية والحماية، ويمكن تنزيله مباشرة من هذه الصفحة دون الانتقال إلى موقع آخر."}
+              : "ملف بيانات هذه الثغرة متاح مجانًا، ويمكن تنزيله مباشرة من هذه الصفحة دون الانتقال إلى موقع آخر."}
           </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap justify-end gap-3">
             {isPaid ? (
               <a
                 href={whatsappUrl}
@@ -149,10 +154,10 @@ function VulnDetail() {
             ) : (
               <a
                 href={downloadUrl}
-                download={`${v.cve}-report.txt`}
+                download={`${v.cve}.json`}
                 className="inline-flex items-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
-                <Download className="size-5" /> تحميل التقرير مجانًا
+                <Download className="size-5" /> تحميل ملف الثغرة
               </a>
             )}
           </div>

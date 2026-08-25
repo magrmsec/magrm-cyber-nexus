@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 
-const ALLOWED_LAB_HOST = "github.com";
+const ALLOWED_LAB_HOSTS = new Set(["github.com", "codeload.github.com"]);
 
 export const Route = createFileRoute("/vulnerabilities/$vulnId/download")({
   server: {
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId/download")({
         }
 
         const source = new URL(vulnerability.downloadUrl);
-        if (source.protocol !== "https:" || source.hostname !== ALLOWED_LAB_HOST) {
+        if (source.protocol !== "https:" || !ALLOWED_LAB_HOSTS.has(source.hostname)) {
           return new Response("Unapproved download source", { status: 403 });
         }
 

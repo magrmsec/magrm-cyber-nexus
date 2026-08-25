@@ -16,6 +16,10 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId/download")({
         }
 
         const vulnerability = rowToVuln(row);
+        if (vulnerability.price && vulnerability.price > 0) {
+          return new Response("Download unavailable for paid vulnerabilities", { status: 403 });
+        }
+
         const payload = {
           cve: vulnerability.cve,
           name: vulnerability.name,

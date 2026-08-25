@@ -118,7 +118,7 @@ function VulnDetail() {
 
         <div className="card-surface mt-5 p-6">
           <h2 className="flex items-center gap-2 font-bold">
-            <CalendarDays className="size-4 text-primary" /> الوصول إلى التقرير
+              <CalendarDays className="size-4 text-primary" /> الوصول إلى ملف الثغرة
           </h2>
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid

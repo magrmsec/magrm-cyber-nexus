@@ -101,18 +101,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              "@id": "https://magrm-cyber-nexus.lovable.app/#organization",
+              "@id": "https://magrm.blacksec.workers.dev/#organization",
               name: "Magrm Cyber Security",
-              url: "https://magrm-cyber-nexus.lovable.app",
+              url: "https://magrm.blacksec.workers.dev",
               description: "منصة Magrm للأمن السيبراني: دورات، مختبرات اختراق، أدوات، وقاعدة ثغرات CVE بالعربي.",
             },
             {
               "@type": "WebSite",
-              "@id": "https://magrm-cyber-nexus.lovable.app/#website",
+              "@id": "https://magrm.blacksec.workers.dev/#website",
               name: "Magrm Cyber Security",
-              url: "https://magrm-cyber-nexus.lovable.app",
+              url: "https://magrm.blacksec.workers.dev",
               inLanguage: "ar",
-              publisher: { "@id": "https://magrm-cyber-nexus.lovable.app/#organization" },
+              publisher: { "@id": "https://magrm.blacksec.workers.dev/#organization" },
             },
           ],
         }),

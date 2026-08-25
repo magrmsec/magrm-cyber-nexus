@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://magrm-cyber-nexus.lovable.app/sitemap.xml
+Sitemap: https://magrm.blacksec.workers.dev/sitemap.xml

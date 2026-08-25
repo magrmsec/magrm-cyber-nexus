@@ -230,6 +230,7 @@ export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
       .from("cms_items")
       .select("id, seq, kind, data, published, created_at")
       .eq("kind", kind)
+      .eq("published", true)
       .order("seq", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error) throw error;
@@ -246,6 +247,7 @@ export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsR
     .select("id, seq, kind, data, published, created_at")
     .eq("kind", kind)
     .eq("seq", seq)
+    .eq("published", true)
     .maybeSingle();
   if (error) return null;
   return (data as unknown as CmsRow) ?? null;

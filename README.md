@@ -124,7 +124,7 @@
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://magrm-cyber-nexus.lovable.app
+**Live app**: https://magrm.blacksec.workers.dev
 
 ## Build with Lovable
 

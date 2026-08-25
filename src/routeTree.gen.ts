@@ -28,6 +28,7 @@ import { Route as PortsPortIdRouteImport } from './routes/ports.$portId'
 import { Route as ToolsToolIdRouteImport } from './routes/tools_.$toolId'
 import { Route as VulnerabilitiesIndexRouteImport } from './routes/vulnerabilities.index'
 import { Route as VulnerabilitiesVulnIdRouteImport } from './routes/vulnerabilities.$vulnId'
+import { Route as VulnerabilitiesVulnIdDownloadRouteImport } from './routes/vulnerabilities.$vulnId.download'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -123,6 +124,12 @@ const VulnerabilitiesVulnIdRoute = VulnerabilitiesVulnIdRouteImport.update({
   path: '/vulnerabilities/$vulnId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VulnerabilitiesVulnIdDownloadRoute =
+  VulnerabilitiesVulnIdDownloadRouteImport.update({
+    id: '/download',
+    path: '/download',
+    getParentRoute: () => VulnerabilitiesVulnIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -139,10 +146,11 @@ export interface FileRoutesByFullPath {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/tools/$toolId': typeof ToolsToolIdRoute
-  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRouteWithChildren
   '/courses/': typeof CoursesIndexRoute
   '/ports/': typeof PortsIndexRoute
   '/vulnerabilities/': typeof VulnerabilitiesIndexRoute
+  '/vulnerabilities/$vulnId/download': typeof VulnerabilitiesVulnIdDownloadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,10 +167,11 @@ export interface FileRoutesByTo {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/tools/$toolId': typeof ToolsToolIdRoute
-  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRouteWithChildren
   '/courses': typeof CoursesIndexRoute
   '/ports': typeof PortsIndexRoute
   '/vulnerabilities': typeof VulnerabilitiesIndexRoute
+  '/vulnerabilities/$vulnId/download': typeof VulnerabilitiesVulnIdDownloadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,10 +190,11 @@ export interface FileRoutesById {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/tools_/$toolId': typeof ToolsToolIdRoute
-  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRoute
+  '/vulnerabilities/$vulnId': typeof VulnerabilitiesVulnIdRouteWithChildren
   '/courses/': typeof CoursesIndexRoute
   '/ports/': typeof PortsIndexRoute
   '/vulnerabilities/': typeof VulnerabilitiesIndexRoute
+  '/vulnerabilities/$vulnId/download': typeof VulnerabilitiesVulnIdDownloadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/ports/'
     | '/vulnerabilities/'
+    | '/vulnerabilities/$vulnId/download'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/courses'
     | '/ports'
     | '/vulnerabilities'
+    | '/vulnerabilities/$vulnId/download'
   id:
     | '__root__'
     | '/'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/ports/'
     | '/vulnerabilities/'
+    | '/vulnerabilities/$vulnId/download'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -264,7 +277,7 @@ export interface RootRouteChildren {
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
   PortsPortIdRoute: typeof PortsPortIdRoute
   ToolsToolIdRoute: typeof ToolsToolIdRoute
-  VulnerabilitiesVulnIdRoute: typeof VulnerabilitiesVulnIdRoute
+  VulnerabilitiesVulnIdRoute: typeof VulnerabilitiesVulnIdRouteWithChildren
   CoursesIndexRoute: typeof CoursesIndexRoute
   PortsIndexRoute: typeof PortsIndexRoute
   VulnerabilitiesIndexRoute: typeof VulnerabilitiesIndexRoute
@@ -405,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VulnerabilitiesVulnIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vulnerabilities/$vulnId/download': {
+      id: '/vulnerabilities/$vulnId/download'
+      path: '/download'
+      fullPath: '/vulnerabilities/$vulnId/download'
+      preLoaderRoute: typeof VulnerabilitiesVulnIdDownloadRouteImport
+      parentRoute: typeof VulnerabilitiesVulnIdRoute
+    }
   }
 }
 
@@ -421,6 +441,19 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface VulnerabilitiesVulnIdRouteChildren {
+  VulnerabilitiesVulnIdDownloadRoute: typeof VulnerabilitiesVulnIdDownloadRoute
+}
+
+const VulnerabilitiesVulnIdRouteChildren: VulnerabilitiesVulnIdRouteChildren = {
+  VulnerabilitiesVulnIdDownloadRoute: VulnerabilitiesVulnIdDownloadRoute,
+}
+
+const VulnerabilitiesVulnIdRouteWithChildren =
+  VulnerabilitiesVulnIdRoute._addFileChildren(
+    VulnerabilitiesVulnIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -435,7 +468,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoursesCourseIdRoute: CoursesCourseIdRoute,
   PortsPortIdRoute: PortsPortIdRoute,
   ToolsToolIdRoute: ToolsToolIdRoute,
-  VulnerabilitiesVulnIdRoute: VulnerabilitiesVulnIdRoute,
+  VulnerabilitiesVulnIdRoute: VulnerabilitiesVulnIdRouteWithChildren,
   CoursesIndexRoute: CoursesIndexRoute,
   PortsIndexRoute: PortsIndexRoute,
   VulnerabilitiesIndexRoute: VulnerabilitiesIndexRoute,

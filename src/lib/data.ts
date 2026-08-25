@@ -196,6 +196,8 @@ export interface Vuln {
   type: string;
   mitigation: string;
   price?: number;
+  downloadUrl?: string;
+  downloadName?: string;
 }
 const VULN_PRODUCTS = [
   ["Apache HTTP Server", "2.4.x"], ["Microsoft Windows", "10/11/Server"], ["Linux Kernel", "5.x/6.x"],

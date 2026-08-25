@@ -4,6 +4,7 @@ import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
 import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
 import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
 import { SECURITY_VULNERABILITY_CATALOG } from "@/lib/security-vulnerability-catalog";
+import { VERIFIED_VULNERABILITY_LABS } from "@/lib/verified-vulnerability-labs";
 
 import {
   COURSE_CATEGORIES,
@@ -203,6 +204,8 @@ export function rowToVuln(row: CmsRow): Vuln {
     type: str(d["type"], "غير محدد"),
     mitigation: str(d["mitigation"], "تحديث النظام المتأثر إلى آخر إصدار مدعوم."),
     ...(price > 0 ? { price } : {}),
+    ...(str(d["downloadUrl"]) ? { downloadUrl: str(d["downloadUrl"]) } : {}),
+    ...(str(d["downloadName"]) ? { downloadName: str(d["downloadName"]) } : {}),
   };
 }
 
@@ -250,6 +253,12 @@ export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
 }
 
 export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsRow | null> {
+  if (kind === "vuln") {
+    const lab = VERIFIED_VULNERABILITY_LABS.find((v) => v.id === seq);
+    if (lab) {
+      return { id: `verified-lab-${lab.id}`, seq: lab.id, kind: "vuln", data: lab as unknown as CmsData, published: true, created_at: lab.date };
+    }
+  }
   if (kind === "vuln" && seq >= 100001) {
     const item = SECURITY_VULNERABILITY_CATALOG.find((v) => v.id === seq);
     if (item) {
@@ -390,13 +399,14 @@ function buildQuery(kind: CmsKind, f: CmsFilter, count?: "exact") {
 
 function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
   const term = clean(filter.search ?? "").toLocaleLowerCase();
-  return SECURITY_VULNERABILITY_CATALOG
-    .filter((item) => item.price > 0)
+  const catalog = SECURITY_VULNERABILITY_CATALOG as unknown as Vuln[];
+  return [...catalog.filter((item) => (item.price ?? 0) > 0), ...VERIFIED_VULNERABILITY_LABS]
+    .filter((item) => item.price === 0 || Boolean(item.downloadUrl))
     .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)
     .filter((item) => {
       if (!term) return true;
       const keys = filter.searchKeys?.length ? filter.searchKeys : ["cve", "name", "description"];
-      return keys.some((key) => String((item as Record<string, unknown>)[key] ?? "").toLocaleLowerCase().includes(term));
+      return keys.some((key) => String((item as unknown as Record<string, unknown>)[key] ?? "").toLocaleLowerCase().includes(term));
     })
     .map((item) => ({ id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date }));
 }

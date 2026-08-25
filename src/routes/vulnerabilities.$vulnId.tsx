@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CalendarDays, Layers, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
+import { CalendarDays, Download, Layers, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
 import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 import { SeverityBadge } from "@/components/ui-bits";
 import { useSiteSettings } from "@/lib/settings";
@@ -122,7 +122,9 @@ function VulnDetail() {
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
               ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
-              : "لا يوجد ملف أصلي مطابق لهذه الثغرة متاح للتنزيل حاليًا. لن نعرض ملفًا عامًا أو غير متعلق بها حفاظًا على دقة المحتوى."}
+              : v.downloadUrl
+                ? "ملف مختبر أمني أصلي ومطابق متاح مجانًا، وسيتم تنزيله مباشرة من موقع Magrm. شغّله محليًا ومعزولًا فقط."
+                : "لا يوجد ملف أصلي مطابق لهذه الثغرة متاح للتنزيل حاليًا. لن نعرض ملفًا عامًا أو غير متعلق بها حفاظًا على دقة المحتوى."}
           </p>
           <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -139,6 +141,13 @@ function VulnDetail() {
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-emerald-700"
               >
                 <MessageCircle className="size-5" /> تواصل معنا عبر الواتساب
+              </a>
+            ) : v.downloadUrl ? (
+              <a
+                href={`/vulnerabilities/${v.id}/download`}
+                className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
+              >
+                <Download className="size-5" /> تحميل الأداة
               </a>
             ) : (
               <div className="rounded-2xl border border-border bg-surface-2 px-5 py-3.5 text-sm font-bold text-muted-foreground">

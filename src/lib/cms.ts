@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
 import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
 import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
+import { SECURITY_VULNERABILITY_CATALOG } from "@/lib/security-vulnerability-catalog";
 
 import {
   COURSE_CATEGORIES,
@@ -187,17 +188,21 @@ export function rowToVideo(row: CmsRow): Video {
 
 export function rowToVuln(row: CmsRow): Vuln {
   const d = row.data;
+  const cvss = num(d["cvss"], 5);
+  const storedPrice = num(d["price"], 0);
+  const price = storedPrice > 0 ? storedPrice : cvss >= 9 ? 999 : cvss >= 7 ? 499 : 0;
   return {
     id: row.seq,
     cve: str(d["cve"], "CVE-0000-0000"),
     name: str(d["name"], "ثغرة جديدة"),
     description: str(d["description"]),
     severity: (SEVERITIES.includes(d["severity"] as Severity) ? d["severity"] : "متوسط") as Severity,
-    cvss: num(d["cvss"], 5),
+    cvss,
     affected: list(d["affected"]),
     date: str(d["date"], new Date().toISOString().slice(0, 10)),
     type: str(d["type"], "غير محدد"),
     mitigation: str(d["mitigation"], "تحديث النظام المتأثر إلى آخر إصدار مدعوم."),
+    ...(price > 0 ? { price } : {}),
   };
 }
 
@@ -245,6 +250,12 @@ export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
 }
 
 export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsRow | null> {
+  if (kind === "vuln" && seq >= 100001) {
+    const item = SECURITY_VULNERABILITY_CATALOG.find((v) => v.id === seq);
+    if (item) {
+      return { id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date };
+    }
+  }
   const { data, error } = await supabase
     .from("cms_items")
     .select("id, seq, kind, data, published, created_at")
@@ -375,7 +386,27 @@ function buildQuery(kind: CmsKind, f: CmsFilter, count?: "exact") {
   return q;
 }
 
+function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
+  const term = clean(filter.search ?? "").toLocaleLowerCase();
+  return SECURITY_VULNERABILITY_CATALOG
+    .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)
+    .filter((item) => {
+      if (!term) return true;
+      const keys = filter.searchKeys?.length ? filter.searchKeys : ["cve", "name", "description"];
+      return keys.some((key) => String((item as Record<string, unknown>)[key] ?? "").toLocaleLowerCase().includes(term));
+    })
+    .map((item) => ({ id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date }));
+}
+
+async function fetchVulnerabilitySlice(f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
+  const { data, error } = await buildQuery("vuln", f).order("seq", { ascending: true }).range(0, 9999);
+  if (error) throw error;
+  const cmsRows = (data ?? []) as unknown as CmsRow[];
+  return [...cmsRows, ...staticVulnerabilityRows(f)].sort((a, b) => a.seq - b.seq).slice(from, from + size);
+}
+
 export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
+  if (kind === "vuln") return fetchVulnerabilitySlice(f, from, size);
   const { data, error } = await buildQuery(kind, f)
     .order("seq", { ascending: true })
     .range(from, from + size - 1);
@@ -385,8 +416,8 @@ export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, s
 
 export async function countCms(kind: CmsKind, f: CmsFilter = {}): Promise<number> {
   const { count, error } = await buildQuery(kind, f, "exact").limit(1);
-  if (error) return 0;
-  return count ?? 0;
+  if (error) return kind === "vuln" ? staticVulnerabilityRows(f).length : 0;
+  return (count ?? 0) + (kind === "vuln" ? staticVulnerabilityRows(f).length : 0);
 }
 
 /** تحميل تدريجي: كل دفعة تجلب `size` عنصراً إضافياً. */

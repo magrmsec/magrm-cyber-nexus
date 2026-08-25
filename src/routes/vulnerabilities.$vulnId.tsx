@@ -1,7 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CalendarDays, Layers, ShieldAlert, ShieldCheck } from "lucide-react";
+import { CalendarDays, Download, Layers, MessageCircle, ShieldAlert, ShieldCheck } from "lucide-react";
 import { fetchCmsRowBySeq, rowToVuln } from "@/lib/cms";
 import { SeverityBadge } from "@/components/ui-bits";
+import { useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/vulnerabilities/$vulnId")({
   loader: async ({ params }) => {
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId")({
             publisher: {
               "@type": "Organization",
               name: "Magrm Cyber Security",
-              url: "https://magrm-cyber-nexus.lovable.app",
+              url: "https://magrm.blacksec.workers.dev",
             },
           }),
         },
@@ -48,6 +49,22 @@ export const Route = createFileRoute("/vulnerabilities/$vulnId")({
 
 function VulnDetail() {
   const { vuln: v } = Route.useLoaderData();
+  const { settings: s } = useSiteSettings();
+  const isPaid = Boolean(v.price && v.price > 0);
+  const report = [
+    `${v.cve} — ${v.name}`,
+    `مستوى الخطورة: ${v.severity}`,
+    `درجة CVSS: ${v.cvss}`,
+    `تاريخ النشر: ${v.date}`,
+    `النوع: ${v.type}`,
+    `\nالأنظمة المتأثرة:\n- ${v.affected.join("\n- ")}`,
+    `\nالوصف:\n${v.description}`,
+    `\nالحماية والتوصيات:\n${v.mitigation}`,
+    "\nهذا تقرير دفاعي للتوعية والحماية، ويجب استخدامه ضمن نطاق مصرح به فقط.",
+  ].join("\n");
+  const downloadUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(report)}`;
+  const whatsappMessage = `السلام عليكم، أريد طلب الخدمة المرتبطة بالثغرة التالية:\nرقم الثغرة: ${v.cve}\nالاسم: ${v.name}\nالخطورة: ${v.severity}\nدرجة CVSS: ${v.cvss}\nالسعر: $${v.price}`;
+  const whatsappUrl = `${s("whatsapp")}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <>
@@ -59,9 +76,7 @@ function VulnDetail() {
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <span className="font-mono text-sm text-cyan">{v.cve}</span>
             <SeverityBadge severity={v.severity} />
-            <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-bold">
-              CVSS {v.cvss}
-            </span>
+            <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-bold">CVSS {v.cvss}</span>
           </div>
           <h1 className="animate-rise mt-4 text-2xl font-black leading-tight md:text-4xl">
             <span className="text-gradient">{v.name}</span>
@@ -71,16 +86,23 @@ function VulnDetail() {
       </section>
 
       <section className="mx-auto max-w-5xl px-4 py-12">
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="card-surface p-6">
+          <h2 className="flex items-center gap-2 font-bold">
+            <ShieldAlert className="size-4 text-primary" /> ماذا تفعل هذه الثغرة؟
+          </h2>
+          <p className="mt-3 text-sm leading-8 text-muted-foreground">
+            هذه الثغرة هي حالة ضعف موثقة في مكوّن برمجي. قد تسمح آثارها بالوصول غير المصرح به أو كشف المعلومات أو التأثير في الخدمة بحسب المنتج المتأثر، وإعداداته، وصلاحيات المهاجم. يوضح الوصف أعلاه طبيعة المشكلة، بينما تساعد درجة CVSS على تقدير مستوى الخطر وترتيب أولوية المعالجة.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <div className="card-surface p-6">
             <h2 className="flex items-center gap-2 font-bold">
               <Layers className="size-4 text-primary" /> الأنظمة المتأثرة
             </h2>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {v.affected.map((a: string) => (
-                <li key={a} className="rounded-lg border border-border bg-surface-2 px-3 py-2">
-                  {a}
-                </li>
+                <li key={a} className="rounded-lg border border-border bg-surface-2 px-3 py-2">{a}</li>
               ))}
             </ul>
           </div>
@@ -107,25 +129,32 @@ function VulnDetail() {
 
         <div className="card-surface mt-5 p-6">
           <h2 className="flex items-center gap-2 font-bold">
-            <CalendarDays className="size-4 text-primary" /> مراجع خارجية
+            <CalendarDays className="size-4 text-primary" /> الوصول إلى التقرير
           </h2>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <a
-              href={`https://nvd.nist.gov/vuln/detail/${v.cve}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-bold transition-colors hover:border-primary/60 hover:text-primary"
-            >
-              NVD Database
-            </a>
-            <a
-              href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${v.cve}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-bold transition-colors hover:border-primary/60 hover:text-primary"
-            >
-              MITRE CVE
-            </a>
+          <p className="mt-3 text-sm leading-8 text-muted-foreground">
+            {isPaid
+              ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
+              : "هذا التقرير متاح مجانًا للتوعية والحماية، ويمكن تنزيله مباشرة من هذه الصفحة دون الانتقال إلى موقع آخر."}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {isPaid ? (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 rounded-2xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-emerald-700"
+              >
+                <MessageCircle className="size-5" /> تواصل معنا عبر الواتساب — ${v.price}
+              </a>
+            ) : (
+              <a
+                href={downloadUrl}
+                download={`${v.cve}-report.txt`}
+                className="inline-flex items-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
+              >
+                <Download className="size-5" /> تحميل التقرير مجانًا
+              </a>
+            )}
           </div>
         </div>
       </section>

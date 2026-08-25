@@ -94,6 +94,9 @@ function VulnsPage() {
                   <div className="flex shrink-0 flex-col items-end gap-2">
                     <SeverityBadge severity={v.severity} />
                     <span className="text-xs text-muted-foreground">CVSS {v.cvss}</span>
+                    <span className={`text-xs font-bold ${v.price ? "text-primary" : "text-emerald-500"}`}>
+                      {v.price ? `$${v.price}` : "مجانية"}
+                    </span>
                   </div>
                 </Link>
               ))}

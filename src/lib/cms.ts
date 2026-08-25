@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
+import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
 
 import {
   COURSE_CATEGORIES,
@@ -282,7 +283,19 @@ export function useCmsVulns() {
 }
 export function useCmsTools() {
   const q = useCmsRows("tool");
-  return { items: (q.data ?? []).filter((r) => r.published).map(rowToTool), isLoading: q.isLoading };
+  const cmsTools = (q.data ?? []).filter((r) => r.published).map(rowToTool);
+  const seen = new Set<string>();
+  const items = [...cmsTools, ...SECURITY_TOOL_CATALOG]
+    .filter((tool) => {
+      const nameKey = tool.name.trim().toLocaleLowerCase();
+      const urlKey = tool.url.trim().toLocaleLowerCase();
+      if (seen.has(nameKey) || seen.has(urlKey)) return false;
+      seen.add(nameKey);
+      seen.add(urlKey);
+      return true;
+    })
+    .map((tool, index) => ({ ...tool, id: tool.id ?? index + 1, price: tool.price ?? 100 + (index % 9) * 50 }));
+  return { items, isLoading: q.isLoading };
 }
 export function useCmsApps() {
   const q = useCmsRows("app");

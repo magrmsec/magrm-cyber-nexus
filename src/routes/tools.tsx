@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute } from '@tanstack/react-router'
+import { useEffect, useState } from "react";
 import { Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -19,9 +19,12 @@ export const Route = createFileRoute("/tools")({
   component: ToolsPage,
 });
 
+const PAGE_SIZE = 30;
+
 function ToolsPage() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
+  const [page, setPage] = useState(1);
   const { items: tools, isLoading } = useCmsTools();
 
   const filtered = tools.filter(
@@ -29,6 +32,13 @@ function ToolsPage() {
       (cat === "الكل" || t.category === cat) &&
       (!q.trim() || t.name.toLowerCase().includes(q.trim().toLowerCase()) || t.description.includes(q.trim())),
   );
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const visibleTools = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, cat]);
 
   return (
     <>
@@ -65,27 +75,73 @@ function ToolsPage() {
             <EmptyState text={isLoading ? "جاري تحميل الأدوات…" : "لا توجد أدوات مطابقة."} />
           </div>
         ) : (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((t) => (
-              <div key={t.id ?? t.name} className="card-surface animate-rise flex flex-col p-6">
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="min-w-0 truncate text-base font-bold">{t.name}</h2>
-                  <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
-                    {t.category}
-                  </span>
+          <>
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleTools.map((t) => (
+                <div key={t.id ?? t.name} className="card-surface animate-rise flex flex-col p-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="min-w-0 truncate text-base font-bold">{t.name}</h2>
+                    <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
+                      {t.category}
+                    </span>
+                  </div>
+                  <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{t.description}</p>
+                  <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm">
+                    <span className="text-muted-foreground">سعر الخدمة</span>
+                    <strong className="text-primary">${t.price ?? 100}</strong>
+                  </div>
+                  <a
+                    href={t.url}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+                  >
+                    <Download className="size-4" /> تحميل الأداة
+                  </a>
                 </div>
-                <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{t.description}</p>
-                <a
-                  href={t.url}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+              ))}
+            </div>
+            {pageCount > 1 ? (
+              <nav className="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label="صفحات الأدوات">
+                <button
+                  type="button"
+                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <Download className="size-4" /> تحميل الأداة
-                </a>
-              </div>
-            ))}
-          </div>
+                  السابق
+                </button>
+                {Array.from({ length: Math.min(pageCount, 7) }, (_, index) => {
+                  const start =
+                    pageCount <= 7 ? 1 : currentPage <= 4 ? 1 : currentPage >= pageCount - 3 ? pageCount - 6 : currentPage - 3;
+                  const pageNumber = start + index;
+                  return (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() => setPage(pageNumber)}
+                      aria-current={currentPage === pageNumber ? "page" : undefined}
+                      className={`grid size-10 place-items-center rounded-lg border text-sm font-bold transition-colors ${
+                        currentPage === pageNumber
+                          ? "border-primary bg-primary/15 text-primary"
+                          : "border-border bg-surface text-muted-foreground hover:border-primary hover:text-primary"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
+                  disabled={currentPage === pageCount}
+                  className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  التالي
+                </button>
+              </nav>
+            ) : null}
+          </>
         )}
       </section>
     </>

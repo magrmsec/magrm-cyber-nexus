@@ -242,6 +242,7 @@ export interface Tool {
   category: string;
   description: string;
   url: string;
+  price?: number;
 }
 export const TOOLS: Tool[] = [
   ["Kali Linux", "توزيعات", "توزيعة لينكس متخصصة في اختبار الاختراق تضم أكثر من 600 أداة أمنية.", "https://www.kali.org/get-kali/"],

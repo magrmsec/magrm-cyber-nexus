@@ -253,7 +253,8 @@ export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsR
   if (kind === "vuln" && seq >= 100001) {
     const item = SECURITY_VULNERABILITY_CATALOG.find((v) => v.id === seq);
     if (item) {
-      return { id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date };
+      const row: CmsRow = { id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date };
+      return (rowToVuln(row).price ?? 0) > 0 ? row : null;
     }
   }
   const { data, error } = await supabase
@@ -264,7 +265,8 @@ export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsR
     .eq("published", true)
     .maybeSingle();
   if (error) return null;
-  return (data as unknown as CmsRow) ?? null;
+  const row = (data as unknown as CmsRow) ?? null;
+  return row && (rowToVuln(row).price ?? 0) > 0 ? row : null;
 }
 
 export function useCmsRows(kind: CmsKind) {
@@ -389,6 +391,7 @@ function buildQuery(kind: CmsKind, f: CmsFilter, count?: "exact") {
 function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
   const term = clean(filter.search ?? "").toLocaleLowerCase();
   return SECURITY_VULNERABILITY_CATALOG
+    .filter((item) => item.price > 0)
     .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)
     .filter((item) => {
       if (!term) return true;
@@ -401,7 +404,7 @@ function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
 async function fetchVulnerabilitySlice(f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
   const { data, error } = await buildQuery("vuln", f).order("seq", { ascending: true }).range(0, 9999);
   if (error) throw error;
-  const cmsRows = (data ?? []) as unknown as CmsRow[];
+  const cmsRows = ((data ?? []) as unknown as CmsRow[]).filter((row) => (rowToVuln(row).price ?? 0) > 0);
   return [...cmsRows, ...staticVulnerabilityRows(f)].sort((a, b) => a.seq - b.seq).slice(from, from + size);
 }
 
@@ -415,9 +418,13 @@ export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, s
 }
 
 export async function countCms(kind: CmsKind, f: CmsFilter = {}): Promise<number> {
+  if (kind === "vuln") {
+    const rows = await fetchVulnerabilitySlice(f, 0, 10000);
+    return rows.length;
+  }
   const { count, error } = await buildQuery(kind, f, "exact").limit(1);
-  if (error) return kind === "vuln" ? staticVulnerabilityRows(f).length : 0;
-  return (count ?? 0) + (kind === "vuln" ? staticVulnerabilityRows(f).length : 0);
+  if (error) return 0;
+  return count ?? 0;
 }
 
 /** تحميل تدريجي: كل دفعة تجلب `size` عنصراً إضافياً. */

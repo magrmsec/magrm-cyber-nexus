@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from "react";
 import { Download, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -78,7 +78,12 @@ function ToolsPage() {
           <>
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {visibleTools.map((t) => (
-                <div key={t.id ?? t.name} className="card-surface animate-rise flex flex-col p-6">
+                <Link
+                  key={t.id ?? t.name}
+                  to="/tools/$toolId"
+                  params={{ toolId: String(t.id) }}
+                  className="card-surface animate-rise flex flex-col p-6 transition-colors hover:border-primary/50"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="min-w-0 truncate text-base font-bold">{t.name}</h2>
                     <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
@@ -90,15 +95,10 @@ function ToolsPage() {
                     <span className="text-muted-foreground">سعر الخدمة</span>
                     <strong className="text-primary">${t.price ?? 100}</strong>
                   </div>
-                  <a
-                    href={`https://wa.me/967733570889?text=${encodeURIComponent(`أريد شراء الأداة: ${t.name} — السعر: $${t.price ?? 100}`)}`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
-                  >
+                  <span className="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90">
                     <Download className="size-4" /> شراء الأداة
-                  </a>
-                </div>
+                  </span>
+                </Link>
               ))}
             </div>
             {pageCount > 1 ? (

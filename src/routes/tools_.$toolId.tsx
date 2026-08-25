@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CheckCircle2, ExternalLink, MessageCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle2, MessageCircle, ShieldCheck } from "lucide-react";
 import { getToolDetails } from "@/lib/tool-details";
 import { useCmsTools } from "@/lib/cms";
 import { useSiteSettings } from "@/lib/settings";
@@ -105,16 +105,6 @@ function ToolDetail() {
             </a>
           </div>
 
-          {tool.url && tool.url !== "#" ? (
-            <a
-              href={tool.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
-            >
-              <ExternalLink className="size-4" /> الصفحة الرسمية للأداة
-            </a>
-          ) : null}
         </div>
       </div>
     </section>

@@ -44,8 +44,8 @@ function ToolsPage() {
     <>
       <PageHero
         eyebrow={`${tools.length} أداة`}
-        title="الأدوات والبرامج"
-        description="ترسانة الأدوات التي يعتمد عليها محترفو الأمن السيبراني حول العالم — مع روابط التحميل الرسمية."
+        title="الأدوات"
+        description="ترسانة الأدوات التي يعتمد عليها محترفو الأمن السيبراني حول العالم"
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

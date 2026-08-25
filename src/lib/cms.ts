@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
 import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
+import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
 
 import {
   COURSE_CATEGORIES,
@@ -139,7 +140,7 @@ export function rowToCourse(row: CmsRow): Course {
     title: str(d["title"], "دورة جديدة"),
     category: str(d["category"], COURSE_CATEGORIES[0] as string),
     description: str(d["description"]),
-    price: num(d["price"], 0),
+    price: PREMIUM_COURSE_PRICES[row.seq] ?? num(d["price"], 0),
     level: (LEVELS.includes(d["level"] as Level) ? d["level"] : LEVELS[0]) as Level,
     hours: num(d["hours"], 1),
     rating: num(d["rating"], 5),

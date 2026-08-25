@@ -91,12 +91,12 @@ function ToolsPage() {
                     <strong className="text-primary">${t.price ?? 100}</strong>
                   </div>
                   <a
-                    href={t.url}
+                    href={`https://wa.me/967733570889?text=${encodeURIComponent(`أريد شراء الأداة: ${t.name} — السعر: $${t.price ?? 100}`)}`}
                     target="_blank"
                     rel="noreferrer noopener"
                     className="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
                   >
-                    <Download className="size-4" /> تحميل الأداة
+                    <Download className="size-4" /> شراء الأداة
                   </a>
                 </div>
               ))}

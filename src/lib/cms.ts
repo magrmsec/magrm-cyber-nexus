@@ -192,7 +192,8 @@ export function rowToVuln(row: CmsRow): Vuln {
   const d = row.data;
   const cvss = num(d["cvss"], 5);
   const storedPrice = num(d["price"], 0);
-  const price = storedPrice > 0 ? storedPrice : cvss >= 9 ? 999 : cvss >= 7 ? 499 : 0;
+  const isFreeLab = Boolean(str(d["downloadUrl"]) || str(d["downloadPath"]));
+  const price = isFreeLab ? 0 : storedPrice > 0 ? storedPrice : cvss >= 9 ? 999 : cvss >= 7 ? 499 : 0;
   return {
     id: row.seq,
     cve: str(d["cve"], "CVE-0000-0000"),
@@ -442,13 +443,33 @@ function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
     .map((item) => ({ id: `catalog-${item.id}`, seq: item.id, kind: "vuln", data: item as unknown as CmsData, published: true, created_at: item.date }));
 }
 
+function interleaveVulnerabilityRows(paid: CmsRow[], free: CmsRow[]): CmsRow[] {
+  const mixed: CmsRow[] = [];
+  const paidGroupSizes = [2, 5, 2, 4, 3, 6, 3, 5, 2, 4, 6, 3];
+  let paidIndex = 0;
+  let freeIndex = 0;
+  let groupIndex = 0;
+  while (paidIndex < paid.length || freeIndex < free.length) {
+    const groupSize = paidGroupSizes[groupIndex % paidGroupSizes.length] ?? 2;
+    for (let i = 0; i < groupSize && paidIndex < paid.length; i += 1) mixed.push(paid[paidIndex++] as CmsRow);
+    const nextFree = free[freeIndex];
+    if (nextFree) mixed.push(nextFree);
+    freeIndex += 1;
+    groupIndex += 1;
+  }
+  return mixed;
+}
+
 async function fetchVulnerabilitySlice(f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
   const { data, error } = await buildQuery("vuln", f).order("seq", { ascending: true }).range(0, 9999);
   if (error) throw error;
   const cmsRows = ((data ?? []) as unknown as CmsRow[])
     .filter((row) => (rowToVuln(row).price ?? 0) > 0)
     .filter((row) => vulnerabilityMatchesPricing(row, f.pricing));
-  return [...cmsRows, ...staticVulnerabilityRows(f)].sort((a, b) => a.seq - b.seq).slice(from, from + size);
+  const staticRows = staticVulnerabilityRows(f);
+  const paidRows = [...cmsRows, ...staticRows.filter((row) => (rowToVuln(row).price ?? 0) > 0)];
+  const freeRows = staticRows.filter((row) => (rowToVuln(row).price ?? 0) === 0);
+  return interleaveVulnerabilityRows(paidRows, freeRows).slice(from, from + size);
 }
 
 export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {

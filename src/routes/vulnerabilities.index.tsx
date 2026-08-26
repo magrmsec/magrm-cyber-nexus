@@ -25,13 +25,8 @@ const BATCH = 25;
 function VulnsPage() {
   const [q, setQ] = useState("");
   const [sev, setSev] = useState("الكل");
-  const [pricing, setPricing] = useState<"free" | "paid" | undefined>();
 
-  const filter = useMemo<CmsFilter>(() => {
-    const next: CmsFilter = { search: q.trim(), severity: sev, searchKeys: ["cve", "name", "type"] };
-    if (pricing) next.pricing = pricing;
-    return next;
-  }, [q, sev, pricing]);
+  const filter = useMemo<CmsFilter>(() => ({ search: q.trim(), severity: sev, searchKeys: ["cve", "name", "type"] }), [q, sev]);
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useCmsInfinite("vuln", filter, BATCH);
   const { data: total } = useCmsCount("vuln", filter);
@@ -61,12 +56,7 @@ function VulnsPage() {
           <div className="mt-5">
             <FilterRow label="مستوى الخطورة" options={["الكل", "حرج", "عالي", "متوسط"]} value={sev} onChange={setSev} />
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold text-muted-foreground">نوع الوصول</span>
-            <Button size="sm" variant={!pricing ? "default" : "outline"} onClick={() => setPricing(undefined)}>الكل</Button>
-            <Button size="sm" variant={pricing === "free" ? "default" : "outline"} onClick={() => setPricing("free")}>مجاني</Button>
-            <Button size="sm" variant={pricing === "paid" ? "default" : "outline"} onClick={() => setPricing("paid")}>مدفوع</Button>
-          </div>
+
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">

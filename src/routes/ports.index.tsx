@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search, Flag, Wrench } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
-import { FilterRow } from "./courses.index";
 import { useCmsPorts } from "@/lib/cms";
 
 export const Route = createFileRoute("/ports/")({
@@ -22,12 +20,9 @@ export const Route = createFileRoute("/ports/")({
 function PortsPage() {
   const { items: ports, isLoading } = useCmsPorts();
   const [q, setQ] = useState("");
-  const [level, setLevel] = useState("الكل");
 
   const filtered = ports.filter(
-    (p) =>
-      (level === "الكل" || p.level === level) &&
-      (!q.trim() || p.name.includes(q.trim()) || p.description.includes(q.trim())),
+    (p) => !q.trim() || p.name.includes(q.trim()) || p.description.includes(q.trim()),
   );
 
   return (
@@ -49,9 +44,6 @@ function PortsPage() {
               placeholder="ابحث عن بورت… مثال: WiFi، Active Directory"
               className="h-12 pr-10 text-sm"
             />
-          </div>
-          <div className="mt-5">
-            <FilterRow label="المستوى" options={["الكل", ...LEVELS]} value={level} onChange={setLevel} />
           </div>
         </div>
 

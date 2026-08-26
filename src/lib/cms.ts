@@ -415,7 +415,22 @@ function vulnerabilityMatchesPricing(row: CmsRow, pricing?: CmsFilter["pricing"]
 function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
   const term = clean(filter.search ?? "").toLocaleLowerCase();
   const catalog = SECURITY_VULNERABILITY_CATALOG as unknown as Vuln[];
-  return [...catalog.filter((item) => (item.price ?? 0) > 0), ...VERIFIED_VULNERABILITY_LABS, ...VERIFIED_VULHUB_LABS]
+  const paid = catalog.filter((item) => (item.price ?? 0) > 0);
+  const free = [...VERIFIED_VULNERABILITY_LABS, ...VERIFIED_VULHUB_LABS];
+  const mixed: Vuln[] = [];
+  const paidGroupSizes = [2, 5, 2, 4, 3, 6, 3, 5, 2, 4, 6, 3];
+  let paidIndex = 0;
+  let freeIndex = 0;
+  let groupIndex = 0;
+  while (paidIndex < paid.length || freeIndex < free.length) {
+    const groupSize = paidGroupSizes[groupIndex % paidGroupSizes.length] ?? 2;
+    for (let i = 0; i < groupSize && paidIndex < paid.length; i += 1) mixed.push(paid[paidIndex++] as Vuln);
+    const nextFree = free[freeIndex];
+    if (nextFree) mixed.push(nextFree);
+    freeIndex += 1;
+    groupIndex += 1;
+  }
+  return mixed
     .filter((item) => (item.price ?? 0) > 0 || Boolean(item.downloadUrl) || Boolean(item.downloadPath))
     .filter((item) => !filter.pricing || filter.pricing === "paid" ? (item.price ?? 0) > 0 : (item.price ?? 0) === 0)
     .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)

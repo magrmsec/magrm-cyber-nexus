@@ -162,13 +162,36 @@ export function rowToCourse(row: CmsRow): Course {
   };
 }
 
+const LEGACY_PORT_PRICES: Record<number, number> = {
+  1002: 179,
+  1003: 239,
+  1004: 219,
+  1005: 199,
+  1006: 229,
+  1007: 249,
+  1008: 289,
+  1009: 269,
+  1010: 259,
+  1011: 239,
+  1012: 219,
+  1013: 229,
+  1014: 199,
+  1015: 249,
+  1016: 239,
+  1017: 219,
+  1018: 259,
+  1019: 229,
+  1020: 279,
+  1021: 299,
+};
+
 export function rowToPort(row: CmsRow): Port {
   const d = row.data;
   return {
     id: row.seq,
     name: str(d["name"], "بورت جديد"),
     description: str(d["description"]),
-    price: num(d["price"], 0),
+    price: LEGACY_PORT_PRICES[row.seq] ?? num(d["price"], 150),
     level: "متقدم",
     objective: str(d["objective"], "الوصول إلى العلم النهائي وتوثيق كل خطوة في تقرير احترافي."),
     tools: list(d["tools"]),

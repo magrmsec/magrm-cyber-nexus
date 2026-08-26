@@ -35,6 +35,34 @@ interface FeaturedCertificate {
 
 const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
   {
+    id: "isc2-cissp-specialization",
+    title: "Certified Information Systems Security Professional (CISSP) Specialization",
+    issuer: "ISC2 عبر Coursera",
+    focus: "تخصص يغطي مجالات CISSP الثمانية: إدارة المخاطر، الأصول، الهندسة، الشبكات، الهوية، التقييم، العمليات، وتطوير البرمجيات الآمن",
+    image: "/certificates/isc2-cissp-specialization.jpg",
+  },
+  {
+    id: "isc2-security-operations",
+    title: "Security Operations",
+    issuer: "ISC2 عبر Coursera",
+    focus: "عمليات الأمن والمراقبة والاستجابة ضمن مسار CISSP",
+    image: "/certificates/isc2-security-operations.jpg",
+  },
+  {
+    id: "isc2-network-security",
+    title: "Network Security",
+    issuer: "ISC2 عبر Coursera",
+    focus: "أمن الشبكات والاتصالات ضمن مسار CISSP",
+    image: "/certificates/isc2-network-security.jpg",
+  },
+  {
+    id: "isc2-incident-response-bc-dr",
+    title: "Incident Response, BC, and DR Concepts",
+    issuer: "ISC2 عبر Coursera",
+    focus: "الاستجابة للحوادث واستمرارية الأعمال والتعافي من الكوارث",
+    image: "/certificates/isc2-incident-response-bc-dr.jpg",
+  },
+  {
     id: "cde-cybersecurity-professional",
     title: "Cybersecurity Professional — Certificate of Achievement",
     issuer: "Cyber Defense Excellence (CDE)",
@@ -70,11 +98,53 @@ const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
     image: "/certificates/ibm-cybersecurity-capstone.jpg",
   },
   {
+    id: "ibm-cloud-computing",
+    title: "Introduction to Cloud Computing",
+    issuer: "IBM عبر Coursera",
+    focus: "مقدمة في الحوسبة السحابية",
+    image: "/certificates/ibm-cloud-computing.jpg",
+  },
+  {
+    id: "ibm-software-programming-databases",
+    title: "Introduction to Software, Programming, and Databases",
+    issuer: "IBM عبر Coursera",
+    focus: "البرمجيات والبرمجة وقواعد البيانات",
+    image: "/certificates/ibm-software-programming-databases.jpg",
+  },
+  {
     id: "ibm-hardware-operating-systems",
     title: "Introduction to Hardware and Operating Systems",
     issuer: "IBM عبر Coursera",
     focus: "العتاد وأنظمة التشغيل",
     image: "/certificates/ibm-hardware-operating-systems.jpg",
+  },
+  {
+    id: "google-ai-professional",
+    title: "Google AI Professional Certificate",
+    issuer: "Google عبر Coursera",
+    focus: "مسار احترافي من 7 دورات في الذكاء الاصطناعي وتطبيقاته العملية",
+    image: "/certificates/google-ai-professional.jpg",
+  },
+  {
+    id: "google-ai-fundamentals",
+    title: "AI Fundamentals",
+    issuer: "Google عبر Coursera",
+    focus: "أساسيات الذكاء الاصطناعي",
+    image: "/certificates/google-ai-fundamentals.jpg",
+  },
+  {
+    id: "google-ai-content-creation",
+    title: "AI for Content Creation",
+    issuer: "Google عبر Coursera",
+    focus: "استخدام الذكاء الاصطناعي في إنشاء المحتوى",
+    image: "/certificates/google-ai-content-creation.jpg",
+  },
+  {
+    id: "google-ai-research-insights",
+    title: "AI for Research and Insights",
+    issuer: "Google عبر Coursera",
+    focus: "البحث واستخلاص الرؤى باستخدام الذكاء الاصطناعي",
+    image: "/certificates/google-ai-research-insights.jpg",
   },
   {
     id: "google-ai-communication",

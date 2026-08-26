@@ -1,10 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Github, Instagram, Mail, MessageCircle, Send, Youtube } from "lucide-react";
+import { BriefcaseBusiness, Github, Instagram, Mail, MessageCircle, Send, Youtube } from "lucide-react";
 import { useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
+
+function WhatsAppBusinessIcon() {
+  return (
+    <span className="relative block size-8" aria-label="واتساب الأعمال">
+      <MessageCircle className="size-8" />
+      <span className="absolute -bottom-1 -right-2 grid size-4 place-items-center rounded-full bg-emerald-600 text-white ring-2 ring-card">
+        <BriefcaseBusiness className="size-2.5" />
+      </span>
+    </span>
+  );
+}
 
 function XLogo({ className }: { className?: string }) {
   return (
@@ -33,7 +44,7 @@ function ContactPage() {
           تواصل معنا مباشرة
         </h1>
         <p className="mt-4 text-muted-foreground text-base leading-7">
-          نحن هنا لمساعدتك في أي استفسار، أو لإتمام عمليات الشراء والدفع بكل سهولة عبر الواتساب.
+          يسعدنا تواصلك. فريق Magrm هنا للإجابة عن استفساراتك وتقديم الدعم والمعلومات التي تحتاجها في مجال الأمن السيبراني، وسنكون معك خطوة بخطوة.
         </p>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -45,7 +56,7 @@ function ContactPage() {
             className="flex flex-col items-center justify-center p-8 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card transition-all group shadow-sm"
           >
             <div className="grid size-14 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
-              <MessageCircle className="size-7" />
+              <WhatsAppBusinessIcon />
             </div>
             <h3 className="mt-5 text-lg font-bold text-foreground">التواصل عبر الواتساب</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">

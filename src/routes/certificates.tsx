@@ -432,34 +432,6 @@ function CertificatesPage() {
         description="هذه المساحة مخصصة لعرض شهادات Magrm المهنية. أضف صورة الشهادة وعنوانها ليظهرا هنا مباشرة."
       />
 
-      <section className="mx-auto max-w-7xl px-4 pt-12">
-        <section aria-labelledby="infosec-certificate-heading">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">قسم مستقل — InfoSec</p>
-              <h2 id="infosec-certificate-heading" className="mt-2 text-2xl font-black">مسار CISSP المهني من InfoSec</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">الشهادة الرئيسية في الأعلى، وعند فتحها ستظهر صور الشهادات الفرعية التي أرسلتها ضمن قسم مستقل.</p>
-            </div>
-            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">شهادة رئيسية</span>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-2">
-            {INFOSEC_MAIN_CERTIFICATE_IDS.map((certificateId) => {
-              const certificate = certificateById.get(certificateId);
-              if (!certificate) return null;
-              return (
-                <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
-                  <CertificateCard certificate={certificate} featured />
-                  <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
-                    <span>فتح الشهادة والصور الفرعية التابعة</span>
-                    <span aria-hidden="true">←</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      </section>
-
       <section className="mx-auto max-w-7xl px-4 py-12">
         <section aria-labelledby="uploaded-certificates-heading">
           <div className="mb-5 flex items-end justify-between gap-4">
@@ -480,6 +452,34 @@ function CertificatesPage() {
                   <CertificateCard certificate={certificate} featured />
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
                     <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
+                    <span aria-hidden="true">←</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pt-0 pb-12">
+        <section aria-labelledby="infosec-certificate-heading">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">القسم الثاني المستقل — InfoSec</p>
+              <h2 id="infosec-certificate-heading" className="mt-2 text-2xl font-black">مسار CISSP المهني من InfoSec</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">الشهادة الرئيسية الثانية، وعند فتحها ستظهر صور الشهادات الفرعية التي أرسلتها ضمن قسم مستقل.</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">شهادة رئيسية</span>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {INFOSEC_MAIN_CERTIFICATE_IDS.map((certificateId) => {
+              const certificate = certificateById.get(certificateId);
+              if (!certificate) return null;
+              return (
+                <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
+                  <CertificateCard certificate={certificate} featured />
+                  <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
+                    <span>فتح الشهادة والصور الفرعية التابعة</span>
                     <span aria-hidden="true">←</span>
                   </div>
                 </Link>

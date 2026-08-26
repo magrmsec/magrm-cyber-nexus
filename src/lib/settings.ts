@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 /** كل نصوص وألوان وروابط الموقع تُقرأ من جدول site_settings (صف واحد id = 'main'). */
 
-export type SettingsFieldType = "text" | "textarea" | "color" | "list";
+export type SettingsFieldType = "text" | "textarea" | "color" | "list" | "toggle";
 
 export interface SettingsField {
   key: string;
@@ -77,8 +77,17 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
   },
   {
     id: "contact",
-    title: "روابط التواصل",
+    title: "نصوص وروابط التواصل",
     fields: [
+      { key: "contactTitle", label: "عنوان صفحة التواصل", type: "text" },
+      { key: "contactIntro", label: "المقدمة تحت العنوان", type: "textarea" },
+      { key: "contactWhatsappTitle", label: "عنوان بطاقة الواتساب", type: "text" },
+      { key: "contactWhatsappDescription", label: "وصف بطاقة الواتساب", type: "textarea" },
+      { key: "contactWhatsappButton", label: "نص زر الواتساب", type: "text" },
+      { key: "contactEmailTitle", label: "عنوان بطاقة البريد", type: "text" },
+      { key: "contactEmailDescription", label: "وصف بطاقة البريد", type: "textarea" },
+      { key: "contactSocialTitle", label: "عنوان منصات التواصل", type: "text" },
+      { key: "contactSocialDescription", label: "وصف منصات التواصل", type: "textarea" },
       { key: "contactEmail", label: "البريد الإلكتروني", type: "text" },
       { key: "supportEmail", label: "بريد الدعم", type: "text" },
       { key: "whatsapp", label: "رابط واتساب", type: "text" },
@@ -88,6 +97,16 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { key: "twitter", label: "رابط X / تويتر", type: "text" },
       { key: "github", label: "رابط GitHub", type: "text" },
       { key: "contactLocation", label: "مكان العمل", type: "text" },
+    ],
+  },
+  {
+    id: "operations",
+    title: "تشغيل الموقع ووضع الصيانة",
+    fields: [
+      { key: "maintenanceMode", label: "وضع الصيانة", type: "toggle", hint: "عند التفعيل يتوقف الموقع للزوار وتبقى لوحة الإدارة متاحة لك." },
+      { key: "maintenanceTitle", label: "عنوان صفحة الصيانة", type: "text" },
+      { key: "maintenanceMessage", label: "رسالة صفحة الصيانة", type: "textarea" },
+      { key: "maintenanceContact", label: "رابط التواصل أثناء الصيانة", type: "text" },
     ],
   },
   {
@@ -173,6 +192,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   aboutStat4Value: "+320",
   aboutStat4Label: "ثغرة مكتشفة",
 
+  contactTitle: "تواصل معنا مباشرة",
+  contactIntro:
+    "يسعدنا تواصلك. فريق Magrm هنا للإجابة عن استفساراتك وتقديم الدعم والمعلومات التي تحتاجها في مجال الأمن السيبراني، وسنكون معك خطوة بخطوة.",
+  contactWhatsappTitle: "التواصل عبر الواتساب",
+  contactWhatsappDescription: "للاستفسارات الرسمية والدعم الفني عبر الواتساب",
+  contactWhatsappButton: "مراسلة عبر الواتساب",
+  contactEmailTitle: "البريد الإلكتروني",
+  contactEmailDescription: "للاستفسارات الرسمية والدعم الفني عبر البريد",
+  contactSocialTitle: "جميع حساباتنا على منصات التواصل",
+  contactSocialDescription: "تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك في أسرع وقت ممكن.",
   contactEmail: "contact@magrm.security",
   supportEmail: "support@magrm.security",
   whatsapp: "https://wa.me/967733570889",
@@ -182,6 +211,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   twitter: "https://x.com/magrm",
   github: "https://github.com/magrm",
   contactLocation: "عن بُعد — خدمة كل الدول العربية",
+
+  maintenanceMode: "false",
+  maintenanceTitle: "الموقع تحت الصيانة المؤقتة",
+  maintenanceMessage: "نعمل حاليًا على تحسين المنصة. سنعود إليك قريبًا بتجربة أفضل.",
+  maintenanceContact: "https://wa.me/967733570889",
 
   paymentTitle: "طريقة الدفع",
   paymentInstructions:

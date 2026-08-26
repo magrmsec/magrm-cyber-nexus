@@ -41,10 +41,10 @@ function ContactPage() {
     <div className="min-h-screen py-16 px-4">
       <div className="mx-auto max-w-4xl text-center">
         <h1 className="text-3xl font-extrabold sm:text-4xl text-foreground">
-          تواصل معنا مباشرة
+          {s("contactTitle")}
         </h1>
         <p className="mt-4 whitespace-nowrap text-sm leading-6 text-muted-foreground">
-          يسعدنا تواصلك. فريق Magrm هنا للإجابة عن استفساراتك وتقديم الدعم والمعلومات التي تحتاجها في مجال الأمن السيبراني، وسنكون معك خطوة بخطوة.
+          {s("contactIntro")}
         </p>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -58,12 +58,12 @@ function ContactPage() {
             <div className="grid size-14 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
               <WhatsAppBusinessIcon />
             </div>
-            <h3 className="mt-5 text-lg font-bold text-foreground">التواصل عبر الواتساب</h3>
+            <h3 className="mt-5 text-lg font-bold text-foreground">{s("contactWhatsappTitle")}</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">
-              للاستفسارات الرسمية والدعم الفني عبر الواتساب
+              {s("contactWhatsappDescription")}
             </p>
             <span className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors">
-              مراسلة عبر الواتساب
+              {s("contactWhatsappButton")}
             </span>
           </a>
 
@@ -72,9 +72,9 @@ function ContactPage() {
             <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
               <Mail className="size-7" />
             </div>
-            <h3 className="mt-5 text-lg font-bold text-foreground">البريد الإلكتروني</h3>
+            <h3 className="mt-5 text-lg font-bold text-foreground">{s("contactEmailTitle")}</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">
-              للاستفسارات الرسمية والدعم الفني عبر البريد
+              {s("contactEmailDescription")}
             </p>
             <a
               href={`mailto:${s("contactEmail")}`}
@@ -86,8 +86,8 @@ function ContactPage() {
         </div>
 
         <section className="mt-10" aria-labelledby="social-links-heading">
-          <h2 id="social-links-heading" className="text-2xl font-black text-foreground">جميع حساباتنا على منصات التواصل</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك في أسرع وقت ممكن.</p>
+          <h2 id="social-links-heading" className="text-2xl font-black text-foreground">{s("contactSocialTitle")}</h2>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">{s("contactSocialDescription")}</p>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {socialLinks.map(({ name, href, icon: Icon, tone }) => (
               <a

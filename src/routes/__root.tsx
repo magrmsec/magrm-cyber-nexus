@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Wrench } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -15,6 +17,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeVars } from "@/components/theme-vars";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 
 function NotFoundComponent() {
@@ -157,16 +160,69 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <RootContent />
+    </QueryClientProvider>
+  );
+}
+
+function RootContent() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { s, isLoading } = useSiteSettings();
+  const isControlArea = pathname === "/admin" || pathname.startsWith("/roles") || pathname.startsWith("/auth");
+  const isMaintenance = !isLoading && !isControlArea && sv(s, "maintenanceMode") === "true";
+
+  return (
+    <>
       <ThemeVars />
       <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <SiteFooter />
+        {isMaintenance ? (
+          <MaintenanceScreen
+            title={sv(s, "maintenanceTitle")}
+            message={sv(s, "maintenanceMessage")}
+            contact={sv(s, "maintenanceContact")}
+          />
+        ) : (
+          <>
+            <SiteHeader />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <SiteFooter />
+          </>
+        )}
         <Toaster position="top-center" richColors />
       </div>
-    </QueryClientProvider>
+    </>
+  );
+}
+
+function MaintenanceScreen({ title, message, contact }: { title: string; message: string; contact: string }) {
+  return (
+    <main className="flex min-h-screen flex-1 items-center justify-center bg-background px-4 py-20 text-center">
+      <section className="relative max-w-xl overflow-hidden rounded-3xl border border-primary/20 bg-card p-8 shadow-2xl md:p-12">
+        <div className="pointer-events-none absolute -right-12 -top-16 size-48 rounded-full bg-primary/15 blur-3xl" />
+        <div className="relative">
+          <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <Wrench className="size-8" />
+          </div>
+          <p className="mt-6 text-xs font-black uppercase tracking-[0.22em] text-primary">Magrm Cyber Security</p>
+          <h1 className="mt-3 text-3xl font-black text-foreground">{title || "الموقع تحت الصيانة المؤقتة"}</h1>
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-8 text-muted-foreground">
+            {message || "نعمل حاليًا على تحسين المنصة. سنعود إليك قريبًا."}
+          </p>
+          {contact ? (
+            <a
+              href={contact}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-7 inline-flex rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              تواصل معنا
+            </a>
+          ) : null}
+        </div>
+      </section>
+    </main>
   );
 }
 

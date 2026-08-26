@@ -2,12 +2,31 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, LogOut, Pencil, Plus, Trash2, Eye, EyeOff, ShieldAlert, Users } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  LayoutDashboard,
+  Loader2,
+  LogOut,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings2,
+  ShieldAlert,
+  Sparkles,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { ROLE_LABELS, useMyPermissions } from "@/lib/roles";
+import { sv, useSiteSettings } from "@/lib/settings";
 import { SettingsPanel } from "@/components/admin-settings";
 import {
   CMS_KINDS,
@@ -15,9 +34,10 @@ import {
   KIND_LABELS,
   fetchCmsSlice,
   type CmsData,
-  type CmsKind,
   type CmsRow,
+  type CmsKind,
   type FieldDef,
+  countCms,
 } from "@/lib/cms";
 
 
@@ -40,8 +60,11 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<CmsKind>("course");
-  const [tab, setTab] = useState<"content" | "settings">("content");
+  const [activeView, setActiveView] = useState<"overview" | "content" | "settings">("overview");
+  const [search, setSearch] = useState("");
+  const [visibility, setVisibility] = useState<"all" | "published" | "draft">("all");
   const { permissions, isLoading: loadingPerms } = useMyPermissions();
+  const { s } = useSiteSettings();
   const [editing, setEditing] = useState<CmsRow | null>(null);
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
   const [saving, setSaving] = useState(false);
@@ -56,12 +79,38 @@ function AdminPage() {
     queryFn: () => fetchCmsSlice(kind, { publishedOnly: false }, 0, 200),
   });
 
+  const { data: overviewCounts = [] } = useQuery({
+    queryKey: ["admin-overview-counts"],
+    queryFn: async () =>
+      Promise.all(
+        CMS_KINDS.map(async (k) => ({
+          kind: k,
+          count: await countCms(k, { publishedOnly: false }),
+        })),
+      ),
+    enabled: permissions.isStaff,
+    staleTime: 30_000,
+  });
+
   const fields = useMemo(() => FIELDS[kind], [kind]);
+  const visibleRows = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase();
+    return (rows ?? []).filter((row) => {
+      const matchesVisibility =
+        visibility === "all" || (visibility === "published" ? row.published : !row.published);
+      if (!matchesVisibility) return false;
+      if (!term) return true;
+      return Object.values(row.data).some((value) => String(value ?? "").toLocaleLowerCase().includes(term));
+    });
+  }, [rows, search, visibility]);
 
   const switchKind = (k: CmsKind) => {
     setKind(k);
+    setActiveView("content");
     setEditing(null);
     setForm(emptyFor(k));
+    setSearch("");
+    setVisibility("all");
   };
 
   const startEdit = (row: CmsRow) => {
@@ -70,7 +119,11 @@ function AdminPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["cms", kind] });
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["cms", kind] });
+    void queryClient.invalidateQueries({ queryKey: ["admin-overview-counts"] });
+    void queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+  };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,46 +266,106 @@ function AdminPage() {
       </section>
 
 
-      <section className="mx-auto max-w-7xl px-4 pt-8">
-        <div className="flex flex-wrap gap-2">
-          {CMS_KINDS.map((k) => (
-            <button
-              key={k}
-              onClick={() => {
-                setTab("content");
-                switchKind(k);
-              }}
-              className={`rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                tab === "content" && kind === k
-                  ? "border-primary bg-primary/15 text-primary"
-                  : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
-              }`}
-            >
-              {KIND_LABELS[k]}
-            </button>
-          ))}
-          <button
-            onClick={() => setTab("settings")}
-            className={`rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-              tab === "settings"
-                ? "border-primary bg-primary/15 text-primary"
-                : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
-            }`}
-          >
-            إعدادات الموقع
-          </button>
-        </div>
-        {tab === "settings" ? (
-          <div className="mt-8 pb-10">
-            <SettingsPanel canEdit={permissions.canPublish} />
+      <section className="mx-auto max-w-7xl px-4 py-8">
+        <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+          <aside className="card-surface h-fit p-3 lg:sticky lg:top-24">
+            <div className="px-3 py-3">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-primary">مركز التحكم</p>
+              <p className="mt-1 text-xs text-muted-foreground">إدارة Magrm من مكان واحد</p>
+            </div>
+            <div className="space-y-1">
+              <AdminNavButton active={activeView === "overview"} icon={LayoutDashboard} onClick={() => setActiveView("overview")}>
+                نظرة عامة
+              </AdminNavButton>
+              <p className="px-3 pb-1 pt-4 text-[11px] font-bold text-muted-foreground">إدارة المحتوى</p>
+              {CMS_KINDS.map((k) => (
+                <AdminNavButton
+                  key={k}
+                  active={activeView === "content" && kind === k}
+                  icon={BarChart3}
+                  onClick={() => switchKind(k)}
+                >
+                  {KIND_LABELS[k]}
+                </AdminNavButton>
+              ))}
+              <p className="px-3 pb-1 pt-4 text-[11px] font-bold text-muted-foreground">إعدادات المنصة</p>
+              <AdminNavButton active={activeView === "settings"} icon={Settings2} onClick={() => setActiveView("settings")}>
+                إعدادات الموقع
+              </AdminNavButton>
+              {permissions.canManageRoles ? (
+                <Button asChild variant="ghost" className="mt-1 w-full justify-start gap-3 px-3 text-sm font-bold text-muted-foreground hover:text-primary">
+                  <Link to="/roles">
+                    <Users className="size-4" /> الصلاحيات والفريق
+                  </Link>
+                </Button>
+              ) : null}
+            </div>
+            <div className="mt-5 rounded-xl border border-border bg-surface-2 p-3">
+              <div className="flex items-center gap-2 text-xs font-bold">
+                <span className={`size-2 rounded-full ${sv(s, "maintenanceMode") === "true" ? "bg-amber-400" : "bg-emerald-400"}`} />
+                {sv(s, "maintenanceMode") === "true" ? "الموقع في وضع الصيانة" : "الموقع يعمل مباشرة"}
+              </div>
+              <p className="mt-1 text-[11px] leading-5 text-muted-foreground">يمكن تغيير الحالة من إعدادات الموقع.</p>
+            </div>
+          </aside>
+
+          <div className="min-w-0">
+            {activeView === "overview" ? (
+              <AdminOverview
+                counts={overviewCounts}
+                myRole={ROLE_LABELS[myRole] ?? myRole}
+                maintenanceMode={sv(s, "maintenanceMode") === "true"}
+                onOpenSettings={() => setActiveView("settings")}
+                onSelectKind={switchKind}
+              />
+            ) : null}
+            {activeView === "settings" ? (
+              <div className="space-y-5">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">إعدادات المنصة</p>
+                  <h2 className="mt-2 text-2xl font-black">تحكم كامل في الهوية والتشغيل</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">عدّل النصوص والألوان وروابط التواصل، أو فعّل وضع الصيانة عند الحاجة.</p>
+                </div>
+                <SettingsPanel canEdit={permissions.canPublish} />
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
       </section>
 
-      <section hidden={tab !== "content"} className="mx-auto max-w-7xl px-4 py-10">
+      <section hidden={activeView !== "content"} className="mx-auto max-w-7xl px-4 pb-10">
+        <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">إدارة {KIND_LABELS[kind]}</p>
+            <h2 className="mt-1 text-xl font-black">المحتوى الحالي</h2>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="relative">
+              <Search className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="ابحث بالاسم أو الوصف…"
+                className="h-10 w-full pr-9 sm:w-64"
+              />
+            </div>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+              className="h-10 rounded-lg border border-input bg-background px-3 text-sm text-foreground"
+              aria-label="تصفية حالة النشر"
+            >
+              <option value="all">كل الحالات</option>
+              <option value="published">المنشور فقط</option>
+              <option value="draft">المخفي فقط</option>
+            </select>
+            <Button type="button" variant="outline" size="icon" aria-label="تحديث القائمة" onClick={refresh}>
+              <RefreshCw className="size-4" />
+            </Button>
+          </div>
+        </div>
 
-
-        <div className={`mt-8 grid gap-8 ${permissions.canEdit ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""}`}>
+        <div className={`grid gap-8 ${permissions.canEdit ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""}`}>
           {permissions.canEdit ? (
             <form onSubmit={save} className="card-surface h-fit p-6 lg:sticky lg:top-24">
               <h2 className="text-lg font-extrabold">
@@ -304,13 +417,13 @@ function AdminPage() {
               <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="size-4 animate-spin" /> جاري التحميل…
               </div>
-            ) : (rows?.length ?? 0) === 0 ? (
+            ) : visibleRows.length === 0 ? (
               <p className="mt-6 rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-                لا توجد عناصر مضافة في هذا القسم بعد.
+                لا توجد نتائج مطابقة لهذا البحث أو الفلتر.
               </p>
             ) : (
               <div className="mt-5 space-y-3">
-                {rows!.map((row) => (
+                {visibleRows.map((row) => (
                   <div key={row.id} className="card-surface flex flex-wrap items-center gap-3 p-4">
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-bold">
@@ -358,6 +471,141 @@ function AdminPage() {
         </div>
       </section>
     </>
+  );
+}
+
+function AdminNavButton({
+  active,
+  icon: Icon,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  icon: typeof LayoutDashboard;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-right text-sm font-bold transition-all ${
+        active
+          ? "bg-primary text-primary-foreground shadow-[0_8px_24px_rgba(255,45,120,0.18)]"
+          : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+      }`}
+    >
+      <Icon className="size-4 shrink-0" />
+      <span>{children}</span>
+    </button>
+  );
+}
+
+function AdminOverview({
+  counts,
+  myRole,
+  maintenanceMode,
+  onOpenSettings,
+  onSelectKind,
+}: {
+  counts: Array<{ kind: CmsKind; count: number }>;
+  myRole: string;
+  maintenanceMode: boolean;
+  onOpenSettings: () => void;
+  onSelectKind: (kind: CmsKind) => void;
+}) {
+  const total = counts.reduce((sum, item) => sum + item.count, 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/15 via-surface to-surface p-6 md:p-8">
+        <div className="pointer-events-none absolute -left-12 -top-16 size-48 rounded-full bg-primary/15 blur-3xl" />
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-black text-primary">
+              <Sparkles className="size-3.5" /> مركز قيادة Magrm
+            </span>
+            <h2 className="mt-4 text-3xl font-black tracking-tight">كل شيء تحت سيطرتك</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+              راقب محتوى المنصة، عدّل النصوص والإعدادات، وتحكم في حالة الموقع من لوحة واحدة مصممة للعمل بسرعة ووضوح.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" className="glow font-bold" onClick={onOpenSettings}>
+              <Settings2 className="size-4" /> إعدادات الموقع
+            </Button>
+            <span className="inline-flex items-center gap-2 rounded-xl border border-border bg-background/60 px-4 py-2 text-xs font-bold text-muted-foreground">
+              <span className={`size-2 rounded-full ${maintenanceMode ? "bg-amber-400" : "bg-emerald-400"}`} />
+              {maintenanceMode ? "وضع الصيانة" : "يعمل مباشرة"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <OverviewStat icon={Activity} label="إجمالي العناصر" value={total.toLocaleString("ar-YE")} tone="primary" />
+        <OverviewStat icon={CheckCircle2} label="أقسام المحتوى" value={CMS_KINDS.length.toString()} tone="emerald" />
+        <OverviewStat icon={Users} label="صلاحيتك" value={myRole} tone="sky" />
+        <OverviewStat icon={Settings2} label="الإعدادات المركزية" value="متاحة" tone="amber" />
+      </div>
+
+      <section className="card-surface p-5 md:p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">وصول سريع</p>
+            <h3 className="mt-1 text-xl font-black">اختر قسمًا لإدارته</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">الإحصائيات تُحدّث تلقائيًا من قاعدة المحتوى.</p>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {counts.map(({ kind, count }) => (
+            <button
+              key={kind}
+              type="button"
+              onClick={() => onSelectKind(kind)}
+              className="group flex items-center justify-between rounded-2xl border border-border bg-surface-2 p-4 text-right transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-card"
+            >
+              <span>
+                <strong className="block text-sm font-black">{KIND_LABELS[kind]}</strong>
+                <span className="mt-1 block text-xs text-muted-foreground">فتح وإدارة العناصر</span>
+              </span>
+              <span className="rounded-xl bg-primary/10 px-3 py-2 text-sm font-black text-primary transition-transform group-hover:scale-105">
+                {count.toLocaleString("ar-YE")}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function OverviewStat({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: typeof Activity;
+  label: string;
+  value: string;
+  tone: "primary" | "emerald" | "sky" | "amber";
+}) {
+  const tones = {
+    primary: "bg-primary/10 text-primary",
+    emerald: "bg-emerald-500/10 text-emerald-400",
+    sky: "bg-sky-500/10 text-sky-400",
+    amber: "bg-amber-500/10 text-amber-400",
+  } as const;
+
+  return (
+    <div className="card-surface p-5">
+      <div className={`grid size-10 place-items-center rounded-xl ${tones[tone]}`}>
+        <Icon className="size-5" />
+      </div>
+      <p className="mt-4 text-xs font-bold text-muted-foreground">{label}</p>
+      <p className="mt-1 text-xl font-black text-foreground">{value}</p>
+    </div>
   );
 }
 

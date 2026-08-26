@@ -68,9 +68,33 @@ export function SettingsPanel({ canEdit }: { canEdit: boolean }) {
           <h3 className="text-base font-extrabold text-primary">{g.title}</h3>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {g.fields.map((f) => (
-              <div key={f.key} className={f.type === "textarea" || f.type === "list" ? "md:col-span-2" : ""}>
+              <div key={f.key} className={f.type === "textarea" || f.type === "list" || f.type === "toggle" ? "md:col-span-2" : ""}>
                 <label className="mb-2 block text-xs font-bold text-muted-foreground">{f.label}</label>
-                {f.type === "textarea" ? (
+                {f.type === "toggle" ? (
+                  <button
+                    type="button"
+                    disabled={!canEdit}
+                    aria-pressed={draft[f.key] === "true"}
+                    onClick={() => setDraft({ ...draft, [f.key]: draft[f.key] === "true" ? "false" : "true" })}
+                    className={`flex w-full items-center justify-between rounded-xl border p-4 text-right transition-colors ${
+                      draft[f.key] === "true"
+                        ? "border-amber-400/40 bg-amber-400/10"
+                        : "border-emerald-400/30 bg-emerald-400/10"
+                    }`}
+                  >
+                    <span>
+                      <strong className="block text-sm font-black">
+                        {draft[f.key] === "true" ? "وضع الصيانة مفعّل" : "الموقع يعمل مباشرة"}
+                      </strong>
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        {draft[f.key] === "true" ? "الزوار يرون صفحة الصيانة" : "المحتوى ظاهر للزوار"}
+                      </span>
+                    </span>
+                    <span className={`relative h-6 w-11 rounded-full p-1 transition-colors ${draft[f.key] === "true" ? "bg-amber-500" : "bg-emerald-500"}`}>
+                      <span className={`block size-4 rounded-full bg-white transition-transform ${draft[f.key] === "true" ? "translate-x-5" : "translate-x-0"}`} />
+                    </span>
+                  </button>
+                ) : f.type === "textarea" ? (
                   <Textarea
                     rows={3}
                     disabled={!canEdit}

@@ -169,7 +169,7 @@ export function rowToPort(row: CmsRow): Port {
     name: str(d["name"], "بورت جديد"),
     description: str(d["description"]),
     price: num(d["price"], 0),
-    level: (LEVELS.includes(d["level"] as Level) ? d["level"] : LEVELS[0]) as Level,
+    level: "متقدم",
     objective: str(d["objective"], "الوصول إلى العلم النهائي وتوثيق كل خطوة في تقرير احترافي."),
     tools: list(d["tools"]),
     flags: num(d["flags"], 1),

@@ -35,6 +35,20 @@ interface FeaturedCertificate {
 
 const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
   {
+    id: "infosec-cissp-specialization",
+    title: "Certified Information Systems Security Professional (CISSP) Specialization",
+    issuer: "InfoSec عبر Coursera",
+    focus: "مسار مهني متقدم من 8 دورات يغطي نطاقات CISSP الثمانية ويهيئ لاختبار ISC2 CISSP، مع شهادة إتمام قابلة للتحقق من Coursera.",
+    image: "/certificates/infosec-cissp-specialization.jpg",
+  },
+  {
+    id: "cde-cybersecurity-professional-2025",
+    title: "Cybersecurity Professional — Certificate of Achievement",
+    issuer: "Cyber Defense Excellence (CDE)",
+    focus: "شهادة إنجاز مهنية كما تظهر في الوثيقة المرفوعة، وتعرض محاور اختبار الاختراق وأمن الشبكات والويب وSIEM والاستجابة للحوادث.",
+    image: "/certificates/cde-cybersecurity-professional-2025.jpg",
+  },
+  {
     id: "ibm-isc2-cybersecurity-specialist-master",
     title: "IBM and ISC2 Cybersecurity Specialist",
     issuer: "IBM وISC2 عبر Coursera",
@@ -332,9 +346,12 @@ const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
 
 const certificateById = new Map(FEATURED_CERTIFICATES.map((certificate) => [certificate.id, certificate]));
 const MASTER_CERTIFICATE_ID = "ibm-isc2-cybersecurity-specialist-master";
+const INFOSEC_MASTER_ID = "infosec-cissp-specialization";
+const INFOSEC_MAIN_CERTIFICATE_IDS = [INFOSEC_MASTER_ID] as const;
 const MAIN_CERTIFICATE_IDS = [
   MASTER_CERTIFICATE_ID,
   "hackviser-csoa",
+  "cde-cybersecurity-professional-2025",
   "hackviser-cwse",
   "hackviser-capt",
   "cde-cybersecurity-professional",
@@ -414,6 +431,34 @@ function CertificatesPage() {
         title="الشهادات المهنية"
         description="هذه المساحة مخصصة لعرض شهادات Magrm المهنية. أضف صورة الشهادة وعنوانها ليظهرا هنا مباشرة."
       />
+
+      <section className="mx-auto max-w-7xl px-4 pt-12">
+        <section aria-labelledby="infosec-certificate-heading">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">قسم مستقل — InfoSec</p>
+              <h2 id="infosec-certificate-heading" className="mt-2 text-2xl font-black">مسار CISSP المهني من InfoSec</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">الشهادة الرئيسية في الأعلى، وعند فتحها ستظهر صور الشهادات الفرعية التي أرسلتها ضمن قسم مستقل.</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">شهادة رئيسية</span>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {INFOSEC_MAIN_CERTIFICATE_IDS.map((certificateId) => {
+              const certificate = certificateById.get(certificateId);
+              if (!certificate) return null;
+              return (
+                <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
+                  <CertificateCard certificate={certificate} featured />
+                  <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
+                    <span>فتح الشهادة والصور الفرعية التابعة</span>
+                    <span aria-hidden="true">←</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12">
         <section aria-labelledby="uploaded-certificates-heading">

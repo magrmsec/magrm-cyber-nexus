@@ -3,6 +3,7 @@ import { ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const MASTER_ID = "ibm-isc2-cybersecurity-specialist-master";
+const INFOSEC_ID = "infosec-cissp-specialization";
 const CSOA_ID = "hackviser-csoa";
 interface CourseCertificate {
   id: string;
@@ -12,6 +13,7 @@ interface CourseCertificate {
   focus: string;
   strength: string;
   image: string;
+  verify?: string;
 }
 
 const MASTER_CERTIFICATE = {
@@ -22,6 +24,67 @@ const MASTER_CERTIFICATE = {
   recognition: "تحمل الشهادة اعتماد Professional Certificate من IBM وISC2 عبر Coursera، وتُعد مسارًا مهنيًا دوليًا موثقًا لبناء مهارات الأمن السيبراني على مستوى البداية. يوضح البرنامج أنه يجهّز المتعلم لامتحان ISC2 Certified in Cybersecurity (CC)، مع بقاء امتحان CC وشهادة CISSP اعتمادات منفصلة تتطلب التسجيل والاختبار الخاص بها.",
   image: "/certificates/ibm-isc2-cybersecurity-specialist.jpg",
 };
+
+const INFOSEC_CERTIFICATE = {
+  title: "Certified Information Systems Security Professional (CISSP) Specialization",
+  issuer: "InfoSec عبر Coursera",
+  image: "/certificates/infosec-cissp-specialization.jpg",
+  description: "مسار مهني متقدم من InfoSec عبر Coursera، يضم 8 دورات تغطي نطاقات CISSP الثمانية، ويعرض أساسًا منظمًا في إدارة المخاطر وأمن الأصول والهندسة الأمنية والاتصالات وإدارة الهوية والتقييم والعمليات وأمن تطوير البرمجيات.",
+  recognition: "الشهادة الظاهرة هي شهادة إتمام لمسار مهني من InfoSec عبر Coursera، مع رابط تحقق ظاهر في الوثيقة. المسار يهيئ المتعلم لاختبار ISC2 CISSP ويغطي نطاقاته الثمانية، لكنه لا يساوي شهادة CISSP الرسمية ولا يثبت اجتياز امتحان ISC2؛ فالاعتماد الرسمي يتطلب مسار الجهة المانحة وامتحانها الخاص.",
+};
+
+const INFOSEC_COURSES: CourseCertificate[] = [
+  {
+    id: "infosec-domain-1",
+    number: 1,
+    title: "CISSP Domain 1: Security and Risk Management",
+    issuer: "InfoSec عبر Coursera",
+    focus: "إدارة الأمن والمخاطر والحوكمة والسياسات التي تبني برنامجًا أمنيًا متينًا.",
+    strength: "إدارة المخاطر والحوكمة",
+    image: "/certificates/infosec-cissp-domain-1.jpg",
+    verify: "https://coursera.org/verify/WQ53AE4RF1R4",
+  },
+  {
+    id: "infosec-domain-2",
+    number: 2,
+    title: "CISSP Domain 2: Asset Security",
+    issuer: "InfoSec عبر Coursera",
+    focus: "تصنيف الأصول وحمايتها وإدارة البيانات خلال دورة حياتها.",
+    strength: "حماية الأصول والبيانات",
+    image: "/certificates/infosec-cissp-domain-2.jpg",
+    verify: "https://coursera.org/verify/T5SP0RH12FU0",
+  },
+  {
+    id: "infosec-domain-4",
+    number: 4,
+    title: "CISSP Domain 4: Communication and Network Security",
+    issuer: "InfoSec عبر Coursera",
+    focus: "أمن الاتصالات والشبكات وتقليل مخاطر البنية التحتية والخدمات المكشوفة.",
+    strength: "أمن الشبكات والاتصالات",
+    image: "/certificates/infosec-cissp-domain-4.jpg",
+    verify: "https://coursera.org/verify/OGUL5A9AT8RZ",
+  },
+  {
+    id: "infosec-domain-7",
+    number: 7,
+    title: "CISSP Domain 7: Security Operations",
+    issuer: "InfoSec عبر Coursera",
+    focus: "العمليات الأمنية والمراقبة والاستجابة للحوادث واستمرارية التشغيل.",
+    strength: "العمليات والاستجابة",
+    image: "/certificates/infosec-cissp-domain-7.jpg",
+    verify: "https://coursera.org/verify/ILMJ8AJY1GGF",
+  },
+  {
+    id: "infosec-domain-8",
+    number: 8,
+    title: "CISSP Domain 8: Software Development Security",
+    issuer: "InfoSec عبر Coursera",
+    focus: "دمج الأمن في دورة حياة تطوير البرمجيات وتقليل مخاطر التطبيقات.",
+    strength: "أمن تطوير البرمجيات",
+    image: "/certificates/infosec-cissp-domain-8.jpg",
+    verify: "https://coursera.org/verify/P5S8O7NPJRAV",
+  },
+];
 
 const CSOA_CERTIFICATE = {
   title: "Certified Security Operations Analyst (CSOA)",
@@ -245,11 +308,15 @@ const RELATED_COURSES: CourseCertificate[] = [
 
 export const Route = createFileRoute("/certificates_/$certificateId")({
   loader: ({ params }) => {
-    if (params.certificateId !== MASTER_ID && params.certificateId !== CSOA_ID && !GENERIC_CERTIFICATES[params.certificateId]) throw notFound();
-    return { certificateId: params.certificateId, certificate: MASTER_CERTIFICATE, courses: RELATED_COURSES };
+    if (params.certificateId !== MASTER_ID && params.certificateId !== INFOSEC_ID && params.certificateId !== CSOA_ID && !GENERIC_CERTIFICATES[params.certificateId]) throw notFound();
+    return {
+      certificateId: params.certificateId,
+      certificate: params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : MASTER_CERTIFICATE,
+      courses: params.certificateId === INFOSEC_ID ? INFOSEC_COURSES : RELATED_COURSES,
+    };
   },
   head: ({ params }) => {
-    const detail = params.certificateId === MASTER_ID ? MASTER_CERTIFICATE : params.certificateId === CSOA_ID ? CSOA_CERTIFICATE : GENERIC_CERTIFICATES[params.certificateId] ?? MASTER_CERTIFICATE;
+    const detail = params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : params.certificateId === MASTER_ID ? MASTER_CERTIFICATE : params.certificateId === CSOA_ID ? CSOA_CERTIFICATE : GENERIC_CERTIFICATES[params.certificateId] ?? MASTER_CERTIFICATE;
     return {
       meta: [
         { title: `${detail.title} | Magrm` },
@@ -264,6 +331,7 @@ export const Route = createFileRoute("/certificates_/$certificateId")({
 
 function CertificateDetailPage() {
   const { certificateId, certificate, courses } = Route.useLoaderData();
+  if (certificateId === INFOSEC_ID) return <InfosecCertificateDetailPage />;
   if (certificateId === CSOA_ID) return <CsoaCertificateDetailPage />;
   const generic = GENERIC_CERTIFICATES[certificateId];
   if (generic) return <GenericCertificateDetailPage certificate={generic} />;
@@ -345,6 +413,89 @@ function CertificateDetailPage() {
   );
 }
 
+
+function InfosecCertificateDetailPage() {
+  return (
+    <>
+      <section className="hero-bg border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
+          <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
+            <ArrowRight className="size-4" /> العودة إلى الشهادات
+          </Link>
+          <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">قسم مستقل — InfoSec</p>
+              <h1 className="animate-rise mt-4 text-3xl font-black leading-tight md:text-5xl">
+                <span className="text-gradient">{INFOSEC_CERTIFICATE.title}</span>
+              </h1>
+              <p className="mt-5 text-base leading-8 text-muted-foreground">{INFOSEC_CERTIFICATE.description}</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold text-primary">{INFOSEC_CERTIFICATE.issuer}</span>
+                <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">8 دورات</span>
+                <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">رابط تحقق</span>
+              </div>
+            </div>
+            <div className="card-surface overflow-hidden p-3 ring-1 ring-primary/45">
+              <img src={INFOSEC_CERTIFICATE.image} alt={INFOSEC_CERTIFICATE.title} className="w-full rounded-lg object-contain" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-4 py-12">
+        <section className="card-surface p-6 md:p-8">
+          <div className="flex items-center gap-3">
+            <Award className="size-5 text-primary" />
+            <h2 className="text-2xl font-black">قوة المسار وطبيعة الاعتماد</h2>
+          </div>
+          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{INFOSEC_CERTIFICATE.recognition}</p>
+        </section>
+
+        <section className="mt-12" aria-labelledby="infosec-courses-heading">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">الشهادات الفرعية المرسلة</p>
+              <h2 id="infosec-courses-heading" className="mt-2 text-2xl font-black">الدورات التابعة لمسار CISSP</h2>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">هذه الصور هي الشهادات الفرعية التي أرسلها صاحب الحساب. أُدرجت كما هي، وتبقى جزءًا من المسار وليست شهادات CISSP مستقلة.</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{INFOSEC_COURSES.length} صور</span>
+          </div>
+
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {INFOSEC_COURSES.map((course) => (
+              <article key={course.id} className="card-surface animate-rise overflow-hidden">
+                <img src={course.image} alt={course.title} className="aspect-[4/3] w-full bg-surface-2 object-contain" loading="lazy" />
+                <div className="space-y-3 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-black text-primary">الدورة {course.number}</span>
+                    <span className="text-xs font-bold text-muted-foreground">{course.strength}</span>
+                  </div>
+                  <p className="text-xs font-bold text-primary">{course.issuer}</p>
+                  <h3 className="font-bold leading-6">{course.title}</h3>
+                  <p className="text-sm leading-7 text-muted-foreground">{course.focus}</p>
+                  {course.verify ? (
+                    <a href={course.verify} target="_blank" rel="noopener noreferrer" className="inline-flex text-xs font-bold text-primary underline underline-offset-4">
+                      فتح رابط التحقق
+                    </a>
+                  ) : null}
+                  <p className="border-t border-border pt-3 text-xs leading-6 text-muted-foreground">شهادة دورة ضمن مسار InfoSec المهني عبر Coursera، وليست اعتمادًا مستقلًا منفصلًا.</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-10">
+          <Button asChild variant="outline" className="font-bold">
+            <Link to="/certificates">
+              <ArrowRight className="size-4" /> العودة إلى قسم الشهادات
+            </Link>
+          </Button>
+        </div>
+      </main>
+    </>
+  );
+}
 
 function CsoaCertificateDetailPage() {
   return (

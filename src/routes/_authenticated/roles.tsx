@@ -131,16 +131,18 @@ function RolesPage() {
                       {member.email ?? member.id}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {member.roles.length
-                        ? member.roles.map((r) => ROLE_LABELS[r] ?? r).join("، ")
-                        : "بدون صلاحيات"}
+                      {member.isOwner
+                        ? "مالك الموقع"
+                        : member.roles.length
+                          ? member.roles.map((r) => ROLE_LABELS[r] ?? r).join("، ")
+                          : "بدون صلاحيات"}
                       {isSelf ? " — حسابك" : ""}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {APP_ROLES.map((r) => {
-                      const has = member.roles.includes(r);
-                      const locked = isSelf && r === "admin";
+                      const has = member.isOwner || member.roles.includes(r);
+                      const locked = member.isOwner || (isSelf && r === "admin");
                       return (
                         <button
                           key={r}
@@ -151,7 +153,7 @@ function RolesPage() {
                               ? "border-primary bg-primary/15 text-primary"
                               : "border-border bg-surface text-muted-foreground hover:border-primary/50 hover:text-primary"
                           }`}
-                          title={locked ? "لا يمكنك سحب صلاحية الإدارة من نفسك" : undefined}
+                          title={locked ? "حساب مالك الموقع محمي ولا يمكن سحب صلاحية الإدارة منه" : undefined}
                         >
                           {ROLE_LABELS[r]}
                         </button>

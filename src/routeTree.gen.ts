@@ -21,7 +21,7 @@ import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedRolesRouteImport } from './routes/_authenticated/roles'
-import { Route as CertificatesCertificateIdRouteImport } from './routes/certificates.$certificateId'
+import { Route as CertificatesCertificateIdRouteImport } from './routes/certificates_.$certificateId'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses.$courseId'
 import { Route as PortsIndexRouteImport } from './routes/ports.index'
@@ -92,9 +92,9 @@ const AuthenticatedRolesRoute = AuthenticatedRolesRouteImport.update({
 } as any)
 const CertificatesCertificateIdRoute =
   CertificatesCertificateIdRouteImport.update({
-    id: '/$certificateId',
-    path: '/$certificateId',
-    getParentRoute: () => CertificatesRoute,
+    id: '/certificates_/$certificateId',
+    path: '/certificates/$certificateId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/courses/',
@@ -143,7 +143,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
   '/auth': typeof AuthRoute
-  '/certificates': typeof CertificatesRouteWithChildren
+  '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
@@ -165,7 +165,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
   '/auth': typeof AuthRoute
-  '/certificates': typeof CertificatesRouteWithChildren
+  '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
@@ -189,14 +189,14 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/apps': typeof AppsRoute
   '/auth': typeof AuthRoute
-  '/certificates': typeof CertificatesRouteWithChildren
+  '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tools': typeof ToolsRoute
   '/videos': typeof VideosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/roles': typeof AuthenticatedRolesRoute
-  '/certificates/$certificateId': typeof CertificatesCertificateIdRoute
+  '/certificates_/$certificateId': typeof CertificatesCertificateIdRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/ports/$portId': typeof PortsPortIdRoute
   '/tools_/$toolId': typeof ToolsToolIdRoute
@@ -265,7 +265,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/_authenticated/admin'
     | '/_authenticated/roles'
-    | '/certificates/$certificateId'
+    | '/certificates_/$certificateId'
     | '/courses/$courseId'
     | '/ports/$portId'
     | '/tools_/$toolId'
@@ -282,11 +282,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AppsRoute: typeof AppsRoute
   AuthRoute: typeof AuthRoute
-  CertificatesRoute: typeof CertificatesRouteWithChildren
+  CertificatesRoute: typeof CertificatesRoute
   ContactRoute: typeof ContactRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ToolsRoute: typeof ToolsRoute
   VideosRoute: typeof VideosRoute
+  CertificatesCertificateIdRoute: typeof CertificatesCertificateIdRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
   PortsPortIdRoute: typeof PortsPortIdRoute
   ToolsToolIdRoute: typeof ToolsToolIdRoute
@@ -382,12 +383,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRolesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/certificates/$certificateId': {
-      id: '/certificates/$certificateId'
-      path: '/$certificateId'
+    '/certificates_/$certificateId': {
+      id: '/certificates_/$certificateId'
+      path: '/certificates/$certificateId'
       fullPath: '/certificates/$certificateId'
       preLoaderRoute: typeof CertificatesCertificateIdRouteImport
-      parentRoute: typeof CertificatesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/courses/': {
       id: '/courses/'
@@ -461,18 +462,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface CertificatesRouteChildren {
-  CertificatesCertificateIdRoute: typeof CertificatesCertificateIdRoute
-}
-
-const CertificatesRouteChildren: CertificatesRouteChildren = {
-  CertificatesCertificateIdRoute: CertificatesCertificateIdRoute,
-}
-
-const CertificatesRouteWithChildren = CertificatesRoute._addFileChildren(
-  CertificatesRouteChildren,
-)
-
 interface VulnerabilitiesVulnIdRouteChildren {
   VulnerabilitiesVulnIdDownloadRoute: typeof VulnerabilitiesVulnIdDownloadRoute
 }
@@ -492,11 +481,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AppsRoute: AppsRoute,
   AuthRoute: AuthRoute,
-  CertificatesRoute: CertificatesRouteWithChildren,
+  CertificatesRoute: CertificatesRoute,
   ContactRoute: ContactRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ToolsRoute: ToolsRoute,
   VideosRoute: VideosRoute,
+  CertificatesCertificateIdRoute: CertificatesCertificateIdRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
   PortsPortIdRoute: PortsPortIdRoute,
   ToolsToolIdRoute: ToolsToolIdRoute,

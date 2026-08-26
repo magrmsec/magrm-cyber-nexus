@@ -135,7 +135,7 @@ const RELATED_COURSES: CourseCertificate[] = [
   },
 ];
 
-export const Route = createFileRoute("/certificates/$certificateId")({
+export const Route = createFileRoute("/certificates_/$certificateId")({
   loader: ({ params }) => {
     if (params.certificateId !== MASTER_ID) throw notFound();
     return { certificate: MASTER_CERTIFICATE, courses: RELATED_COURSES };

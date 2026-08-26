@@ -43,7 +43,7 @@ function ContactPage() {
         <h1 className="text-3xl font-extrabold sm:text-4xl text-foreground">
           تواصل معنا مباشرة
         </h1>
-        <p className="mt-4 text-muted-foreground text-base leading-7">
+        <p className="mt-4 whitespace-nowrap text-sm leading-6 text-muted-foreground">
           يسعدنا تواصلك. فريق Magrm هنا للإجابة عن استفساراتك وتقديم الدعم والمعلومات التي تحتاجها في مجال الأمن السيبراني، وسنكون معك خطوة بخطوة.
         </p>
 

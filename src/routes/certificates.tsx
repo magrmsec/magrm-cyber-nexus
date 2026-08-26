@@ -24,6 +24,67 @@ interface Cert {
   title: string;
   image: string;
 }
+
+interface FeaturedCertificate {
+  id: string;
+  title: string;
+  issuer: string;
+  focus: string;
+  image: string;
+}
+
+const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
+  {
+    id: "cde-cybersecurity-professional",
+    title: "Cybersecurity Professional — Certificate of Achievement",
+    issuer: "Cyber Defense Excellence (CDE)",
+    focus: "اختبار الاختراق، أمن الشبكات، أمن الويب، SIEM، والاستجابة للحوادث",
+    image: "/certificates/cde-cybersecurity-professional.jpg",
+  },
+  {
+    id: "hackviser-core-cybersecurity",
+    title: "CORE — Certified Cybersecurity Foundations",
+    issuer: "Hackviser",
+    focus: "أساسيات الأمن السيبراني والتدريبات العملية",
+    image: "/certificates/hackviser-core-cybersecurity.jpg",
+  },
+  {
+    id: "google-network-security",
+    title: "Connect and Protect: Networks and Network Security",
+    issuer: "Google عبر Coursera",
+    focus: "الشبكات وأمن الشبكات",
+    image: "/certificates/google-network-security.jpg",
+  },
+  {
+    id: "google-cybersecurity-jobs",
+    title: "Put It to Work: Prepare for Cybersecurity Jobs",
+    issuer: "Google عبر Coursera",
+    focus: "الاستعداد للعمل في الأمن السيبراني",
+    image: "/certificates/google-cybersecurity-jobs.jpg",
+  },
+  {
+    id: "ibm-cybersecurity-capstone",
+    title: "Cybersecurity Case Studies and Capstone Project",
+    issuer: "IBM عبر Coursera",
+    focus: "دراسات الحالة ومشروع التخرج في الأمن السيبراني",
+    image: "/certificates/ibm-cybersecurity-capstone.jpg",
+  },
+  {
+    id: "ibm-hardware-operating-systems",
+    title: "Introduction to Hardware and Operating Systems",
+    issuer: "IBM عبر Coursera",
+    focus: "العتاد وأنظمة التشغيل",
+    image: "/certificates/ibm-hardware-operating-systems.jpg",
+  },
+  {
+    id: "google-ai-communication",
+    title: "AI for Writing and Communicating",
+    issuer: "Google عبر Coursera",
+    focus: "الذكاء الاصطناعي والكتابة والتواصل المهني",
+    image: "/certificates/google-ai-communication.jpg",
+  },
+];
+
 const KEY = "magrm-certificates";
 
 function CertificatesPage() {
@@ -80,6 +141,30 @@ function CertificatesPage() {
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12">
+        <section aria-labelledby="uploaded-certificates-heading">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">ملف Mohammed Qaed Mohammed Ali Al-Azzani</p>
+              <h2 id="uploaded-certificates-heading" className="mt-2 text-2xl font-black">الشهادات المرفوعة</h2>
+              <p className="mt-2 text-sm text-muted-foreground">صور الشهادات كما تم استلامها، مرتبة من الأكثر ارتباطًا بالأمن السيبراني إلى الأقل.</p>
+            </div>
+            <span className="rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{FEATURED_CERTIFICATES.length} شهادات</span>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURED_CERTIFICATES.map((certificate) => (
+              <article key={certificate.id} className="card-surface animate-rise overflow-hidden">
+                <img src={certificate.image} alt={certificate.title} className="aspect-[4/3] w-full bg-surface-2 object-contain" loading="lazy" />
+                <div className="space-y-2 p-5">
+                  <p className="text-xs font-bold text-primary">{certificate.issuer}</p>
+                  <h3 className="font-bold leading-6">{certificate.title}</h3>
+                  <p className="text-sm leading-6 text-muted-foreground">{certificate.focus}</p>
+                  <p className="pt-1 text-xs text-muted-foreground">صورة مرفوعة من صاحب الحساب</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {signedIn && (<div className="card-surface p-6">
           <h2 className="flex items-center gap-2 font-bold">
             <ImagePlus className="size-4 text-primary" /> إضافة شهادة جديدة

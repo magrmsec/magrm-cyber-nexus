@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, ImagePlus, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -39,7 +39,7 @@ const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
     title: "IBM and ISC2 Cybersecurity Specialist",
     issuer: "IBM وISC2 عبر Coursera",
     focus: "الشهادة النهائية لمسار مهني واحد مكوّن من 12 دورة في الأمن السيبراني، وليست شهادة CISSP الرسمية نفسها",
-    image: "/certificates/isc2-cissp-specialization.jpg",
+    image: "/certificates/ibm-isc2-cybersecurity-specialist.jpg",
   },
   {
     id: "isc2-security-operations",
@@ -330,105 +330,8 @@ const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
   },
 ];
 
-interface CertificateGroup {
-  id: string;
-  title: string;
-  description: string;
-  memberIds: string[];
-}
-
-const CERTIFICATE_GROUPS: CertificateGroup[] = [
-  {
-    id: "ibm-isc2-specialist-track",
-    title: "IBM and ISC2 Cybersecurity Specialist",
-    description: "المسار الرئيسي: شهادة مهنية نهائية واحدة مكوّنة من 12 دورة، مع صور الدورات التابعة لها داخل المجموعة نفسها.",
-    memberIds: [
-      "ibm-isc2-cybersecurity-specialist-master",
-      "ibm-cybersecurity-essentials",
-      "ibm-hardware-operating-systems",
-      "ibm-software-programming-databases",
-      "ibm-cybersecurity-storage",
-      "ibm-cloud-computing",
-      "isc2-security-principles",
-      "isc2-incident-response-bc-dr",
-      "isc2-access-control-concepts",
-      "isc2-network-security",
-      "isc2-security-operations",
-      "ibm-cybersecurity-capstone",
-    ],
-  },
-  {
-    id: "hackviser-professional-track",
-    title: "Hackviser — شهادات الاختبار العملي",
-    description: "مجموعة شهادات عملية متخصصة في اختبار الاختراق وأمن الويب وعمليات الأمن.",
-    memberIds: ["hackviser-csoa", "hackviser-cwse", "hackviser-capt", "hackviser-core-cybersecurity"],
-  },
-  {
-    id: "cde-cybersecurity-track",
-    title: "Cyber Defense Excellence",
-    description: "شهادة إنجاز مهنية في مجالات الأمن السيبراني واختبار الاختراق والدفاع والاستجابة للحوادث.",
-    memberIds: ["cde-cybersecurity-professional", "cde-cybersecurity-achievement"],
-  },
-  {
-    id: "isc2-domain-track",
-    title: "ISC2 / InfoSec — CISSP Domain Courses",
-    description: "دورات فرعية متقدمة مرتبطة بمجالات CISSP، معروضة كمجموعة تعليمية واحدة منفصلة عن الشهادة النهائية IBM وISC2.",
-    memberIds: [
-      "isc2-cissp-domain-3-security-architecture",
-      "isc2-cissp-domain-4-network-security",
-      "isc2-cissp-domain-6-security-assessment",
-      "isc2-cissp-domain-7-security-operations",
-      "isc2-cissp-domain-8-software-security",
-    ],
-  },
-  {
-    id: "opswat-track",
-    title: "OPSWAT Academy",
-    description: "مسار متخصص في حماية البنية التحتية الحيوية.",
-    memberIds: ["opswat-icip"],
-  },
-  {
-    id: "cisco-cybersecurity-track",
-    title: "Cisco Networking Academy",
-    description: "شهادة تأسيسية في مقدمة الأمن السيبراني والتهديدات وحماية الأنظمة.",
-    memberIds: ["cisco-introduction-cybersecurity"],
-  },
-  {
-    id: "google-cybersecurity-track",
-    title: "Google Cybersecurity",
-    description: "شهادات ومسارات Google المرتبطة بالشبكات والاستعداد المهني في الأمن السيبراني.",
-    memberIds: ["google-network-security", "google-cybersecurity-jobs"],
-  },
-  {
-    id: "google-ai-track",
-    title: "Google AI عبر Coursera",
-    description: "مسارات الذكاء الاصطناعي والتطبيقات المهنية، مرتبة بعد المسارات الأمنية المتخصصة.",
-    memberIds: [
-      "google-ai-professional",
-      "google-ai-fundamentals",
-      "google-ai-content-creation",
-      "google-ai-research-insights",
-      "google-ai-communication",
-      "google-ai-app-building",
-    ],
-  },
-  {
-    id: "ibm-general-track",
-    title: "IBM — مسارات تقنية عامة",
-    description: "شهادات IBM التمهيدية المرتبطة بالعتاد والبرمجيات والحوسبة، خارج مسار IBM وISC2 الرئيسي.",
-    memberIds: ["ibm-cybersecurity-careers"],
-  },
-  {
-    id: "dubai-ai-track",
-    title: "1 Million Prompters",
-    description: "شهادة إتمام في هندسة الأوامر والذكاء الاصطناعي.",
-    memberIds: ["one-million-prompters"],
-  },
-];
-
 const certificateById = new Map(FEATURED_CERTIFICATES.map((certificate) => [certificate.id, certificate]));
-const DISPLAYED_CERTIFICATE_COUNT = new Set(CERTIFICATE_GROUPS.flatMap((group) => group.memberIds)).size;
-
+const MASTER_CERTIFICATE_ID = "ibm-isc2-cybersecurity-specialist-master";
 const KEY = "magrm-certificates";
 
 function CertificateCard({ certificate, featured = false }: { certificate: FeaturedCertificate; featured?: boolean }) {
@@ -502,36 +405,25 @@ function CertificatesPage() {
         <section aria-labelledby="uploaded-certificates-heading">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">ملف Mohammed Qaed Mohammed Ali Al-Azzani</p>
-              <h2 id="uploaded-certificates-heading" className="mt-2 text-2xl font-black">الشهادات المرفوعة</h2>
-              <p className="mt-2 text-sm text-muted-foreground">مجموعات مرتبة من أقوى مسار مهني إلى الشهادات الأصغر، مع إبقاء الشهادة الرئيسية ودوراتها التابعة في مكان واحد.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">المسار المهني الرئيسي</p>
+              <h2 id="uploaded-certificates-heading" className="mt-2 text-2xl font-black">IBM and ISC2 Cybersecurity Specialist</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">شهادة مهنية واحدة لمسار مكوّن من 12 دورة. اضغط على البطاقة لفتح صفحة التفاصيل ورؤية الشهادة الكبيرة والدورات التابعة لها في واجهة مستقلة.</p>
             </div>
-            <span className="rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{DISPLAYED_CERTIFICATE_COUNT} صور</span>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">12 دورة</span>
           </div>
-
-          {CERTIFICATE_GROUPS.map((group) => {
-            const certificates = group.memberIds
-              .map((id) => certificateById.get(id))
-              .filter((certificate): certificate is FeaturedCertificate => Boolean(certificate));
-            if (certificates.length === 0) return null;
+          {(() => {
+            const master = certificateById.get(MASTER_CERTIFICATE_ID);
+            if (!master) return null;
             return (
-              <section key={group.id} aria-labelledby={`${group.id}-heading`} className="mt-10 border-t border-border/70 pt-8 first:mt-0 first:border-t-0 first:pt-0">
-                <div className="mb-5 flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">المجموعة {CERTIFICATE_GROUPS.indexOf(group) + 1}</p>
-                    <h3 id={`${group.id}-heading`} className="mt-2 text-xl font-black">{group.title}</h3>
-                    <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{group.description}</p>
-                  </div>
-                  <span className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-bold text-muted-foreground">{certificates.length} عناصر</span>
+              <Link to="/certificates/$certificateId" params={{ certificateId: MASTER_CERTIFICATE_ID }} className="block max-w-xl transition-transform hover:-translate-y-1">
+                <CertificateCard certificate={master} featured />
+                <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
+                  <span>فتح الشهادة والدورات التابعة</span>
+                  <span aria-hidden="true">←</span>
                 </div>
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {certificates.map((certificate, index) => (
-                    <CertificateCard key={certificate.id} certificate={certificate} featured={index === 0} />
-                  ))}
-                </div>
-              </section>
+              </Link>
             );
-          })}
+          })()}
         </section>
 
         {signedIn && (<div className="card-surface p-6">

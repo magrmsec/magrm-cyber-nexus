@@ -19,11 +19,11 @@ function ContactPage() {
   const whatsappNumber = "967733570889";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
   const socialLinks = [
+    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400", description: "الصور والمنشورات الجديدة" },
+    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400", description: "تحديثات المجتمع والتنبيهات" },
     { name: "X / تويتر", href: "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground", description: "تابع آخر الأخبار والتحديثات" },
     { name: "GitHub", href: "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300", description: "المشاريع والمصادر التقنية" },
     { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400", description: "المحتوى المرئي والشروحات" },
-    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400", description: "تحديثات المجتمع والتنبيهات" },
-    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400", description: "الصور والمنشورات الجديدة" },
   ];
 
   return (
@@ -77,21 +77,21 @@ function ContactPage() {
         <section className="mt-10" aria-labelledby="social-links-heading">
           <h2 id="social-links-heading" className="text-2xl font-black text-foreground">جميع حساباتنا على منصات التواصل</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك من خلال الحساب الرسمي.</p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {socialLinks.map(({ name, href, icon: Icon, tone, description }) => (
               <a
                 key={name}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-4 rounded-2xl border border-border bg-card/60 p-5 text-start shadow-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:bg-card"
+                className="group flex min-h-56 flex-col items-center justify-center rounded-2xl border border-border bg-card/60 p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:bg-card"
               >
-                <span className={`grid size-12 shrink-0 place-items-center rounded-xl transition-transform group-hover:scale-110 ${tone}`}>
-                  <Icon className="size-6" />
+                <span className={`grid size-16 place-items-center rounded-2xl transition-transform group-hover:scale-110 ${tone}`}>
+                  <Icon className="size-8" />
                 </span>
-                <span>
-                  <strong className="block text-base text-foreground">{name}</strong>
-                  <span className="mt-1 block text-sm text-muted-foreground">{description}</span>
+                <span className="mt-5">
+                  <strong className="block text-lg text-foreground">{name}</strong>
+                  <span className="mt-2 block text-sm text-muted-foreground">{description}</span>
                 </span>
               </a>
             ))}

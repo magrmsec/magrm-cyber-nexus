@@ -433,7 +433,7 @@ function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
   }
   return mixed
     .filter((item) => (item.price ?? 0) > 0 || Boolean(item.downloadUrl) || Boolean(item.downloadPath))
-    .filter((item) => !filter.pricing || filter.pricing === "paid" ? (item.price ?? 0) > 0 : (item.price ?? 0) === 0)
+    .filter((item) => !filter.pricing || (filter.pricing === "paid" ? (item.price ?? 0) > 0 : (item.price ?? 0) === 0))
     .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)
     .filter((item) => {
       if (!term) return true;

@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SECURITY_APP_CATALOG } from "@/lib/security-app-catalog";
 import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
+import { SECURITY_PORT_CATALOG } from "@/lib/security-port-catalog";
 import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
 import { SECURITY_VULNERABILITY_CATALOG } from "@/lib/security-vulnerability-catalog";
 import { VERIFIED_VULNERABILITY_LABS } from "@/lib/verified-vulnerability-labs";
@@ -258,6 +259,12 @@ export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
 }
 
 export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsRow | null> {
+  if (kind === "port") {
+    const item = SECURITY_PORT_CATALOG.find((p) => p.id === seq);
+    if (item) {
+      return { id: `port-catalog-${item.id}`, seq: item.id, kind: "port", data: item as unknown as CmsData, published: true, created_at: new Date().toISOString() };
+    }
+  }
   if (kind === "vuln") {
     const vulhubLab = VERIFIED_VULHUB_LABS.find((v) => v.id === seq);
     if (vulhubLab) {
@@ -303,7 +310,17 @@ export function useCmsCourses() {
 }
 export function useCmsPorts() {
   const q = useCmsRows("port");
-  return { items: (q.data ?? []).filter((r) => r.published).map(rowToPort), isLoading: q.isLoading };
+  const cmsPorts = (q.data ?? []).filter((r) => r.published).map(rowToPort);
+  const seen = new Set<string>();
+  const items = [...cmsPorts, ...SECURITY_PORT_CATALOG]
+    .filter((port) => {
+      const key = port.name.trim().toLocaleLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((port, index) => ({ ...port, id: port.id ?? index + 1 }));
+  return { items, isLoading: q.isLoading };
 }
 export function useCmsVideos() {
   const q = useCmsRows("video");

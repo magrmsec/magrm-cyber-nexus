@@ -11,7 +11,7 @@ export const Route = createFileRoute("/ports/")({
   head: () => ({
     meta: [
       { title: "البورتات العملية | Magrm Cyber Security" },
-      { name: "description", content: "20 تحدي اختراق عملي (Ports): WiFi، سيرفرات، جدران نارية، قواعد بيانات وأكثر." },
+      { name: "description", content: "240+ تحدي اختراق عملي (Ports): شبكات، خوادم، أجهزة، سحابة، تطبيقات ومنصات اجتماعية داخل مختبرات معزولة." },
       { property: "og:title", content: "البورتات العملية | Magrm" },
       { property: "og:description", content: "مختبرات اختراق واقعية مدفوعة مع أعلام وتقارير احترافية." },
     ],
@@ -35,7 +35,7 @@ function PortsPage() {
       <PageHero
         eyebrow={`${ports.length} بورت`}
         title="البورتات — تحديات اختراق عملية"
-        description="بيئات معزولة واقعية تحاكي شبكات وشركات حقيقية. اخترق، التقط الأعلام، واكتب تقريرك الاحترافي."
+        description="بيئات معزولة واقعية تحاكي الشبكات والخوادم والأجهزة والسحابة وتطبيقات ومنصات التواصل. اختبر، التقط الأعلام، واكتب تقريرك الاحترافي ضمن نطاق مصرح به."
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

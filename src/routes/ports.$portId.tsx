@@ -100,7 +100,7 @@ function PortDetail() {
               <Button
                 className="glow mt-5 w-full text-base font-bold"
                 size="lg"
-                onClick={() => window.open(`${s("whatsapp")}?text=${encodeURIComponent(`السلام عليكم، أريد شراء/الاشتراك في البورت التالي:\nالاسم: ${p.name}\nالسعر: $${p.price}`)}`, "_blank")}
+                onClick={() => window.open(`${s("whatsapp")}?text=${encodeURIComponent(`السلام عليكم، أريد شراء/الاشتراك في البورت التالي:\nالاسم: ${p.name}\nالسعر: $${p.price}\nالمعلومات: ${p.description}`)}`, "_blank")}
               >
                 اشترِ الآن
               </Button>

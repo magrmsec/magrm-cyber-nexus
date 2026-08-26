@@ -76,7 +76,7 @@ function ContactPage() {
 
         <section className="mt-10" aria-labelledby="social-links-heading">
           <h2 id="social-links-heading" className="text-2xl font-black text-foreground">جميع حساباتنا على منصات التواصل</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك من خلال الحساب الرسمي.</p>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك في أسرع وقت ممكن.</p>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {socialLinks.map(({ name, href, icon: Icon, tone }) => (
               <a

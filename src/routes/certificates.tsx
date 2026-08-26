@@ -38,7 +38,7 @@ const FEATURED_CERTIFICATES: FeaturedCertificate[] = [
     id: "ibm-isc2-cybersecurity-specialist-master",
     title: "IBM and ISC2 Cybersecurity Specialist",
     issuer: "IBM وISC2 عبر Coursera",
-    focus: "الشهادة النهائية لمسار مهني واحد مكوّن من 12 دورة في الأمن السيبراني، وليست شهادة CISSP الرسمية نفسها",
+    focus: "شهادة مهنية دولية من IBM وISC2 لمسار متكامل من 12 دورة، تبني أساسًا قويًا في الأمن السيبراني والشبكات والسحابة والاستجابة للحوادث والعمليات الأمنية، مع مشروع تطبيقي ختامي.",
     image: "/certificates/ibm-isc2-cybersecurity-specialist.jpg",
   },
   {

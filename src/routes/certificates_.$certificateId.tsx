@@ -1,10 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Award, ExternalLink } from "lucide-react";
+import { ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const MASTER_ID = "ibm-isc2-cybersecurity-specialist-master";
-const PROGRAM_URL = "https://www.coursera.org/professional-certificates/ibm-isc2-cybersecurity-specialist";
-
 interface CourseCertificate {
   id: string;
   number: number;
@@ -19,8 +17,8 @@ const MASTER_CERTIFICATE = {
   id: MASTER_ID,
   title: "IBM and ISC2 Cybersecurity Specialist",
   issuer: "IBM وISC2 عبر Coursera",
-  description: "شهادة مهنية نهائية لمسار واحد مكوّن من 12 دورة في الأمن السيبراني. يغطي المسار أساسيات تقنية المعلومات، الشبكات، السحابة، مبادئ الأمن، الاستجابة للحوادث، التحكم بالوصول، أمن الشبكات، والعمليات الأمنية، وينتهي بمشروع تطبيقي.",
-  recognition: "شهادة Professional Certificate دولية من IBM وISC2 عبر Coursera، وتُجهّز المتعلم لامتحان ISC2 Certified in Cybersecurity (CC). هذه الشهادة لا تعني اجتياز امتحان CC أو الحصول على CISSP.",
+  description: "شهادة مهنية دولية تجمع بين خبرة IBM ومسار ISC2 في برنامج واحد متكامل من 12 دورة. تمنح حاملها أساسًا قويًا للانطلاق في الأمن السيبراني، من فهم الأنظمة والشبكات والسحابة إلى مبادئ الحماية والاستجابة للحوادث والتحكم بالوصول والعمليات الأمنية، وتنتهي بمشروع تطبيقي يربط المعرفة بالواقع.",
+  recognition: "تحمل الشهادة اعتماد Professional Certificate من IBM وISC2 عبر Coursera، وتُعد مسارًا مهنيًا دوليًا موثقًا لبناء مهارات الأمن السيبراني على مستوى البداية. يوضح البرنامج أنه يجهّز المتعلم لامتحان ISC2 Certified in Cybersecurity (CC)، مع بقاء امتحان CC وشهادة CISSP اعتمادات منفصلة تتطلب التسجيل والاختبار الخاص بها.",
   image: "/certificates/ibm-isc2-cybersecurity-specialist.jpg",
 };
 
@@ -188,9 +186,6 @@ function CertificateDetailPage() {
             <h2 className="text-2xl font-black">قوة الشهادة واعتمادها</h2>
           </div>
           <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{certificate.recognition}</p>
-          <a href={PROGRAM_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-            صفحة البرنامج الرسمية على Coursera <ExternalLink className="size-4" />
-          </a>
         </section>
 
         <section className="mt-12" aria-labelledby="related-courses-heading">

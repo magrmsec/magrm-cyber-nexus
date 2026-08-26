@@ -243,7 +243,13 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
   const merged: SiteSettings = { ...DEFAULT_SETTINGS };
   for (const [k, v] of Object.entries(stored)) {
     if (Array.isArray(v)) merged[k] = v.map(String);
-    else if (typeof v === "string" && v.trim()) merged[k] = v;
+    else if (typeof v === "string" && v.trim()) {
+      // توافق مؤقت مع القيم القديمة المحفوظة قبل اعتماد هوية Mohammed Al-Azzani.
+      // عند حفظ قيمة جديدة من لوحة الإدارة تُقبل وتظهر بشكل طبيعي.
+      if (k === "aboutName" && v.startsWith("Magrm ـ الاسم الذي يخشاه المخترقون")) continue;
+      if (k === "aboutIntro" && v.startsWith("لا أنتظر الاختراق ليحدث")) continue;
+      merged[k] = v;
+    }
   }
   return merged;
 }

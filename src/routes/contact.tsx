@@ -6,16 +6,24 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+function XLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.956 6.817H1.69l7.73-8.835L1.266 2.25h6.826l4.713 6.231 5.439-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+    </svg>
+  );
+}
+
 function ContactPage() {
   const { settings: s } = useSiteSettings();
   const whatsappNumber = "967733570889";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
   const socialLinks = [
-    { name: "X / تويتر", href: "https://x.com/magrm", icon: Send, description: "تابع آخر الأخبار والتحديثات" },
-    { name: "GitHub", href: "https://github.com/magrm", icon: Github, description: "المشاريع والمصادر التقنية" },
-    { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, description: "المحتوى المرئي والشروحات" },
-    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, description: "تحديثات المجتمع والتنبيهات" },
-    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, description: "الصور والمنشورات الجديدة" },
+    { name: "X / تويتر", href: "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground", description: "تابع آخر الأخبار والتحديثات" },
+    { name: "GitHub", href: "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300", description: "المشاريع والمصادر التقنية" },
+    { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400", description: "المحتوى المرئي والشروحات" },
+    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400", description: "تحديثات المجتمع والتنبيهات" },
+    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400", description: "الصور والمنشورات الجديدة" },
   ];
 
   return (
@@ -70,7 +78,7 @@ function ContactPage() {
           <h2 id="social-links-heading" className="text-2xl font-black text-foreground">جميع حساباتنا على منصات التواصل</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك من خلال الحساب الرسمي.</p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {socialLinks.map(({ name, href, icon: Icon, description }) => (
+            {socialLinks.map(({ name, href, icon: Icon, tone, description }) => (
               <a
                 key={name}
                 href={href}
@@ -78,7 +86,7 @@ function ContactPage() {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-4 rounded-2xl border border-border bg-card/60 p-5 text-start shadow-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:bg-card"
               >
-                <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <span className={`grid size-12 shrink-0 place-items-center rounded-xl transition-transform group-hover:scale-110 ${tone}`}>
                   <Icon className="size-6" />
                 </span>
                 <span>

@@ -19,11 +19,11 @@ function ContactPage() {
   const whatsappNumber = "967733570889";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
   const socialLinks = [
-    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400", description: "الصور والمنشورات الجديدة" },
-    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400", description: "تحديثات المجتمع والتنبيهات" },
-    { name: "X / تويتر", href: "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground", description: "تابع آخر الأخبار والتحديثات" },
-    { name: "GitHub", href: "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300", description: "المشاريع والمصادر التقنية" },
-    { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400", description: "المحتوى المرئي والشروحات" },
+    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400" },
+    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400" },
+    { name: "X / تويتر", href: "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground" },
+    { name: "GitHub", href: "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300" },
+    { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400" },
   ];
 
   return (
@@ -49,7 +49,7 @@ function ContactPage() {
             </div>
             <h3 className="mt-5 text-lg font-bold text-foreground">التواصل عبر الواتساب</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">
-              اضغط هنا للمراسلة الفورية وشراء الدورات والملفات مباشرة
+              للاستفسارات الرسمية والدعم الفني عبر الواتساب
             </p>
             <span className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors">
               مراسلة عبر الواتساب
@@ -78,7 +78,7 @@ function ContactPage() {
           <h2 id="social-links-heading" className="text-2xl font-black text-foreground">جميع حساباتنا على منصات التواصل</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">تواصل معنا عبر المنصة التي تناسبك، وسنرد عليك من خلال الحساب الرسمي.</p>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
-            {socialLinks.map(({ name, href, icon: Icon, tone, description }) => (
+            {socialLinks.map(({ name, href, icon: Icon, tone }) => (
               <a
                 key={name}
                 href={href}
@@ -91,7 +91,6 @@ function ContactPage() {
                 </span>
                 <span className="mt-5">
                   <strong className="block text-lg text-foreground">{name}</strong>
-                  <span className="mt-2 block text-sm text-muted-foreground">{description}</span>
                 </span>
               </a>
             ))}

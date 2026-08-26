@@ -4,6 +4,7 @@ import { Download, Search, Smartphone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useCmsApps } from "@/lib/cms";
 import { EmptyState, PageHero } from "@/components/ui-bits";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/apps")({
   head: () => ({
@@ -24,6 +25,7 @@ const PAGE_SIZE = 24;
 const ALL = "الكل";
 
 function AppsPage() {
+  const { s } = useSiteSettings();
   const { items: apps, isLoading } = useCmsApps();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(ALL);
@@ -59,8 +61,8 @@ function AppsPage() {
     <>
       <PageHero
         eyebrow={`${apps.length.toLocaleString("en-US")} برنامج وتطبيق`}
-        title="برامج وتطبيقات الأمن السيبراني"
-        description="قسم واحد يضم كتالوجًا واسعًا من الأدوات والتطبيقات، مرتبًا حسب المجال والمنصة مع روابط المواقع الرسمية. استخدم البحث والتصنيفات للوصول بسرعة إلى ما تحتاجه."
+        title={sv(s, "appsPageTitle") || "برامج وتطبيقات الأمن السيبراني"}
+        description={sv(s, "appsPageDescription") || "قسم واحد يضم كتالوجًا واسعًا من الأدوات والتطبيقات، مرتبًا حسب المجال والمنصة مع روابط المواقع الرسمية. استخدم البحث والتصنيفات للوصول بسرعة إلى ما تحتاجه."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

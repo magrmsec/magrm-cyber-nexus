@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHero } from "@/components/ui-bits";
 import { supabase } from "@/integrations/supabase/client";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -380,6 +381,7 @@ function CertificateCard({ certificate, featured = false }: { certificate: Featu
 }
 
 function CertificatesPage() {
+  const { s } = useSiteSettings();
   const [certs, setCerts] = useState<Cert[]>([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
@@ -428,8 +430,8 @@ function CertificatesPage() {
     <>
       <PageHero
         eyebrow="Magrm"
-        title="الشهادات المهنية"
-        description="هذه المساحة مخصصة لعرض شهادات Magrm المهنية. أضف صورة الشهادة وعنوانها ليظهرا هنا مباشرة."
+        title={sv(s, "certificatesPageTitle") || "الشهادات المهنية"}
+        description={sv(s, "certificatesPageDescription") || "هذه المساحة مخصصة لعرض شهادات Magrm المهنية. أضف صورة الشهادة وعنوانها ليظهرا هنا مباشرة."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12">

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LEVELS } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { SECTIONS, rowToCourse, useCmsCount, useCmsInfinite, type CmsFilter } from "@/lib/cms";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
@@ -29,6 +30,7 @@ const PRICES = [
 const BATCH = 24;
 
 function CoursesPage() {
+  const { s } = useSiteSettings();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [level, setLevel] = useState("الكل");
@@ -56,8 +58,8 @@ function CoursesPage() {
     <>
       <PageHero
         eyebrow={`${(grandTotal ?? 0).toLocaleString("en-US")} دورة في 12 قسماً`}
-        title="مكتبة الدورات المدفوعة"
-        description="مسارات تدريبية عملية بالكامل في الاختراق الأخلاقي والأمن السيبراني، من المستوى المبتدئ حتى الاحتراف."
+        title={sv(s, "coursesPageTitle") || "مكتبة الدورات المدفوعة"}
+        description={sv(s, "coursesPageDescription") || "مسارات تدريبية عملية بالكامل في الاختراق الأخلاقي والأمن السيبراني، من المستوى المبتدئ حتى الاحتراف."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

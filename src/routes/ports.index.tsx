@@ -4,6 +4,7 @@ import { Search, Flag, Wrench } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { useCmsPorts } from "@/lib/cms";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/ports/")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/ports/")({
 });
 
 function PortsPage() {
+  const { s } = useSiteSettings();
   const { items: ports, isLoading } = useCmsPorts();
   const [q, setQ] = useState("");
 
@@ -29,8 +31,8 @@ function PortsPage() {
     <>
       <PageHero
         eyebrow={`${ports.length} بورت`}
-        title="البورتات — تحديات اختراق عملية"
-        description="بيئات معزولة واقعية تحاكي الشبكات والخوادم والأجهزة والسحابة وتطبيقات ومنصات التواصل. اختبر، التقط الأعلام، واكتب تقريرك الاحترافي ضمن نطاق مصرح به."
+        title={sv(s, "portsPageTitle") || "البورتات — تحديات اختراق عملية"}
+        description={sv(s, "portsPageDescription") || "بيئات معزولة واقعية تحاكي الشبكات والخوادم والأجهزة والسحابة وتطبيقات ومنصات التواصل. اختبر، التقط الأعلام، واكتب تقريرك الاحترافي ضمن نطاق مصرح به."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

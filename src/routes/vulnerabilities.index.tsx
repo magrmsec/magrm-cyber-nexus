@@ -7,6 +7,7 @@ import { SEVERITIES } from "@/lib/data";
 import { SeverityBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { rowToVuln, useCmsCount, useCmsInfinite, type CmsFilter } from "@/lib/cms";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/vulnerabilities/")({
   head: () => ({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/vulnerabilities/")({
 const BATCH = 25;
 
 function VulnsPage() {
+  const { s } = useSiteSettings();
   const [q, setQ] = useState("");
   const [sev, setSev] = useState("الكل");
 
@@ -37,8 +39,8 @@ function VulnsPage() {
     <>
       <PageHero
         eyebrow={`${(grandTotal ?? 0).toLocaleString("en-US")} ثغرة`}
-        title="قاعدة الثغرات الأمنية"
-        description="أرشيف ثغرات CVE مصنّف حسب الخطورة والنوع، مع الأنظمة المتأثرة وتاريخ الاكتشاف وطرق الحماية."
+        title={sv(s, "vulnsPageTitle") || "قاعدة الثغرات الأمنية"}
+        description={sv(s, "vulnsPageDescription") || "أرشيف ثغرات CVE مصنّف حسب الخطورة والنوع، مع الأنظمة المتأثرة وتاريخ الاكتشاف وطرق الحماية."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

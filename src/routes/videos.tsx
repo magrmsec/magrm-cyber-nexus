@@ -7,6 +7,7 @@ import { VIDEO_CATEGORIES, LEVELS, type Video } from "@/lib/data";
 import { LevelBadge, PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsVideos } from "@/lib/cms";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/videos")({
 });
 
 function VideosPage() {
+  const { s } = useSiteSettings();
   const { items: videos, isLoading } = useCmsVideos();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
@@ -44,8 +46,8 @@ function VideosPage() {
     <>
       <PageHero
         eyebrow={`${videos.length.toLocaleString("en-US")} فيديو`}
-        title="مكتبة الفيديوهات"
-        description="شروحات عملية مجانية بالفيديو: أدوات الاختراق، ثغرات الويب، الشبكات، وتحديات CTF."
+        title={sv(s, "videosPageTitle") || "مكتبة الفيديوهات"}
+        description={sv(s, "videosPageDescription") || "شروحات عملية مجانية بالفيديو: أدوات الاختراق، ثغرات الويب، الشبكات، وتحديات CTF."}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

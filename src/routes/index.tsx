@@ -38,12 +38,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const AWARDS = [
-  { title: "أفضل منصة تدريب سيبراني عربية", year: "2024", icon: Award },
-  { title: "جائزة التميّز في المحتوى التقني", year: "2023", icon: Sparkles },
-  { title: "اعتماد مسارات Red Team", year: "2023", icon: ShieldCheck },
-  { title: "أفضل مختبرات عملية", year: "2022", icon: Terminal },
-];
+const AWARD_ICONS = [Award, Sparkles, ShieldCheck, Terminal];
 
 const SECTION_LINKS = [
   { to: "/courses", label: "الدورات المدفوعة", desc: "12 قسماً رئيسياً وأكثر من 1000 دورة في كل قسم", icon: BookOpen },
@@ -65,8 +60,14 @@ function Index() {
   const featured = courseRows.map(rowToCourse);
   const latestVulns = vulnRows
     .map(rowToVuln)
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .filter((v) => v.cvss >= 8 || v.severity === "حرج")
+    .sort((a, b) => b.date.localeCompare(a.date) || b.cvss - a.cvss)
     .slice(0, 5);
+  const awards = AWARD_ICONS.map((icon, index) => ({
+    icon,
+    title: sv(s, `award${index + 1}Title`),
+    year: sv(s, `award${index + 1}Year`),
+  })).filter((award) => award.title || award.year);
 
   const nf = (n: number) => n.toLocaleString("en-US");
   const partners = sl(s, "partners");
@@ -135,9 +136,9 @@ function Index() {
 
       {/* Sections grid */}
       <section className="mx-auto max-w-7xl px-4 py-20">
-        <h2 className="text-2xl font-extrabold md:text-3xl">
-          استكشف <span className="text-gradient">المنصة</span>
-        </h2>
+          <h2 className="text-2xl font-extrabold md:text-3xl">
+            {sv(s, "homeExploreTitle") || "استكشف المنصة"}
+          </h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {SECTION_LINKS.map((sec) => (
             <Link key={sec.to} to={sec.to} className="card-surface group block p-6">
@@ -156,8 +157,8 @@ function Index() {
       <section className="border-y border-border bg-card/30 py-20">
         <div className="mx-auto max-w-7xl px-4">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
-            <h2 className="min-w-0 text-2xl font-extrabold md:text-3xl">
-              دورات <span className="text-gradient">مميزة</span>
+              <h2 className="min-w-0 text-2xl font-extrabold md:text-3xl">
+              {sv(s, "homeFeaturedTitle") || "دورات مميزة"}
             </h2>
             <Link to="/courses" className="shrink-0 text-sm font-bold text-primary">
               عرض الكل ←
@@ -202,7 +203,7 @@ function Index() {
       <section className="mx-auto max-w-7xl px-4 py-20">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
           <h2 className="min-w-0 text-2xl font-extrabold md:text-3xl">
-            أحدث <span className="text-gradient">الثغرات</span>
+            {sv(s, "homeLatestTitle") || "أحدث الثغرات"}
           </h2>
           <Link to="/vulnerabilities" className="shrink-0 text-sm font-bold text-primary">
             كل الثغرات ←
@@ -233,10 +234,10 @@ function Index() {
       <section className="border-t border-border bg-card/30 py-20">
         <div className="mx-auto max-w-7xl px-4">
           <h2 className="text-2xl font-extrabold md:text-3xl">
-            جوائز <span className="text-gradient">الأمن السيبراني</span>
+            {sv(s, "awardsTitle") || "جوائز الأمن السيبراني"}
           </h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {AWARDS.map((a) => (
+            {awards.map((a) => (
               <div key={a.title} className="card-surface p-6 text-center">
                 <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary ring-1 ring-primary/30">
                   <a.icon className="size-6" />

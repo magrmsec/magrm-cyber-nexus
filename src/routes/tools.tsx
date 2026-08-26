@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PageHero, EmptyState } from "@/components/ui-bits";
 import { FilterRow } from "./courses.index";
 import { useCmsTools } from "@/lib/cms";
+import { sv, useSiteSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/tools")({
   head: () => ({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/tools")({
 const PAGE_SIZE = 30;
 
 function ToolsPage() {
+  const { s } = useSiteSettings();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("الكل");
   const [page, setPage] = useState(1);
@@ -44,8 +46,8 @@ function ToolsPage() {
     <>
       <PageHero
         eyebrow={`${tools.length} أداة`}
-        title="الأدوات"
-        description="ترسانة الأدوات التي يعتمد عليها محترفو الأمن السيبراني حول العالم"
+        title={sv(s, "toolsPageTitle") || "الأدوات"}
+        description={sv(s, "toolsPageDescription") || "ترسانة الأدوات التي يعتمد عليها محترفو الأمن السيبراني حول العالم"}
       />
 
       <section className="mx-auto max-w-7xl px-4 py-10">

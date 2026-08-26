@@ -46,6 +46,7 @@ export interface CmsRow {
   data: CmsData;
   published: boolean;
   created_at: string;
+  source?: "database" | "catalog";
 }
 
 export type FieldType = "text" | "textarea" | "number" | "select" | "list";
@@ -505,8 +506,9 @@ async function fetchVulnerabilitySlice(f: CmsFilter, from: number, size: number)
   if (error) throw error;
   const cmsRows = ((data ?? []) as unknown as CmsRow[])
     .filter((row) => (rowToVuln(row).price ?? 0) > 0)
-    .filter((row) => vulnerabilityMatchesPricing(row, f.pricing));
-  const staticRows = staticVulnerabilityRows(f);
+    .filter((row) => vulnerabilityMatchesPricing(row, f.pricing))
+    .map((row) => ({ ...row, source: "database" as const }));
+  const staticRows = staticVulnerabilityRows(f).map((row) => ({ ...row, source: "catalog" as const }));
   const paidRows = [...cmsRows, ...staticRows.filter((row) => (rowToVuln(row).price ?? 0) > 0)];
   const freeRows = staticRows.filter((row) => (rowToVuln(row).price ?? 0) === 0);
   return interleaveVulnerabilityRows(paidRows, freeRows).slice(from, from + size);
@@ -518,7 +520,89 @@ export async function fetchCmsSlice(kind: CmsKind, f: CmsFilter, from: number, s
     .order("seq", { ascending: true })
     .range(from, from + size - 1);
   if (error) throw error;
-  return (data ?? []) as unknown as CmsRow[];
+  return ((data ?? []) as unknown as CmsRow[]).map((row) => ({ ...row, source: "database" }));
+}
+
+function adminCatalogRows(kind: CmsKind): CmsRow[] {
+  if (kind === "port") {
+    return SECURITY_PORT_CATALOG.map((item, index) => ({
+      id: `port-catalog-${item.id ?? index}`,
+      seq: item.id ?? 2000000 + index,
+      kind,
+      data: item as unknown as CmsData,
+      published: true,
+      created_at: new Date().toISOString(),
+      source: "catalog",
+    }));
+  }
+  if (kind === "tool") {
+    return SECURITY_TOOL_CATALOG.map((item, index) => ({
+      id: `tool-catalog-${index}`,
+      seq: 3000000 + index,
+      kind,
+      data: item as unknown as CmsData,
+      published: true,
+      created_at: new Date().toISOString(),
+      source: "catalog",
+    }));
+  }
+  if (kind === "app") {
+    return SECURITY_APP_CATALOG.map((item, index) => ({
+      id: `app-catalog-${index}`,
+      seq: 4000000 + index,
+      kind,
+      data: item as unknown as CmsData,
+      published: true,
+      created_at: new Date().toISOString(),
+      source: "catalog",
+    }));
+  }
+  return [];
+}
+
+function adminDedupeKey(row: CmsRow): string {
+  const d = row.data;
+  const name = String(d["name"] ?? d["title"] ?? d["cve"] ?? row.id).trim().toLocaleLowerCase();
+  const url = String(d["url"] ?? "").trim().toLocaleLowerCase();
+  return url ? `${name}|${url}` : name;
+}
+
+/** قائمة الإدارة الكاملة: صفوف قاعدة البيانات أولاً ثم عناصر الكتالوجات الثابتة مع إزالة التكرار. */
+export async function fetchAdminSlice(kind: CmsKind, from: number, size: number): Promise<CmsRow[]> {
+  if (kind === "vuln") {
+    return fetchVulnerabilitySlice({ publishedOnly: false }, from, size);
+  }
+
+  if (kind === "course" || kind === "video") {
+    const { data, error } = await buildQuery(kind, { publishedOnly: false })
+      .order("seq", { ascending: true })
+      .range(from, from + size - 1);
+    if (error) throw error;
+    return ((data ?? []) as unknown as CmsRow[]).map((row) => ({ ...row, source: "database" as const }));
+  }
+
+  const { data, error } = await buildQuery(kind, { publishedOnly: false })
+    .order("seq", { ascending: true })
+    .range(0, 9999);
+  if (error) throw error;
+
+  const databaseRows = ((data ?? []) as unknown as CmsRow[]).map((row) => ({ ...row, source: "database" as const }));
+  const seen = new Set<string>();
+  const combined = [...databaseRows, ...adminCatalogRows(kind)].filter((row) => {
+    const key = adminDedupeKey(row);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return combined.slice(from, from + size);
+}
+
+export async function countAdmin(kind: CmsKind): Promise<number> {
+  if (kind === "course" || kind === "video" || kind === "vuln") {
+    return countCms(kind, { publishedOnly: false });
+  }
+  const allRows = await fetchAdminSlice(kind, 0, 50000);
+  return allRows.length;
 }
 
 export async function countCms(kind: CmsKind, f: CmsFilter = {}): Promise<number> {

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Activity,
@@ -32,12 +32,12 @@ import {
   CMS_KINDS,
   FIELDS,
   KIND_LABELS,
-  fetchCmsSlice,
+  fetchAdminSlice,
+  countAdmin,
   type CmsData,
   type CmsRow,
   type CmsKind,
   type FieldDef,
-  countCms,
 } from "@/lib/cms";
 
 
@@ -68,16 +68,30 @@ function AdminPage() {
   const [editing, setEditing] = useState<CmsRow | null>(null);
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
   const [saving, setSaving] = useState(false);
+  const [copyingId, setCopyingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!permissions.canEdit && editing) setEditing(null);
   }, [permissions.canEdit, editing]);
 
 
-  const { data: rows, isLoading } = useQuery({
-    queryKey: ["cms", kind],
-    queryFn: () => fetchCmsSlice(kind, { publishedOnly: false }, 0, 200),
+  const PAGE_SIZE = 200;
+  const {
+    data: adminPages,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["cms-admin", kind],
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => fetchAdminSlice(kind, pageParam as number, PAGE_SIZE),
+    getNextPageParam: (lastPage, allPages) => (lastPage.length < PAGE_SIZE ? undefined : allPages.length * PAGE_SIZE),
+    enabled: permissions.isStaff,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
   });
+  const rows = useMemo(() => adminPages?.pages.flat() ?? [], [adminPages]);
 
   const { data: overviewCounts = [] } = useQuery({
     queryKey: ["admin-overview-counts"],
@@ -85,7 +99,7 @@ function AdminPage() {
       Promise.all(
         CMS_KINDS.map(async (k) => ({
           kind: k,
-          count: await countCms(k, { publishedOnly: false }),
+          count: await countAdmin(k),
         })),
       ),
     enabled: permissions.isStaff,
@@ -120,7 +134,7 @@ function AdminPage() {
   };
 
   const refresh = () => {
-    void queryClient.invalidateQueries({ queryKey: ["cms", kind] });
+    void queryClient.invalidateQueries({ queryKey: ["cms-admin", kind] });
     void queryClient.invalidateQueries({ queryKey: ["admin-overview-counts"] });
     void queryClient.invalidateQueries({ queryKey: ["site-settings"] });
   };
@@ -198,6 +212,27 @@ function AdminPage() {
       setForm(emptyFor(kind));
     }
     refresh();
+  };
+
+  const copyCatalogToEditor = async (row: CmsRow) => {
+    if (!permissions.canEdit) return;
+    setCopyingId(row.id);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase.from("cms_items").insert({
+        kind: row.kind,
+        data: row.data as never,
+        published: permissions.canPublish,
+        created_by: userData.user?.id ?? null,
+      });
+      if (error) throw error;
+      toast.success("تم نسخ العنصر إلى المحرر", { description: "يمكنك الآن تعديله من نموذج التحرير." });
+      refresh();
+    } catch (err) {
+      toast.error("تعذّر نسخ العنصر", { description: err instanceof Error ? err.message : "حاول مرة أخرى" });
+    } finally {
+      setCopyingId(null);
+    }
   };
 
   const signOut = async () => {
@@ -410,7 +445,7 @@ function AdminPage() {
 
           <div>
             <h2 className="text-lg font-extrabold">
-              العناصر المضافة{" "}
+              العناصر الظاهرة في اللوحة{" "}
               <span className="text-sm font-bold text-muted-foreground">({rows?.length ?? 0})</span>
             </h2>
             {isLoading ? (
@@ -423,48 +458,78 @@ function AdminPage() {
               </p>
             ) : (
               <div className="mt-5 space-y-3">
-                {visibleRows.map((row) => (
-                  <div key={row.id} className="card-surface flex flex-wrap items-center gap-3 p-4">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-bold">
-                        {String(row.data["title"] ?? row.data["name"] ?? row.data["cve"] ?? "بدون عنوان")}
-                      </p>
-                      <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
-                        {String(row.data["description"] ?? "")}
-                      </p>
+                {visibleRows.map((row) => {
+                  const isCatalog = row.source === "catalog";
+                  return (
+                    <div key={row.id} className="card-surface flex flex-wrap items-center gap-3 p-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold">
+                          {String(row.data["title"] ?? row.data["name"] ?? row.data["cve"] ?? "بدون عنوان")}
+                        </p>
+                        <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                          {String(row.data["description"] ?? "")}
+                        </p>
+                      </div>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                          isCatalog
+                            ? "bg-sky-500/10 text-sky-300"
+                            : row.published
+                              ? "bg-primary/10 text-primary"
+                              : "bg-surface-2 text-muted-foreground"
+                        }`}
+                      >
+                        {isCatalog ? "كتالوج" : row.published ? "منشور" : "مخفي"}
+                      </span>
+                      <div className="flex gap-1.5">
+                        {isCatalog && permissions.canEdit ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            aria-label="نسخ للتعديل"
+                            disabled={copyingId === row.id}
+                            onClick={() => void copyCatalogToEditor(row)}
+                          >
+                            {copyingId === row.id ? <Loader2 className="size-4 animate-spin" /> : <Pencil className="size-4" />}
+                            <span className="hidden sm:inline">نسخ للتعديل</span>
+                          </Button>
+                        ) : null}
+                        {!isCatalog && permissions.canEdit ? (
+                          <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
+                            <Pencil className="size-4" />
+                          </Button>
+                        ) : null}
+                        {!isCatalog && permissions.canPublish ? (
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            aria-label="نشر أو إخفاء"
+                            onClick={() => togglePublish(row)}
+                          >
+                            {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                          </Button>
+                        ) : null}
+                        {!isCatalog && permissions.canDelete ? (
+                          <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
+                            <Trash2 className="size-4 text-destructive" />
+                          </Button>
+                        ) : null}
+                      </div>
                     </div>
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                        row.published ? "bg-primary/10 text-primary" : "bg-surface-2 text-muted-foreground"
-                      }`}
-                    >
-                      {row.published ? "منشور" : "مخفي"}
-                    </span>
-                    <div className="flex gap-1.5">
-                      {permissions.canEdit ? (
-                        <Button size="icon" variant="outline" aria-label="تعديل" onClick={() => startEdit(row)}>
-                          <Pencil className="size-4" />
-                        </Button>
-                      ) : null}
-                      {permissions.canPublish ? (
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          aria-label="نشر أو إخفاء"
-                          onClick={() => togglePublish(row)}
-                        >
-                          {row.published ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                        </Button>
-                      ) : null}
-                      {permissions.canDelete ? (
-                        <Button size="icon" variant="outline" aria-label="حذف" onClick={() => remove(row)}>
-                          <Trash2 className="size-4 text-destructive" />
-                        </Button>
-                      ) : null}
-                    </div>
-
-                  </div>
-                ))}
+                  );
+                })}
+                {hasNextPage ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-5 w-full font-bold"
+                    disabled={isFetchingNextPage}
+                    onClick={() => void fetchNextPage()}
+                  >
+                    {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                    {isFetchingNextPage ? "جاري تحميل المزيد…" : "تحميل بقية المحتوى"}
+                  </Button>
+                ) : null}
               </div>
             )}
           </div>

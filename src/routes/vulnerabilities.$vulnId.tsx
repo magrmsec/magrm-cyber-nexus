@@ -122,7 +122,7 @@ function VulnDetail() {
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
               ? "هذه الثغرة ضمن الثغرات عالية الخطورة. للحصول على الخدمة والتفاصيل التجارية، تواصل معنا مباشرة عبر واتساب."
-              : v.downloadUrl
+              : v.downloadUrl || v.downloadPath
                 ? "ملف مختبر أمني أصلي ومطابق متاح مجانًا، وسيتم تنزيله مباشرة من موقع Magrm. شغّله محليًا ومعزولًا فقط."
                 : "لا يوجد ملف أصلي مطابق لهذه الثغرة متاح للتنزيل حاليًا. لن نعرض ملفًا عامًا أو غير متعلق بها حفاظًا على دقة المحتوى."}
           </p>
@@ -142,9 +142,10 @@ function VulnDetail() {
               >
                 <MessageCircle className="size-5" /> تواصل معنا عبر الواتساب
               </a>
-            ) : v.downloadUrl ? (
+            ) : v.downloadUrl || v.downloadPath ? (
               <a
-                href={`/vulnerabilities/${v.id}/download`}
+                href={v.downloadPath ?? `/vulnerabilities/${v.id}/download`}
+                download={v.downloadName}
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
                 <Download className="size-5" /> تحميل الأداة

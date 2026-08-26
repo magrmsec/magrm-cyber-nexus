@@ -5,6 +5,7 @@ import { SECURITY_TOOL_CATALOG } from "@/lib/security-tool-catalog";
 import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
 import { SECURITY_VULNERABILITY_CATALOG } from "@/lib/security-vulnerability-catalog";
 import { VERIFIED_VULNERABILITY_LABS } from "@/lib/verified-vulnerability-labs";
+import { VERIFIED_VULHUB_LABS } from "@/lib/verified-vulnerability-labs-vulhub";
 
 import {
   COURSE_CATEGORIES,
@@ -205,7 +206,10 @@ export function rowToVuln(row: CmsRow): Vuln {
     mitigation: str(d["mitigation"], "تحديث النظام المتأثر إلى آخر إصدار مدعوم."),
     ...(price > 0 ? { price } : {}),
     ...(str(d["downloadUrl"]) ? { downloadUrl: str(d["downloadUrl"]) } : {}),
+    ...(str(d["downloadPath"]) ? { downloadPath: str(d["downloadPath"]) } : {}),
     ...(str(d["downloadName"]) ? { downloadName: str(d["downloadName"]) } : {}),
+    ...(str(d["labSource"]) ? { labSource: str(d["labSource"]) } : {}),
+    ...(num(d["fileBytes"], 0) > 0 ? { fileBytes: num(d["fileBytes"], 0) } : {}),
   };
 }
 
@@ -254,6 +258,10 @@ export async function fetchCmsRows(kind: CmsKind): Promise<CmsRow[]> {
 
 export async function fetchCmsRowBySeq(kind: CmsKind, seq: number): Promise<CmsRow | null> {
   if (kind === "vuln") {
+    const vulhubLab = VERIFIED_VULHUB_LABS.find((v) => v.id === seq);
+    if (vulhubLab) {
+      return { id: `vulhub-lab-${vulhubLab.id}`, seq: vulhubLab.id, kind: "vuln", data: vulhubLab as unknown as CmsData, published: true, created_at: vulhubLab.date };
+    }
     const lab = VERIFIED_VULNERABILITY_LABS.find((v) => v.id === seq);
     if (lab) {
       return { id: `verified-lab-${lab.id}`, seq: lab.id, kind: "vuln", data: lab as unknown as CmsData, published: true, created_at: lab.date };
@@ -370,6 +378,7 @@ export interface CmsFilter {
   severity?: string;
   minPrice?: number;
   maxPrice?: number;
+  pricing?: "free" | "paid";
   searchKeys?: string[];
   publishedOnly?: boolean;
 }
@@ -397,11 +406,18 @@ function buildQuery(kind: CmsKind, f: CmsFilter, count?: "exact") {
   return q;
 }
 
+function vulnerabilityMatchesPricing(row: CmsRow, pricing?: CmsFilter["pricing"]): boolean {
+  if (!pricing) return true;
+  const isPaid = (rowToVuln(row).price ?? 0) > 0;
+  return pricing === "paid" ? isPaid : !isPaid;
+}
+
 function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
   const term = clean(filter.search ?? "").toLocaleLowerCase();
   const catalog = SECURITY_VULNERABILITY_CATALOG as unknown as Vuln[];
-  return [...catalog.filter((item) => (item.price ?? 0) > 0), ...VERIFIED_VULNERABILITY_LABS]
-    .filter((item) => item.price === 0 || Boolean(item.downloadUrl))
+  return [...catalog.filter((item) => (item.price ?? 0) > 0), ...VERIFIED_VULNERABILITY_LABS, ...VERIFIED_VULHUB_LABS]
+    .filter((item) => (item.price ?? 0) > 0 || Boolean(item.downloadUrl) || Boolean(item.downloadPath))
+    .filter((item) => !filter.pricing || filter.pricing === "paid" ? (item.price ?? 0) > 0 : (item.price ?? 0) === 0)
     .filter((item) => !filter.severity || filter.severity === ANY || item.severity === filter.severity)
     .filter((item) => {
       if (!term) return true;
@@ -414,7 +430,9 @@ function staticVulnerabilityRows(filter: CmsFilter): CmsRow[] {
 async function fetchVulnerabilitySlice(f: CmsFilter, from: number, size: number): Promise<CmsRow[]> {
   const { data, error } = await buildQuery("vuln", f).order("seq", { ascending: true }).range(0, 9999);
   if (error) throw error;
-  const cmsRows = ((data ?? []) as unknown as CmsRow[]).filter((row) => (rowToVuln(row).price ?? 0) > 0);
+  const cmsRows = ((data ?? []) as unknown as CmsRow[])
+    .filter((row) => (rowToVuln(row).price ?? 0) > 0)
+    .filter((row) => vulnerabilityMatchesPricing(row, f.pricing));
   return [...cmsRows, ...staticVulnerabilityRows(f)].sort((a, b) => a.seq - b.seq).slice(from, from + size);
 }
 

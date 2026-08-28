@@ -86,7 +86,7 @@ function AuthPage() {
           <span className="text-gradient">{mode === "in" ? "تسجيل الدخول" : "إنشاء حساب"}</span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          الدخول مخصص لإدارة محتوى الموقع. أول حساب يتم إنشاؤه يصبح مدير الموقع تلقائياً.
+          الدخول مخصص لإدارة محتوى الموقع.
         </p>
 
         <form onSubmit={submit} className="mt-6 space-y-4">

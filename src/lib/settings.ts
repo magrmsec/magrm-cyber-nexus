@@ -87,6 +87,10 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { key: "detailToolsTitle", label: "عنوان أدوات البورت", type: "text" },
       { key: "detailPathTitle", label: "عنوان مسار الحل", type: "text" },
       { key: "detailPurchaseButton", label: "زر الشراء", type: "text" },
+      { key: "certificateBackLabel", label: "زر العودة من الشهادة", type: "text" },
+      { key: "certificateRecognitionTitle", label: "عنوان اعتماد الشهادة", type: "text" },
+      { key: "certificateTopicsTitle", label: "عنوان محاور الشهادة", type: "text" },
+      { key: "certificateReturnButton", label: "زر العودة لقسم الشهادات", type: "text" },
     ],
   },
   {
@@ -288,6 +292,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   detailToolsTitle: "الأدوات المستخدمة",
   detailPathTitle: "مسار الحل",
   detailPurchaseButton: "اشترِ الآن",
+  certificateBackLabel: "العودة إلى الشهادات",
+  certificateRecognitionTitle: "قوة الشهادة واعتمادها",
+  certificateTopicsTitle: "المهارات والمحاور الرئيسية",
+  certificateReturnButton: "العودة إلى قسم الشهادات",
 
   uiSearchLabel: "البحث في المحتوى",
   uiAllOption: "الكل",

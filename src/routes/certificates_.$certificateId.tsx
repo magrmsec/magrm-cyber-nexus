@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/lib/settings";
 
 const MASTER_ID = "ibm-isc2-cybersecurity-specialist-master";
 const INFOSEC_ID = "infosec-cissp-specialization";
@@ -331,6 +332,7 @@ export const Route = createFileRoute("/certificates_/$certificateId")({
 
 function CertificateDetailPage() {
   const { certificateId, certificate, courses } = Route.useLoaderData();
+  const { settings: s } = useSiteSettings();
   if (certificateId === INFOSEC_ID) return <InfosecCertificateDetailPage />;
   if (certificateId === CSOA_ID) return <CsoaCertificateDetailPage />;
   const generic = GENERIC_CERTIFICATES[certificateId];
@@ -341,7 +343,7 @@ function CertificateDetailPage() {
       <section className="hero-bg border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
-            <ArrowRight className="size-4" /> العودة إلى الشهادات
+            <ArrowRight className="size-4" /> {s("certificateBackLabel") || "العودة إلى الشهادات"}
           </Link>
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
             <div>
@@ -367,7 +369,7 @@ function CertificateDetailPage() {
         <section className="card-surface p-6 md:p-8">
           <div className="flex items-center gap-3">
             <Award className="size-5 text-primary" />
-            <h2 className="text-2xl font-black">قوة الشهادة واعتمادها</h2>
+            <h2 className="text-2xl font-black">{s("certificateRecognitionTitle") || "قوة الشهادة واعتمادها"}</h2>
           </div>
           <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{certificate.recognition}</p>
         </section>
@@ -404,7 +406,7 @@ function CertificateDetailPage() {
         <div className="mt-10">
           <Button asChild variant="outline" className="font-bold">
             <Link to="/certificates">
-              <ArrowRight className="size-4" /> العودة إلى قسم الشهادات
+              <ArrowRight className="size-4" /> {s("certificateReturnButton") || "العودة إلى قسم الشهادات"}
             </Link>
           </Button>
         </div>
@@ -415,12 +417,13 @@ function CertificateDetailPage() {
 
 
 function InfosecCertificateDetailPage() {
+  const { settings: s } = useSiteSettings();
   return (
     <>
       <section className="hero-bg border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
-            <ArrowRight className="size-4" /> العودة إلى الشهادات
+            <ArrowRight className="size-4" /> {s("certificateBackLabel") || "العودة إلى الشهادات"}
           </Link>
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
             <div>
@@ -488,7 +491,7 @@ function InfosecCertificateDetailPage() {
         <div className="mt-10">
           <Button asChild variant="outline" className="font-bold">
             <Link to="/certificates">
-              <ArrowRight className="size-4" /> العودة إلى قسم الشهادات
+              <ArrowRight className="size-4" /> {s("certificateReturnButton") || "العودة إلى قسم الشهادات"}
             </Link>
           </Button>
         </div>
@@ -498,12 +501,13 @@ function InfosecCertificateDetailPage() {
 }
 
 function CsoaCertificateDetailPage() {
+  const { settings: s } = useSiteSettings();
   return (
     <>
       <section className="hero-bg border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
-            <ArrowRight className="size-4" /> العودة إلى الشهادات
+            <ArrowRight className="size-4" /> {s("certificateBackLabel") || "العودة إلى الشهادات"}
           </Link>
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
             <div>
@@ -529,7 +533,7 @@ function CsoaCertificateDetailPage() {
         <section className="card-surface p-6 md:p-8">
           <div className="flex items-center gap-3">
             <Award className="size-5 text-primary" />
-            <h2 className="text-2xl font-black">قوة الشهادة واعتمادها</h2>
+            <h2 className="text-2xl font-black">{s("certificateRecognitionTitle") || "قوة الشهادة واعتمادها"}</h2>
           </div>
           <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{CSOA_CERTIFICATE.recognition}</p>
         </section>
@@ -550,7 +554,7 @@ function CsoaCertificateDetailPage() {
         <div className="mt-10">
           <Button asChild variant="outline" className="font-bold">
             <Link to="/certificates">
-              <ArrowRight className="size-4" /> العودة إلى قسم الشهادات
+              <ArrowRight className="size-4" /> {s("certificateReturnButton") || "العودة إلى قسم الشهادات"}
             </Link>
           </Button>
         </div>
@@ -561,12 +565,13 @@ function CsoaCertificateDetailPage() {
 
 
 function GenericCertificateDetailPage({ certificate }: { certificate: GenericCertificate }) {
+  const { settings: s } = useSiteSettings();
   return (
     <>
       <section className="hero-bg border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
-            <ArrowRight className="size-4" /> العودة إلى الشهادات
+            <ArrowRight className="size-4" /> {s("certificateBackLabel") || "العودة إلى الشهادات"}
           </Link>
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
             <div>
@@ -591,14 +596,14 @@ function GenericCertificateDetailPage({ certificate }: { certificate: GenericCer
         <section className="card-surface p-6 md:p-8">
           <div className="flex items-center gap-3">
             <Award className="size-5 text-primary" />
-            <h2 className="text-2xl font-black">قوة الشهادة واعتمادها</h2>
+            <h2 className="text-2xl font-black">{s("certificateRecognitionTitle") || "قوة الشهادة واعتمادها"}</h2>
           </div>
           <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{certificate.recognition}</p>
         </section>
 
         <section className="mt-12" aria-labelledby="certificate-topics-heading">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">المجالات التي تغطيها</p>
-          <h2 id="certificate-topics-heading" className="mt-2 text-2xl font-black">المهارات والمحاور الرئيسية</h2>
+          <h2 id="certificate-topics-heading" className="mt-2 text-2xl font-black">{s("certificateTopicsTitle") || "المهارات والمحاور الرئيسية"}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {certificate.topics.map((topic) => (
               <div key={topic} className="card-surface flex items-start gap-3 p-5">
@@ -612,7 +617,7 @@ function GenericCertificateDetailPage({ certificate }: { certificate: GenericCer
         <div className="mt-10">
           <Button asChild variant="outline" className="font-bold">
             <Link to="/certificates">
-              <ArrowRight className="size-4" /> العودة إلى قسم الشهادات
+              <ArrowRight className="size-4" /> {s("certificateReturnButton") || "العودة إلى قسم الشهادات"}
             </Link>
           </Button>
         </div>

@@ -87,7 +87,7 @@ function VideosPage() {
                 >
                   <div
                     className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-surface-2 bg-cover bg-center"
-                    style={{ backgroundImage: "url('/cyber-hacker-video-background-magrm-preview.png')" }}
+                    style={{ backgroundImage: `url('${sv(s, "videosCoverImage") || "/cyber-hacker-video-background-magrm-preview.png"}')` }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-black/35 via-background/20 to-primary/25" />
                     <div className="absolute inset-0 grid place-items-center">

@@ -51,6 +51,7 @@ function withSecurityHeaders(response: Response): Response {
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
   headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  headers.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://lecsvmzdywrechtlsseu.supabase.co");
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,

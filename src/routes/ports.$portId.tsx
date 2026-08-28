@@ -38,7 +38,7 @@ function PortDetail() {
       <section className="hero-bg border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <Link to="/ports" className="text-sm font-bold text-primary">
-            → العودة للبورتات
+            {s("detailBackLabel") || "→ العودة للبورتات"}
           </Link>
           <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="min-w-0">
@@ -53,14 +53,14 @@ function PortDetail() {
 
               <div className="card-surface mt-8 p-6">
                 <h2 className="flex items-center gap-2 font-bold">
-                  <Target className="size-4 text-primary" /> الهدف
+                  <Target className="size-4 text-primary" /> {s("detailObjectiveTitle") || "الهدف"}
                 </h2>
                 <p className="mt-3 text-sm leading-8 text-muted-foreground">{p.objective}</p>
               </div>
 
               <div className="card-surface mt-5 p-6">
                 <h2 className="flex items-center gap-2 font-bold">
-                  <Wrench className="size-4 text-primary" /> الأدوات المستخدمة
+                  <Wrench className="size-4 text-primary" /> {s("detailToolsTitle") || "الأدوات المستخدمة"}
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {p.tools.map((t: string) => (
@@ -73,7 +73,7 @@ function PortDetail() {
 
               <div className="card-surface mt-5 p-6">
                 <h2 className="flex items-center gap-2 font-bold">
-                  <Flag className="size-4 text-primary" /> مسار الحل
+                  <Flag className="size-4 text-primary" /> {s("detailPathTitle") || "مسار الحل"}
                 </h2>
                 <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
                   {[
@@ -102,7 +102,7 @@ function PortDetail() {
                 size="lg"
                 onClick={() => window.open(`${s("whatsapp")}?text=${encodeURIComponent(`السلام عليكم، أريد شراء/الاشتراك في البورت التالي:\nالاسم: ${p.name}\nالسعر: $${p.price}\nالمعلومات: ${p.description}`)}`, "_blank")}
               >
-                اشترِ الآن
+                {s("detailPurchaseButton") || "اشترِ الآن"}
               </Button>
               <div className="mt-6 space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-center justify-between">

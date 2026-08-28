@@ -83,6 +83,10 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
       { key: "detailAccessTitle", label: "عنوان الوصول إلى الملف", type: "text" },
       { key: "detailContactButton", label: "زر التواصل في التفاصيل", type: "text" },
       { key: "detailDownloadButton", label: "زر تحميل الأداة", type: "text" },
+      { key: "detailObjectiveTitle", label: "عنوان هدف البورت", type: "text" },
+      { key: "detailToolsTitle", label: "عنوان أدوات البورت", type: "text" },
+      { key: "detailPathTitle", label: "عنوان مسار الحل", type: "text" },
+      { key: "detailPurchaseButton", label: "زر الشراء", type: "text" },
     ],
   },
   {
@@ -280,6 +284,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   detailAccessTitle: "الوصول إلى ملف الثغرة",
   detailContactButton: "تواصل معنا عبر الواتساب",
   detailDownloadButton: "تحميل الأداة",
+  detailObjectiveTitle: "الهدف",
+  detailToolsTitle: "الأدوات المستخدمة",
+  detailPathTitle: "مسار الحل",
+  detailPurchaseButton: "اشترِ الآن",
 
   uiSearchLabel: "البحث في المحتوى",
   uiAllOption: "الكل",

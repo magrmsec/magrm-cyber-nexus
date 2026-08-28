@@ -20,6 +20,7 @@ import {
   Sparkles,
   Trash2,
   Users,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,43 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 const emptyFor = (kind: CmsKind): CmsData => Object.fromEntries(FIELDS[kind].map((f) => [f.key, f.type === "number" ? 0 : ""]));
 
+function parseCsvLine(line: string) {
+  const values: string[] = [];
+  let value = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (char === '"' && line[i + 1] === '"') {
+      value += '"';
+      i += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      values.push(value.trim());
+      value = "";
+    } else {
+      value += char;
+    }
+  }
+  values.push(value.trim());
+  return values;
+}
+
+function parseVideoImport(text: string, fileName: string): CmsData[] {
+  if (fileName.toLowerCase().endsWith(".json")) {
+    const parsed: unknown = JSON.parse(text);
+    if (!Array.isArray(parsed)) throw new Error("ملف JSON يجب أن يحتوي على مصفوفة فيديوهات");
+    return parsed.map((item) => (item && typeof item === "object" ? (item as CmsData) : {}));
+  }
+  const lines = text.split(/\\r?\\n/).filter((line) => line.trim());
+  if (lines.length < 2) throw new Error("ملف CSV فارغ أو بلا صفوف");
+  const headers = parseCsvLine(lines[0]);
+  return lines.slice(1).map((line) => {
+    const values = parseCsvLine(line);
+    return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]));
+  });
+}
+
 function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -69,6 +107,7 @@ function AdminPage() {
   const [form, setForm] = useState<CmsData>(() => emptyFor("course"));
   const [saving, setSaving] = useState(false);
   const [copyingId, setCopyingId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     if (!permissions.canEdit && editing) setEditing(null);
@@ -178,6 +217,54 @@ function AdminPage() {
       toast.error("تعذّر الحفظ", { description: err instanceof Error ? err.message : "حاول مرة أخرى" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const importVideos = async (file: File) => {
+    if (!permissions.canEdit) {
+      toast.error("لا تملك صلاحية استيراد الفيديوهات");
+      return;
+    }
+    setImporting(true);
+    try {
+      const imported = parseVideoImport(await file.text(), file.name);
+      const valid = imported.filter((item) => /^[A-Za-z0-9_-]{11}$/.test(String(item.youtubeId ?? "")));
+      if (!valid.length) throw new Error("لم يتم العثور على معرفات فيديو صالحة");
+      const { data: existingRows, error: existingError } = await supabase
+        .from("cms_items")
+        .select("data")
+        .eq("kind", "video");
+      if (existingError) throw existingError;
+      const existingIds = new Set((existingRows ?? []).map((row) => String((row.data as CmsData)?.youtubeId ?? "")));
+      const unique = valid.filter((item, index, list) => {
+        const id = String(item.youtubeId);
+        return !existingIds.has(id) && list.findIndex((candidate) => String(candidate.youtubeId) === id) === index;
+      });
+      if (!unique.length) throw new Error("كل فيديوهات الملف موجودة مسبقًا أو مكررة");
+      const { data: userData } = await supabase.auth.getUser();
+      for (let start = 0; start < unique.length; start += 100) {
+        const batch = unique.slice(start, start + 100).map((item) => ({
+          kind: "video" as const,
+          data: {
+            title: String(item.title ?? "فيديو أمن سيبراني"),
+            description: String(item.description ?? "شرح تعليمي رسمي في الأمن السيبراني ضمن نطاق قانوني ومصرح به."),
+            youtubeId: String(item.youtubeId),
+            category: String(item.category ?? "شروحات أدوات"),
+            level: String(item.level ?? "متوسط"),
+            minutes: Number(item.minutes) || 30,
+          } as never,
+          published: permissions.canPublish,
+          created_by: userData.user?.id ?? null,
+        }));
+        const { error } = await supabase.from("cms_items").insert(batch);
+        if (error) throw error;
+      }
+      toast.success(`تم استيراد ${unique.length} فيديو`, { description: `تم تجاهل ${imported.length - unique.length} سجل مكرر أو غير صالح.` });
+      refresh();
+    } catch (err) {
+      toast.error("تعذّر استيراد الملف", { description: err instanceof Error ? err.message : "تحقق من صيغة CSV أو JSON" });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -406,6 +493,27 @@ function AdminPage() {
               <h2 className="text-lg font-extrabold">
                 {editing ? `تعديل عنصر في ${KIND_LABELS[kind]}` : `إضافة إلى ${KIND_LABELS[kind]}`}
               </h2>
+              {kind === "video" && !editing ? (
+                <div className="mt-4 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4">
+                  <p className="text-sm font-bold">إضافة جماعية للفيديوهات</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">ارفع ملف CSV أو JSON لإضافة عدة فيديوهات دفعة واحدة، مع تجاهل المكرر تلقائيًا.</p>
+                  <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary/50 px-3 py-2 text-sm font-bold text-primary transition hover:bg-primary/10">
+                    {importing ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+                    {importing ? "جاري الاستيراد…" : "اختيار ملف الاستيراد"}
+                    <input
+                      type="file"
+                      accept=".csv,.json,application/json,text/csv"
+                      className="sr-only"
+                      disabled={importing}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        event.currentTarget.value = "";
+                        if (file) void importVideos(file);
+                      }}
+                    />
+                  </label>
+                </div>
+              ) : null}
               {!permissions.canPublish ? (
                 <p className="mt-2 rounded-lg bg-surface-2 p-3 text-xs text-muted-foreground">
                   كمحرر، العناصر التي تضيفها تبقى مخفية حتى يعتمدها المدير وينشرها.

@@ -110,14 +110,14 @@ function VulnDetail() {
 
         <div className="card-surface mt-5 p-6">
           <h2 className="flex items-center gap-2 font-bold">
-            <ShieldCheck className="size-4 text-primary" /> الحماية والتوصيات
+            <ShieldCheck className="size-4 text-primary" /> {s("detailProtectionTitle") || "الحماية والتوصيات"}
           </h2>
           <p className="mt-3 text-sm leading-8 text-muted-foreground">{v.mitigation}</p>
         </div>
 
         <div className="card-surface mt-5 p-6">
           <h2 className="flex items-center gap-2 font-bold">
-              <CalendarDays className="size-4 text-primary" /> الوصول إلى ملف الثغرة
+              <CalendarDays className="size-4 text-primary" /> {s("detailAccessTitle") || "الوصول إلى ملف الثغرة"}
           </h2>
           <p className="mt-3 text-sm leading-8 text-muted-foreground">
             {isPaid
@@ -140,7 +140,7 @@ function VulnDetail() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-emerald-700"
               >
-                <MessageCircle className="size-5" /> تواصل معنا عبر الواتساب
+                <MessageCircle className="size-5" /> {s("detailContactButton") || "تواصل معنا عبر الواتساب"}
               </a>
             ) : v.downloadUrl || v.downloadPath ? (
               <a
@@ -148,7 +148,7 @@ function VulnDetail() {
                 download={v.downloadName}
                 className="inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
               >
-                <Download className="size-5" /> تحميل الأداة
+                <Download className="size-5" /> {s("detailDownloadButton") || "تحميل الأداة"}
               </a>
             ) : (
               <div className="rounded-2xl border border-border bg-surface-2 px-5 py-3.5 text-sm font-bold text-muted-foreground">

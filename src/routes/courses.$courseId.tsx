@@ -26,7 +26,7 @@ function CourseDetail() {
     <section className="hero-bg border-b border-border">
       <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
         <Link to="/courses" className="text-sm font-bold text-primary">
-          ← العودة لمكتبة الدورات
+          {s("detailBackLabel") || "← العودة لمكتبة الدورات"}
         </Link>
         <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,2fr),minmax(0,1fr)]">
           <div>
@@ -47,7 +47,7 @@ function CourseDetail() {
                 className="inline-flex items-center gap-3 rounded-2xl bg-emerald-600 px-8 py-4 text-base font-bold text-white shadow-lg hover:bg-emerald-700 transition-all"
               >
                 <MessageCircle className="size-6" />
-                اشترك الآن عبر الواتساب
+                {s("detailWhatsappButton") || "اشترك الآن عبر الواتساب"}
               </a>
             </div>
           </div>

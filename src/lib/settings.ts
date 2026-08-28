@@ -64,6 +64,16 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    id: "certificates",
+    title: "الشهادات الرئيسية",
+    fields: [
+      { key: "certificateMasterTitle", label: "عنوان شهادة 12 دورة", type: "text" },
+      { key: "certificateMasterDescription", label: "وصف شهادة 12 دورة", type: "textarea" },
+      { key: "certificateInfoSecTitle", label: "عنوان شهادة InfoSec", type: "text" },
+      { key: "certificateInfoSecDescription", label: "وصف شهادة InfoSec", type: "textarea" },
+    ],
+  },
+  {
     id: "stats",
     title: "إحصائيات الصفحة الأولى",
     fields: [
@@ -212,6 +222,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   portsPageDescription: "بيئات معزولة واقعية تحاكي الشبكات والخوادم والأجهزة والسحابة وتطبيقات ومنصات التواصل. اختبر، التقط الأعلام، واكتب تقريرك الاحترافي ضمن نطاق مصرح به.",
   certificatesPageTitle: "الشهادات المهنية",
   certificatesPageDescription: "هذه المساحة مخصصة لعرض شهادات Magrm المهنية. أضف صورة الشهادة وعنوانها ليظهرا هنا مباشرة.",
+  certificateMasterTitle: "IBM and ISC2 Cybersecurity Specialist",
+  certificateMasterDescription: "مسار مهني متكامل من 12 دورة يقدّم أساسًا عمليًا في الأمن السيبراني والشبكات والسحابة والاستجابة للحوادث والعمليات الأمنية.",
+  certificateInfoSecTitle: "Certified Information Systems Security Professional (CISSP) Specialization",
+  certificateInfoSecDescription: "مسار مهني من 8 دورات يغطي نطاقات CISSP ويهيئ لاختبار ISC2 CISSP، مع شهادة إتمام قابلة للتحقق من Coursera.",
 
   stat1Value: "",
   stat1Label: "دورة تدريبية",

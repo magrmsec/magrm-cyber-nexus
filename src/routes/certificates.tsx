@@ -449,9 +449,12 @@ function CertificatesPage() {
               const certificate = certificateById.get(certificateId);
               if (!certificate) return null;
               const isMaster = certificateId === MASTER_CERTIFICATE_ID;
+              const displayCertificate = isMaster
+                ? { ...certificate, title: sv(s, "certificateMasterTitle") || certificate.title, focus: sv(s, "certificateMasterDescription") || certificate.focus }
+                : certificate;
               return (
                 <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
-                  <CertificateCard certificate={certificate} featured />
+                  <CertificateCard certificate={displayCertificate} featured />
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
                     <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
                     <span aria-hidden="true">←</span>
@@ -477,9 +480,10 @@ function CertificatesPage() {
             {INFOSEC_MAIN_CERTIFICATE_IDS.map((certificateId) => {
               const certificate = certificateById.get(certificateId);
               if (!certificate) return null;
+              const displayCertificate = { ...certificate, title: sv(s, "certificateInfoSecTitle") || certificate.title, focus: sv(s, "certificateInfoSecDescription") || certificate.focus };
               return (
                 <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
-                  <CertificateCard certificate={certificate} featured />
+                  <CertificateCard certificate={displayCertificate} featured />
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
                     <span>فتح الشهادة والصور الفرعية التابعة</span>
                     <span aria-hidden="true">←</span>

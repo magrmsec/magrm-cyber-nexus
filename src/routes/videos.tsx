@@ -85,16 +85,14 @@ function VideosPage() {
                   onClick={() => setActive(v)}
                   className="card-surface animate-rise flex flex-col p-0 text-right"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-surface-2">
-                    <img
-                      src={`https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`}
-                      alt={v.title}
-                      loading="lazy"
-                      className="size-full object-cover opacity-80 transition-opacity hover:opacity-100"
-                    />
-                    <span className="absolute inset-0 grid place-items-center">
-                      <PlayCircle className="size-12 text-primary drop-shadow" />
-                    </span>
+                  <div
+                    className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-surface-2 bg-cover bg-center"
+                    style={{ backgroundImage: "url('/cyber-hacker-video-background-magrm-preview.png')" }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-black/35 via-background/20 to-primary/25" />
+                    <div className="absolute inset-0 grid place-items-center">
+                      <PlayCircle className="relative z-10 size-12 text-primary drop-shadow-[0_0_14px_rgba(236,72,153,0.85)]" />
+                    </div>
                     <span className="absolute bottom-2 left-2 rounded bg-background/85 px-2 py-0.5 text-[11px] font-bold">
                       {v.minutes} د
                     </span>

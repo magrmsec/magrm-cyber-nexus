@@ -56,13 +56,13 @@ function VulnsPage() {
             />
           </div>
           <div className="mt-5">
-            <FilterRow label="مستوى الخطورة" options={["الكل", "حرج", "عالي", "متوسط"]} value={sev} onChange={setSev} />
+            <FilterRow label={sv(s, "uiSeverityLabel") || "مستوى الخطورة"} options={[sv(s, "uiAllOption") || "الكل", "حرج", "عالي", "متوسط"]} value={sev} onChange={setSev} />
           </div>
 
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          عدد النتائج: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> ثغرة
+          {sv(s, "uiResultsLabel") || "عدد النتائج"}: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> ثغرة
         </p>
 
         {isLoading ? (
@@ -71,7 +71,7 @@ function VulnsPage() {
           </div>
         ) : rows.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text="لا توجد ثغرات مطابقة." />
+            <EmptyState text={sv(s, "uiEmptyResults") || "لا توجد ثغرات مطابقة."} />
           </div>
         ) : (
           <>
@@ -105,7 +105,7 @@ function VulnsPage() {
             {hasNextPage ? (
               <div className="mt-10 text-center">
                 <Button size="lg" variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>
-                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} تحميل المزيد
+                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} {sv(s, "uiLoadMore") || "تحميل المزيد"}
                 </Button>
               </div>
             ) : (

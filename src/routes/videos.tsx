@@ -63,18 +63,18 @@ function VideosPage() {
             />
           </div>
           <div className="mt-5 space-y-4">
-            <FilterRow label="التصنيف" options={["الكل", ...VIDEO_CATEGORIES]} value={cat} onChange={set(setCat)} />
-            <FilterRow label="المستوى" options={["الكل", ...LEVELS]} value={level} onChange={set(setLevel)} />
+            <FilterRow label={sv(s, "uiCategoryLabel") || "التصنيف"} options={[sv(s, "uiAllOption") || "الكل", ...VIDEO_CATEGORIES]} value={cat} onChange={set(setCat)} />
+            <FilterRow label={sv(s, "uiLevelLabel") || "المستوى"} options={[sv(s, "uiAllOption") || "الكل", ...LEVELS]} value={level} onChange={set(setLevel)} />
           </div>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          عدد النتائج: <span className="font-bold text-primary">{filtered.length.toLocaleString("en-US")}</span> فيديو
+          {sv(s, "uiResultsLabel") || "عدد النتائج"}: <span className="font-bold text-primary">{filtered.length.toLocaleString("en-US")}</span> فيديو
         </p>
 
         {filtered.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text={isLoading ? "جاري تحميل الفيديوهات…" : "لا توجد فيديوهات مطابقة."} />
+            <EmptyState text={isLoading ? "جاري تحميل الفيديوهات…" : sv(s, "uiEmptyResults") || "لا توجد فيديوهات مطابقة."} />
           </div>
         ) : (
           <>
@@ -117,7 +117,7 @@ function VideosPage() {
             {shown < filtered.length ? (
               <div className="mt-10 text-center">
                 <Button size="lg" variant="outline" onClick={() => setShown((s) => s + 12)}>
-                  عرض المزيد ({(filtered.length - shown).toLocaleString("en-US")} متبقية)
+                  {sv(s, "uiLoadMore") || "عرض المزيد"} ({(filtered.length - shown).toLocaleString("en-US")} متبقية)
                 </Button>
               </div>
             ) : null}
@@ -138,7 +138,7 @@ function VideosPage() {
               <h3 className="min-w-0 truncate text-sm font-bold">{active.title}</h3>
               <button
                 onClick={() => setActive(null)}
-                aria-label="إغلاق"
+                aria-label={sv(s, "uiClose") || "إغلاق"}
                 className="grid size-9 shrink-0 place-items-center rounded-lg border border-border text-muted-foreground hover:text-primary"
               >
                 <X className="size-4" />

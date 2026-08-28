@@ -70,7 +70,7 @@ function AppsPage() {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
             <div>
               <label htmlFor="apps-search" className="text-xs font-bold text-muted-foreground">
-                ابحث داخل البرامج والتطبيقات
+                {sv(s, "uiSearchLabel") || "ابحث داخل البرامج والتطبيقات"}
               </label>
               <div className="relative mt-2">
                 <Search className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -83,7 +83,7 @@ function AppsPage() {
                 />
               </div>
             </div>
-            <FilterSelect label="القسم الفرعي" value={category} options={categories} onChange={setCategory} />
+            <FilterSelect label={sv(s, "uiCategoryLabel") || "القسم الفرعي"} value={category} options={categories} onChange={setCategory} />
             <FilterSelect label="المنصة" value={platform} options={platforms} onChange={setPlatform} />
           </div>
 
@@ -97,8 +97,8 @@ function AppsPage() {
           </div>
         </div>
 
-        {isLoading && apps.length === 0 ? <EmptyState text="جاري تحميل التطبيقات…" /> : null}
-        {!isLoading && filtered.length === 0 ? <EmptyState text="لا توجد نتائج مطابقة للبحث الحالي." /> : null}
+        {isLoading && apps.length === 0 ? <EmptyState text={"جاري تحميل التطبيقات…"} /> : null}
+        {!isLoading && filtered.length === 0 ? <EmptyState text={sv(s, "uiEmptyResults") || "لا توجد نتائج مطابقة للبحث الحالي."} /> : null}
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleApps.map((app) => (

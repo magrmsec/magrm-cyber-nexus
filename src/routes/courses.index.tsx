@@ -76,8 +76,8 @@ function CoursesPage() {
           </div>
 
           <div className="mt-5 space-y-4">
-            <FilterRow label="القسم" options={["الكل", ...SECTIONS]} value={cat} onChange={setCat} />
-            <FilterRow label="المستوى" options={["الكل", ...LEVELS]} value={level} onChange={setLevel} />
+            <FilterRow label={sv(s, "uiCategoryLabel") || "القسم"} options={[sv(s, "uiAllOption") || "الكل", ...SECTIONS]} value={cat} onChange={setCat} />
+            <FilterRow label={sv(s, "uiLevelLabel") || "المستوى"} options={[sv(s, "uiAllOption") || "الكل", ...LEVELS]} value={level} onChange={setLevel} />
             <FilterRow
               label="السعر"
               options={PRICES.map((p) => p.label)}
@@ -88,7 +88,7 @@ function CoursesPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          عدد النتائج: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> دورة
+          {sv(s, "uiResultsLabel") || "عدد النتائج"}: <span className="font-bold text-primary">{(total ?? 0).toLocaleString("en-US")}</span> دورة
         </p>
 
         {isLoading ? (
@@ -97,7 +97,7 @@ function CoursesPage() {
           </div>
         ) : courses.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text="لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر." />
+            <EmptyState text={sv(s, "uiEmptyResults") || "لا توجد دورات مطابقة لبحثك. جرّب تعديل الفلاتر."} />
           </div>
         ) : (
           <>
@@ -141,7 +141,7 @@ function CoursesPage() {
             {hasNextPage ? (
               <div className="mt-10 text-center">
                 <Button size="lg" variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>
-                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} تحميل المزيد
+                  {isFetchingNextPage ? <Loader2 className="size-4 animate-spin" /> : null} {sv(s, "uiLoadMore") || "تحميل المزيد"}
                 </Button>
               </div>
             ) : (

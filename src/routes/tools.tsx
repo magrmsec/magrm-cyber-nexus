@@ -55,7 +55,7 @@ function ToolsPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="البحث في الأدوات"
+              aria-label={sv(s, "uiSearchLabel") || "البحث في الأدوات"}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="ابحث عن أداة… مثال: Burp، Hashcat"
@@ -64,8 +64,8 @@ function ToolsPage() {
           </div>
           <div className="mt-5">
             <FilterRow
-              label="التصنيف"
-              options={["الكل", ...new Set(tools.map((t) => t.category))]}
+              label={sv(s, "uiCategoryLabel") || "التصنيف"}
+              options={[sv(s, "uiAllOption") || "الكل", ...new Set(tools.map((t) => t.category))]}
               value={cat}
               onChange={setCat}
             />
@@ -74,7 +74,7 @@ function ToolsPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-8">
-            <EmptyState text={isLoading ? "جاري تحميل الأدوات…" : "لا توجد أدوات مطابقة."} />
+            <EmptyState text={isLoading ? "جاري تحميل الأدوات…" : sv(s, "uiEmptyResults") || "لا توجد أدوات مطابقة."} />
           </div>
         ) : (
           <>

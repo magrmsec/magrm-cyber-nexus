@@ -65,6 +65,21 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
+    id: "interface",
+    title: "نصوص الواجهة المشتركة",
+    fields: [
+      { key: "uiSearchLabel", label: "تسمية البحث", type: "text" },
+      { key: "uiAllOption", label: "خيار الكل", type: "text" },
+      { key: "uiCategoryLabel", label: "تسمية التصنيف", type: "text" },
+      { key: "uiLevelLabel", label: "تسمية المستوى", type: "text" },
+      { key: "uiSeverityLabel", label: "تسمية الخطورة", type: "text" },
+      { key: "uiResultsLabel", label: "تسمية النتائج", type: "text" },
+      { key: "uiLoadMore", label: "زر تحميل المزيد", type: "text" },
+      { key: "uiClose", label: "زر الإغلاق", type: "text" },
+      { key: "uiEmptyResults", label: "رسالة عدم وجود نتائج", type: "text" },
+    ],
+  },
+  {
     id: "certificates",
     title: "الشهادات الرئيسية",
     fields: [
@@ -228,6 +243,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   certificateMasterDescription: "مسار مهني متكامل من 12 دورة يقدّم أساسًا عمليًا في الأمن السيبراني والشبكات والسحابة والاستجابة للحوادث والعمليات الأمنية.",
   certificateInfoSecTitle: "Certified Information Systems Security Professional (CISSP) Specialization",
   certificateInfoSecDescription: "مسار مهني من 8 دورات يغطي نطاقات CISSP ويهيئ لاختبار ISC2 CISSP، مع شهادة إتمام قابلة للتحقق من Coursera.",
+
+  uiSearchLabel: "البحث في المحتوى",
+  uiAllOption: "الكل",
+  uiCategoryLabel: "التصنيف",
+  uiLevelLabel: "المستوى",
+  uiSeverityLabel: "مستوى الخطورة",
+  uiResultsLabel: "عدد النتائج",
+  uiLoadMore: "تحميل المزيد",
+  uiClose: "إغلاق",
+  uiEmptyResults: "لا توجد نتائج مطابقة.",
 
   stat1Value: "",
   stat1Label: "دورة تدريبية",

@@ -40,7 +40,7 @@ function PortsPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="البحث في البورتات"
+              aria-label={sv(s, "uiSearchLabel") || "البحث في البورتات"}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="ابحث عن بورت… مثال: WiFi، Active Directory"
@@ -51,7 +51,7 @@ function PortsPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-8">
-            <EmptyState text={isLoading ? "جاري تحميل البورتات…" : "لا توجد بورتات مطابقة."} />
+            <EmptyState text={isLoading ? "جاري تحميل البورتات…" : sv(s, "uiEmptyResults") || "لا توجد بورتات مطابقة."} />
           </div>
         ) : (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

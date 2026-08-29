@@ -7,6 +7,7 @@ import { PREMIUM_COURSE_PRICES } from "@/lib/premium-course-prices";
 import { SECURITY_VULNERABILITY_CATALOG } from "@/lib/security-vulnerability-catalog";
 import { VERIFIED_VULNERABILITY_LABS } from "@/lib/verified-vulnerability-labs";
 import { VERIFIED_VULHUB_LABS } from "@/lib/verified-vulnerability-labs-vulhub";
+import { FEATURED_CERTIFICATES } from "@/lib/certificate-catalog";
 
 import {
   COURSE_CATEGORIES,
@@ -559,6 +560,17 @@ function adminCatalogRows(kind: CmsKind): CmsRow[] {
     return SECURITY_APP_CATALOG.map((item, index) => ({
       id: `app-catalog-${index}`,
       seq: 4000000 + index,
+      kind,
+      data: item as unknown as CmsData,
+      published: true,
+      created_at: new Date().toISOString(),
+      source: "catalog",
+    }));
+  }
+  if (kind === "certificate") {
+    return FEATURED_CERTIFICATES.map((item, index) => ({
+      id: `certificate-catalog-${item.id}-${index}`,
+      seq: 5000000 + index,
       kind,
       data: item as unknown as CmsData,
       published: true,

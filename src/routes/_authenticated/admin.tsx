@@ -108,10 +108,48 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [copyingId, setCopyingId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [migratingCertificates, setMigratingCertificates] = useState(false);
 
   useEffect(() => {
     if (!permissions.canEdit && editing) setEditing(null);
   }, [permissions.canEdit, editing]);
+
+  useEffect(() => {
+    if (kind !== "certificate" || !permissions.canEdit || migratingCertificates) return;
+    let cancelled = false;
+    const migrate = async () => {
+      setMigratingCertificates(true);
+      try {
+        const { data: existing, error: existingError } = await supabase.from("cms_items").select("data").eq("kind", "certificate");
+        if (existingError) throw existingError;
+        const existingKeys = new Set((existing ?? []).map((row) => `${String((row.data as CmsData)?.title ?? "")}::${String((row.data as CmsData)?.image ?? "")}`));
+        const legacy = await import("@/lib/certificate-catalog");
+        const missing = legacy.FEATURED_CERTIFICATES.filter((certificate) => !existingKeys.has(`${certificate.title}::${certificate.image}`));
+        if (missing.length) {
+          const { data: userData } = await supabase.auth.getUser();
+          const { error } = await supabase.from("cms_items").insert(
+            missing.map((certificate) => ({
+              kind: "certificate" as const,
+              data: { title: certificate.title, issuer: certificate.issuer, focus: certificate.focus, image: certificate.image, legacyId: certificate.id } as never,
+              published: permissions.canPublish,
+              created_by: userData.user?.id ?? null,
+            })),
+          );
+          if (error) throw error;
+          if (!cancelled) toast.success(`تم ترحيل ${missing.length} شهادة إلى CMS`);
+          if (!cancelled) refresh();
+        }
+      } catch (err) {
+        if (!cancelled) toast.error("تعذّر ترحيل الشهادات القديمة", { description: err instanceof Error ? err.message : "حاول مرة أخرى" });
+      } finally {
+        if (!cancelled) setMigratingCertificates(false);
+      }
+    };
+    void migrate();
+    return () => {
+      cancelled = true;
+    };
+  }, [kind, permissions.canEdit, permissions.canPublish]);
 
 
   const PAGE_SIZE = 200;

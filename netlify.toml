@@ -1,9 +1,7 @@
 [build]
-  command = "mkdir -p public && curl -fsSL https://magrm.blacksec.workers.dev/ -o public/index.html"
-  publish = "public"
+  command = "npm install --no-audit --no-fund && npm run build"
+  publish = "dist"
 
-[[redirects]]
-  from = "/*"
-  to = "https://magrm.blacksec.workers.dev/:splat"
-  status = 200
-  force = true
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund"

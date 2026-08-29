@@ -1,6 +1,6 @@
 [build]
-  command = "npm install --no-audit --no-fund && npm run build"
-  publish = ".output/public"
+  command = "npm install --no-audit --no-fund && npm run build && rm -rf dist && cp -R .output/public dist"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"

@@ -60,7 +60,6 @@ function CertificateCard({ certificate, featured = false }: { certificate: Featu
         <p className="text-xs font-bold text-primary">{certificate.issuer}</p>
         <h4 className="font-bold leading-6">{certificate.title}</h4>
         <p className="text-sm leading-6 text-muted-foreground">{certificate.focus}</p>
-        <p className="pt-1 text-xs text-muted-foreground">صورة مرفوعة من صاحب الحساب</p>
       </div>
     </article>
   );
@@ -232,21 +231,7 @@ function CertificatesPage() {
           ) : null}
         </div>)} 
 
-        {certs.length === 0 ? (
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="grid aspect-[4/3] place-items-center rounded-xl border border-dashed border-border bg-surface/40 text-center text-sm text-muted-foreground"
-              >
-                <div>
-                  <Award className="mx-auto size-8 text-primary/60" />
-                  <p className="mt-3">مكان مخصص لشهادة</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
+        {certs.length > 0 && (
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {certs.map((c) => (
               <div key={c.id} className="card-surface animate-rise overflow-hidden">

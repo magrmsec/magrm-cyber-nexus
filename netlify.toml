@@ -1,7 +1,12 @@
 [build]
-  command = "npm install --no-audit --no-fund && npm run build"
-  publish = "dist"
+  command = "echo Netlify proxy ready"
+  publish = "public"
 
 [build.environment]
   NODE_VERSION = "22"
-  NPM_FLAGS = "--no-audit --no-fund"
+
+[[redirects]]
+  from = "/*"
+  to = "https://magrm.blacksec.workers.dev/:splat"
+  status = 200
+  force = true

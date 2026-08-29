@@ -26,25 +26,24 @@ function XLogo({ className }: { className?: string }) {
 }
 
 function ContactPage() {
-  const { settings: s } = useSiteSettings();
-  const whatsappNumber = "967733570889";
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
+  const { settings: getSetting } = useSiteSettings();
+  const whatsappUrl = getSetting("whatsapp") || `https://wa.me/967733570889?text=${encodeURIComponent("السلام عليكم، أريد الاستفسار أو شراء دورة/ملف من الموقع.")}`;
   const socialLinks = [
-    { name: "Instagram", href: "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400" },
-    { name: "Telegram", href: "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400" },
-    { name: "X / تويتر", href: "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground" },
-    { name: "GitHub", href: "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300" },
-    { name: "YouTube", href: "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400" },
+    { name: "Instagram", href: getSetting("instagram") || "https://instagram.com/m0_qd", icon: Instagram, tone: "bg-pink-500/15 text-pink-400" },
+    { name: "Telegram", href: getSetting("telegram") || "https://t.me/f_akx", icon: Send, tone: "bg-sky-500/15 text-sky-400" },
+    { name: "X / تويتر", href: getSetting("twitter") || "https://x.com/magrm", icon: XLogo, tone: "bg-black/20 text-foreground" },
+    { name: "GitHub", href: getSetting("github") || "https://github.com/magrm", icon: Github, tone: "bg-slate-500/15 text-slate-300" },
+    { name: "YouTube", href: getSetting("youtube") || "https://youtube.com/@magrm", icon: Youtube, tone: "bg-red-500/15 text-red-400" },
   ];
 
   return (
     <div className="min-h-screen py-16 px-4">
       <div className="mx-auto max-w-4xl text-center">
         <h1 className="text-3xl font-extrabold sm:text-4xl text-foreground">
-          {s("contactTitle")}
+          {getSetting("contactTitle")}
         </h1>
         <p className="mt-4 whitespace-nowrap text-sm leading-6 text-muted-foreground">
-          {s("contactIntro")}
+          {getSetting("contactIntro")}
         </p>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -58,12 +57,12 @@ function ContactPage() {
             <div className="grid size-14 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
               <WhatsAppBusinessIcon />
             </div>
-            <h3 className="mt-5 text-lg font-bold text-foreground">{s("contactWhatsappTitle")}</h3>
+            <h3 className="mt-5 text-lg font-bold text-foreground">{getSetting("contactWhatsappTitle")}</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">
-              {s("contactWhatsappDescription")}
+              {getSetting("contactWhatsappDescription")}
             </p>
             <span className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition-colors">
-              {s("contactWhatsappButton")}
+              {getSetting("contactWhatsappButton")}
             </span>
           </a>
 
@@ -72,22 +71,22 @@ function ContactPage() {
             <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
               <Mail className="size-7" />
             </div>
-            <h3 className="mt-5 text-lg font-bold text-foreground">{s("contactEmailTitle")}</h3>
+            <h3 className="mt-5 text-lg font-bold text-foreground">{getSetting("contactEmailTitle")}</h3>
             <p className="mt-2 text-sm text-muted-foreground text-center">
-              {s("contactEmailDescription")}
+              {getSetting("contactEmailDescription")}
             </p>
             <a
-              href={`mailto:${s("contactEmail")}`}
+              href={`mailto:${getSetting("contactEmail")}`}
               className="mt-6 inline-flex items-center gap-2 rounded-xl border border-border px-6 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
             >
-              {s("contactEmail")}
+              {getSetting("contactEmail")}
             </a>
           </div>
         </div>
 
         <section className="mt-10" aria-labelledby="social-links-heading">
-          <h2 id="social-links-heading" className="text-2xl font-black text-foreground">{s("contactSocialTitle")}</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">{s("contactSocialDescription")}</p>
+          <h2 id="social-links-heading" className="text-2xl font-black text-foreground">{getSetting("contactSocialTitle")}</h2>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">{getSetting("contactSocialDescription")}</p>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {socialLinks.map(({ name, href, icon: Icon, tone }) => (
               <a

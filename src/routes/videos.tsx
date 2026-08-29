@@ -55,10 +55,10 @@ function VideosPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="البحث في الفيديوهات"
+              aria-label={sv(s, "videosSearchPlaceholder") || "البحث في الفيديوهات"}
               value={q}
               onChange={(e) => set<string>(setQ)(e.target.value)}
-              placeholder="ابحث في الفيديوهات… مثال: Nmap، CTF"
+              placeholder={sv(s, "videosSearchPlaceholder") || "ابحث في الفيديوهات… مثال: Nmap، CTF"}
               className="h-12 pr-10 text-sm"
             />
           </div>
@@ -74,7 +74,7 @@ function VideosPage() {
 
         {filtered.length === 0 ? (
           <div className="mt-6">
-            <EmptyState text={isLoading ? "جاري تحميل الفيديوهات…" : sv(s, "uiEmptyResults") || "لا توجد فيديوهات مطابقة."} />
+            <EmptyState text={isLoading ? sv(s, "videosLoadingLabel") || "جاري تحميل الفيديوهات…" : sv(s, "uiEmptyResults") || "لا توجد فيديوهات مطابقة."} />
           </div>
         ) : (
           <>
@@ -94,7 +94,7 @@ function VideosPage() {
                       <PlayCircle className="relative z-10 size-12 text-primary drop-shadow-[0_0_14px_rgba(236,72,153,0.85)]" />
                     </div>
                     <span className="absolute bottom-2 left-2 rounded bg-background/85 px-2 py-0.5 text-[11px] font-bold">
-                      {v.minutes} د
+                      {v.minutes} {sv(s, "videosMinutesShort") || "د"}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col p-5">
@@ -107,7 +107,7 @@ function VideosPage() {
                     <h2 className="mt-3 text-sm font-bold leading-7">{v.title}</h2>
                     <p className="mt-2 line-clamp-2 flex-1 text-xs leading-6 text-muted-foreground">{v.description}</p>
                     <span className="mt-3 flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="size-3.5" /> {v.minutes} دقيقة
+                      <Clock className="size-3.5" /> {v.minutes} {sv(s, "videosMinutesLabel") || "دقيقة"}
                     </span>
                   </div>
                 </button>
@@ -117,7 +117,7 @@ function VideosPage() {
             {shown < filtered.length ? (
               <div className="mt-10 text-center">
                 <Button size="lg" variant="outline" onClick={() => setShown((s) => s + 12)}>
-                  {sv(s, "uiLoadMore") || "عرض المزيد"} ({(filtered.length - shown).toLocaleString("en-US")} متبقية)
+                  {sv(s, "uiLoadMore") || "عرض المزيد"} ({(filtered.length - shown).toLocaleString("en-US")} {sv(s, "videosRemainingLabel") || "متبقية"})
                 </Button>
               </div>
             ) : null}
@@ -162,7 +162,7 @@ function VideosPage() {
                 rel="noreferrer noopener"
                 className="mt-3 inline-block text-sm font-bold text-primary"
               >
-                فتح على يوتيوب ←
+                {sv(s, "videosYoutubeLinkLabel") || "فتح على يوتيوب ←"}
               </a>
             </div>
           </div>

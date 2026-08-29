@@ -25,7 +25,7 @@ import {
 
 /** كل المحتوى يأتي من قاعدة البيانات؛ معرف العنصر هو رقم التسلسل (seq). */
 
-export const CMS_KINDS = ["course", "port", "video", "vuln", "tool", "app"] as const;
+export const CMS_KINDS = ["course", "port", "video", "vuln", "tool", "app", "certificate"] as const;
 export type CmsKind = (typeof CMS_KINDS)[number];
 
 export const KIND_LABELS: Record<CmsKind, string> = {
@@ -35,6 +35,7 @@ export const KIND_LABELS: Record<CmsKind, string> = {
   vuln: "الثغرات",
   tool: "الأدوات",
   app: "التطبيقات",
+  certificate: "الشهادات",
 };
 
 export type CmsData = Record<string, unknown>;
@@ -128,6 +129,14 @@ export const FIELDS: Record<CmsKind, FieldDef[]> = {
     { key: "platform", label: "المنصة", type: "text", required: true },
     { key: "description", label: "الوصف", type: "textarea", required: true },
     { key: "url", label: "رابط التحميل", type: "text", required: true },
+  ],
+  certificate: [
+    { key: "title", label: "اسم الشهادة", type: "text", required: true },
+    { key: "issuer", label: "الجهة المانحة", type: "text", required: true },
+    { key: "focus", label: "الوصف والتخصص", type: "textarea", required: true },
+    { key: "image", label: "رابط صورة الشهادة", type: "text" },
+    { key: "verificationUrl", label: "رابط التحقق", type: "text" },
+    { key: "parentId", label: "الشهادة الرئيسية / المجموعة", type: "text" },
   ],
 };
 

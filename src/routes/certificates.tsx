@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, ImagePlus, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { PageHero } from "@/components/ui-bits";
 import { supabase } from "@/integrations/supabase/client";
 import { sv, useSiteSettings } from "@/lib/settings";
 import { FEATURED_CERTIFICATES, type LegacyCertificate } from "@/lib/certificate-catalog";
+import { useCmsRows } from "@/lib/cms";
 
 export const Route = createFileRoute("/certificates")({
   head: () => ({
@@ -67,6 +68,24 @@ function CertificateCard({ certificate, featured = false }: { certificate: Featu
 
 function CertificatesPage() {
   const { s } = useSiteSettings();
+  const { data: cmsCertificateRows = [] } = useCmsRows("certificate");
+  const editableCertificateById = useMemo(() => {
+    const map = new Map(certificateById);
+    for (const row of cmsCertificateRows) {
+      const data = row.data as Record<string, unknown>;
+      const legacyId = String(data.legacyId ?? "");
+      const original = map.get(legacyId);
+      if (!original) continue;
+      map.set(legacyId, {
+        ...original,
+        title: String(data.title ?? original.title),
+        issuer: String(data.issuer ?? original.issuer),
+        focus: String(data.focus ?? original.focus),
+        image: String(data.image ?? original.image),
+      });
+    }
+    return map;
+  }, [cmsCertificateRows]);
   const [certs, setCerts] = useState<Cert[]>([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
@@ -131,7 +150,7 @@ function CertificatesPage() {
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             {MAIN_CERTIFICATE_IDS.map((certificateId) => {
-              const certificate = certificateById.get(certificateId);
+              const certificate = editableCertificateById.get(certificateId);
               if (!certificate) return null;
               const isMaster = certificateId === MASTER_CERTIFICATE_ID;
               const displayCertificate = isMaster
@@ -163,7 +182,7 @@ function CertificatesPage() {
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             {INFOSEC_MAIN_CERTIFICATE_IDS.map((certificateId) => {
-              const certificate = certificateById.get(certificateId);
+              const certificate = editableCertificateById.get(certificateId);
               if (!certificate) return null;
               const displayCertificate = { ...certificate, title: sv(s, "certificateInfoSecTitle") || certificate.title, focus: sv(s, "certificateInfoSecDescription") || certificate.focus };
               return (

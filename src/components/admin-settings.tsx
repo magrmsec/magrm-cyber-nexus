@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
@@ -9,11 +9,44 @@ import { supabase } from "@/integrations/supabase/client";
 import { SETTINGS_GROUPS, useSiteSettings, type SiteSettings } from "@/lib/settings";
 
 /** محرر كل نصوص وألوان الموقع (جدول site_settings). */
+const SETTINGS_SECTIONS = [
+  { id: "home", title: "الرئيسية", description: "الواجهة الرئيسية والهوية والإحصائيات والجوائز" },
+  { id: "courses", title: "الدورات", description: "عنوان صفحة الدورات ووصفها" },
+  { id: "videos", title: "الفيديوهات", description: "نصوص مكتبة الفيديوهات وخلفيتها" },
+  { id: "certificates", title: "الشهادات", description: "نصوص قسم الشهادات والاعتمادات" },
+  { id: "tools", title: "الأدوات", description: "نصوص صفحة الأدوات" },
+  { id: "apps", title: "التطبيقات", description: "نصوص صفحة التطبيقات" },
+  { id: "vulns", title: "الثغرات", description: "نصوص صفحة الثغرات" },
+  { id: "ports", title: "البورتات", description: "نصوص صفحة البورتات" },
+  { id: "contact", title: "التواصل", description: "نصوص وروابط منصات التواصل" },
+  { id: "about", title: "عني", description: "النبذة والرسالة والتخصصات" },
+  { id: "footer", title: "الفوتر", description: "نصوص أسفل الموقع" },
+  { id: "general", title: "إعدادات الموقع", description: "التشغيل والألوان والدفع والنصوص المشتركة" },
+] as const;
+
+type SettingsSectionId = (typeof SETTINGS_SECTIONS)[number]["id"];
+
+function fieldBelongsTo(key: string, section: SettingsSectionId) {
+  if (section === "home") return /^(brand|siteTagline|hero|home|partners|stat|award)/.test(key);
+  if (section === "courses") return /^(coursesPage|course)/.test(key);
+  if (section === "videos") return /^(videosPage|video)/.test(key);
+  if (section === "certificates") return /^(certificatesPage|certificate)/.test(key);
+  if (section === "tools") return /^(toolsPage|tool)/.test(key);
+  if (section === "apps") return /^(appsPage|app)/.test(key);
+  if (section === "vulns") return /^(vulnsPage|vuln)/.test(key);
+  if (section === "ports") return /^(portsPage|port)/.test(key);
+  if (section === "contact") return /^contact|^(whatsapp|telegram|instagram|youtube|twitter|github)/.test(key);
+  if (section === "about") return /^about/.test(key);
+  if (section === "footer") return /^footer/.test(key);
+  return /^(detail|ui|maintenance|payment|color|supportEmail)/.test(key);
+}
+
 export function SettingsPanel({ canEdit }: { canEdit: boolean }) {
   const { s, isLoading } = useSiteSettings();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [activeSection, setActiveSection] = useState<SettingsSectionId>("home");
 
   useEffect(() => {
     const next: Record<string, string> = {};
@@ -61,9 +94,35 @@ export function SettingsPanel({ canEdit }: { canEdit: boolean }) {
     );
   }
 
+  const activeSectionInfo = SETTINGS_SECTIONS.find((section) => section.id === activeSection) ?? SETTINGS_SECTIONS[0];
+  const visibleGroups = useMemo(
+    () => SETTINGS_GROUPS.map((group) => ({ ...group, fields: group.fields.filter((field) => fieldBelongsTo(field.key, activeSection)) })).filter((group) => group.fields.length),
+    [activeSection],
+  );
+
   return (
     <div className="space-y-6">
-      {SETTINGS_GROUPS.map((g) => (
+      <div className="card-surface p-3">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {SETTINGS_SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => setActiveSection(section.id)}
+              className={`rounded-xl border px-4 py-3 text-right transition-colors ${activeSection === section.id ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_24px_rgba(255,45,120,0.18)]" : "border-border bg-surface-2 text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+            >
+              <strong className="block text-sm font-black">{section.title}</strong>
+              <span className="mt-1 block text-[11px] leading-5 opacity-80">{section.description}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">قسم مستقل</p>
+        <h3 className="mt-2 text-xl font-black">{activeSectionInfo.title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{activeSectionInfo.description} — عدّل الحقول ثم اضغط حفظ.</p>
+      </div>
+      {visibleGroups.map((g) => (
         <div key={g.id} className="card-surface p-6">
           <h3 className="text-base font-extrabold text-primary">{g.title}</h3>
           <div className="mt-5 grid gap-4 md:grid-cols-2">

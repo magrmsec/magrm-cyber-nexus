@@ -38,7 +38,6 @@ const INFOSEC_MASTER_ID = "infosec-cissp-specialization";
 const INFOSEC_MAIN_CERTIFICATE_IDS = [INFOSEC_MASTER_ID] as const;
 const MAIN_CERTIFICATE_IDS = [
   MASTER_CERTIFICATE_ID,
-  HACKVISER_MASTER_ID,
   "cde-cybersecurity-professional-2025",
   "cde-cybersecurity-professional",
   "opswat-icip",
@@ -139,11 +138,11 @@ function CertificatesPage() {
         <section aria-labelledby="uploaded-certificates-heading">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">الشهادات المهنية الرئيسية</p>
-              <h2 id="uploaded-certificates-heading" className="mt-2 text-2xl font-black">أقوى الشهادات المهنية</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">اختر الشهادة لفتح واجهة تفاصيل مستقلة تحتوي الصورة الأصلية والوصف المهني وقوة الاعتماد والمحتوى التابع لها.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">{sv(s, "certificatesMainSectionEyebrow") || "الشهادات المهنية الرئيسية"}</p>
+              <h2 id="uploaded-certificates-heading" className="mt-2 text-2xl font-black">{sv(s, "certificatesMainSectionTitle") || "أقوى الشهادات المهنية"}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{sv(s, "certificatesMainSectionDescription") || "اختر الشهادة لفتح واجهة تفاصيل مستقلة تحتوي الصورة الأصلية والوصف المهني وقوة الاعتماد والمحتوى التابع لها."}</p>
             </div>
-            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{MAIN_CERTIFICATE_IDS.length} شهادات</span>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{MAIN_CERTIFICATE_IDS.length} {sv(s, "certificatesMainCountLabel") || "شهادات"}</span>
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             {MAIN_CERTIFICATE_IDS.map((certificateId) => {
@@ -161,13 +160,37 @@ function CertificatesPage() {
                 <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
                   <CertificateCard certificate={displayCertificate} featured />
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
-                    <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : isHackviserMaster ? "فتح مجموعة Hackviser والشهادات التابعة" : "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
+                    <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : sv(s, "certificatesOpenDetailsLabel") || "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
                     <span aria-hidden="true">←</span>
                   </div>
                 </Link>
               );
             })}
           </div>
+        </section>
+
+        <section className="mt-12" aria-labelledby="hackviser-section-heading">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">{sv(s, "hackviserSectionEyebrow") || "قسم Hackviser المستقل"}</p>
+              <h2 id="hackviser-section-heading" className="mt-2 text-2xl font-black">{sv(s, "hackviserSectionTitle") || "Hackviser — مجموعة الشهادات المهنية العملية"}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{sv(s, "hackviserSectionDescription") || "مجموعة مستقلة تضم شهادات Hackviser في عمليات الأمن، اختبار الاختراق، وأمن تطبيقات الويب، مع صفحة تفاصيل تعرض كل شهادة وصورتها ووصفها."}</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">4 {sv(s, "hackviserCertificateCountLabel") || "شهادات"}</span>
+          </div>
+          {(() => {
+            const certificate = editableCertificateById.get(HACKVISER_MASTER_ID);
+            if (!certificate) return null;
+            return (
+              <Link to="/certificates/$certificateId" params={{ certificateId: HACKVISER_MASTER_ID }} className="block transition-transform hover:-translate-y-1">
+                <CertificateCard certificate={{ ...certificate, title: sv(s, "hackviserSectionTitle") || certificate.title, focus: sv(s, "hackviserSectionDescription") || certificate.focus }} featured />
+                <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
+                  <span>{sv(s, "hackviserOpenDetailsLabel") || "فتح مجموعة Hackviser والشهادات التابعة"}</span>
+                  <span aria-hidden="true">←</span>
+                </div>
+              </Link>
+            );
+          })()}
         </section>
       </section>
 

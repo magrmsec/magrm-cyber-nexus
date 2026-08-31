@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/lib/settings";
+import { useCmsRows } from "@/lib/cms";
 
 const MASTER_ID = "ibm-isc2-cybersecurity-specialist-master";
 const INFOSEC_ID = "infosec-cissp-specialization";
@@ -551,6 +552,20 @@ function InfosecCertificateDetailPage() {
 
 function HackviserCertificateDetailPage() {
   const { settings: s } = useSiteSettings();
+  const { data: cmsCertificateRows = [] } = useCmsRows("certificate");
+  const editableCertificates = HACKVISER_CERTIFICATES.map((certificate) => {
+    const row = cmsCertificateRows.find((item) => String(item.data.legacyId ?? "") === certificate.id);
+    if (!row) return certificate;
+    const data = row.data;
+    return {
+      ...certificate,
+      title: typeof data.title === "string" && data.title.trim() ? data.title : certificate.title,
+      issuer: typeof data.issuer === "string" && data.issuer.trim() ? data.issuer : certificate.issuer,
+      focus: typeof data.focus === "string" && data.focus.trim() ? data.focus : certificate.focus,
+      strength: typeof data.strength === "string" && data.strength.trim() ? data.strength : certificate.strength,
+      image: typeof data.image === "string" && data.image.trim() ? data.image : certificate.image,
+    };
+  });
   return (
     <>
       <section className="hero-bg border-b border-border">
@@ -560,11 +575,11 @@ function HackviserCertificateDetailPage() {
           </Link>
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">قسم Hackviser المستقل</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">{s("hackviserDetailEyebrow") || "قسم Hackviser المستقل"}</p>
               <h1 className="animate-rise mt-4 text-3xl font-black leading-tight md:text-5xl">
-                <span className="text-gradient">{HACKVISER_CERTIFICATE.title}</span>
+                <span className="text-gradient">{s("hackviserDetailTitle") || HACKVISER_CERTIFICATE.title}</span>
               </h1>
-              <p className="mt-5 text-base leading-8 text-muted-foreground">{HACKVISER_CERTIFICATE.description}</p>
+              <p className="mt-5 text-base leading-8 text-muted-foreground">{s("hackviserDetailDescription") || HACKVISER_CERTIFICATE.description}</p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold text-primary">{HACKVISER_CERTIFICATE.issuer}</span>
                 <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">{HACKVISER_CERTIFICATES.length} شهادات تابعة</span>
@@ -582,27 +597,27 @@ function HackviserCertificateDetailPage() {
         <section className="card-surface p-6 md:p-8">
           <div className="flex items-center gap-3">
             <Award className="size-5 text-primary" />
-            <h2 className="text-2xl font-black">قوة المجموعة وطبيعة الاعتماد</h2>
+            <h2 className="text-2xl font-black">{s("hackviserRecognitionTitle") || "قوة المجموعة وطبيعة الاعتماد"}</h2>
           </div>
-          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{HACKVISER_CERTIFICATE.recognition}</p>
+          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{s("hackviserRecognitionText") || HACKVISER_CERTIFICATE.recognition}</p>
         </section>
 
         <section className="mt-12" aria-labelledby="hackviser-certificates-heading">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">الشهادات التابعة لمجموعة Hackviser</p>
-              <h2 id="hackviser-certificates-heading" className="mt-2 text-2xl font-black">جميع شهادات Hackviser</h2>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">تظهر كل شهادة بصورة مستقلة مع اسمها والمهارات التي تركز عليها، مرتبة من المسارات التخصصية إلى الشهادة التأسيسية.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{s("hackviserSubsectionEyebrow") || "الشهادات التابعة لمجموعة Hackviser"}</p>
+              <h2 id="hackviser-certificates-heading" className="mt-2 text-2xl font-black">{s("hackviserSubsectionTitle") || "جميع شهادات Hackviser"}</h2>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{s("hackviserSubsectionDescription") || "تظهر كل شهادة بصورة مستقلة مع اسمها والمهارات التي تركز عليها، مرتبة من المسارات التخصصية إلى الشهادة التأسيسية."}</p>
             </div>
-            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{HACKVISER_CERTIFICATES.length} شهادات</span>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{editableCertificates.length} {s("hackviserCertificateCountLabel") || "شهادات"}</span>
           </div>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {HACKVISER_CERTIFICATES.map((certificate) => (
+            {editableCertificates.map((certificate) => (
               <article key={certificate.id} className="card-surface animate-rise overflow-hidden">
                 <img src={certificate.image} alt={certificate.title} className="aspect-[4/3] w-full bg-surface-2 object-contain" loading="lazy" />
                 <div className="space-y-3 p-5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-black text-primary">الشهادة {certificate.number}</span>
+                    <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-black text-primary">{s("hackviserCertificateBadge") || "الشهادة"} {certificate.number}</span>
                     <span className="text-xs font-bold text-muted-foreground">{certificate.strength}</span>
                   </div>
                   <p className="text-xs font-bold text-primary">{certificate.issuer}</p>

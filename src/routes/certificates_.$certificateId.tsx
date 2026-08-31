@@ -707,6 +707,18 @@ function CsoaCertificateDetailPage() {
 
 function GenericCertificateDetailPage({ certificate }: { certificate: GenericCertificate }) {
   const { settings: s } = useSiteSettings();
+  const { data: cmsCertificateRows = [] } = useCmsRows("certificate");
+  const row = cmsCertificateRows.find((item) => String(item.data.legacyId ?? "") === Object.keys(GENERIC_CERTIFICATES).find((key) => GENERIC_CERTIFICATES[key] === certificate));
+  const data = row?.data ?? {};
+  const editableCertificate: GenericCertificate = {
+    ...certificate,
+    title: typeof data.title === "string" && data.title.trim() ? data.title : certificate.title,
+    issuer: typeof data.issuer === "string" && data.issuer.trim() ? data.issuer : certificate.issuer,
+    image: typeof data.image === "string" && data.image.trim() ? data.image : certificate.image,
+    description: typeof data.description === "string" && data.description.trim() ? data.description : certificate.description,
+    recognition: typeof data.recognition === "string" && data.recognition.trim() ? data.recognition : certificate.recognition,
+    topics: Array.isArray(data.topics) && data.topics.length ? data.topics.map(String) : certificate.topics,
+  };
   return (
     <>
       <section className="hero-bg border-b border-border">
@@ -718,16 +730,16 @@ function GenericCertificateDetailPage({ certificate }: { certificate: GenericCer
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">شهادة مهنية</p>
               <h1 className="animate-rise mt-4 text-3xl font-black leading-tight md:text-5xl">
-                <span className="text-gradient">{certificate.title}</span>
+                <span className="text-gradient">{editableCertificate.title}</span>
               </h1>
-              <p className="mt-5 text-base leading-8 text-muted-foreground">{certificate.description}</p>
+              <p className="mt-5 text-base leading-8 text-muted-foreground">{editableCertificate.description}</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold text-primary">{certificate.issuer}</span>
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold text-primary">{editableCertificate.issuer}</span>
                 <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">شهادة مهنية</span>
               </div>
             </div>
             <div className="card-surface overflow-hidden p-3 ring-1 ring-primary/45">
-              <img src={certificate.image} alt={certificate.title} className="w-full rounded-lg object-contain" />
+              <img src={editableCertificate.image} alt={editableCertificate.title} className="w-full rounded-lg object-contain" />
             </div>
           </div>
         </div>
@@ -739,14 +751,14 @@ function GenericCertificateDetailPage({ certificate }: { certificate: GenericCer
             <Award className="size-5 text-primary" />
             <h2 className="text-2xl font-black">{s("certificateRecognitionTitle") || "قوة الشهادة واعتمادها"}</h2>
           </div>
-          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{certificate.recognition}</p>
+          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{editableCertificate.recognition}</p>
         </section>
 
         <section className="mt-12" aria-labelledby="certificate-topics-heading">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">المجالات التي تغطيها</p>
           <h2 id="certificate-topics-heading" className="mt-2 text-2xl font-black">{s("certificateTopicsTitle") || "المهارات والمحاور الرئيسية"}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {certificate.topics.map((topic) => (
+            {editableCertificate.topics.map((topic) => (
               <div key={topic} className="card-surface flex items-start gap-3 p-5">
                 <Award className="mt-0.5 size-5 shrink-0 text-primary" />
                 <p className="text-sm font-bold leading-7">{topic}</p>

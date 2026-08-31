@@ -141,6 +141,13 @@ export const FEATURED_CERTIFICATES: LegacyCertificate[] = [
     image: "/certificates/google-ai-app-building.jpg",
   },
   {
+    id: "hackviser-certifications-master",
+    title: "Hackviser — مجموعة الشهادات المهنية العملية",
+    issuer: "Hackviser",
+    focus: "مجموعة مستقلة من الشهادات العملية في عمليات الأمن واختبار الاختراق وأمن تطبيقات الويب",
+    image: "/certificates/hackviser-csoa.jpg",
+  },
+  {
     id: "hackviser-core-cybersecurity",
     title: "CORE — Certified Cybersecurity Foundations",
     issuer: "Hackviser",

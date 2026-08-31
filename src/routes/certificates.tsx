@@ -33,21 +33,19 @@ type FeaturedCertificate = LegacyCertificate;
 
 const certificateById = new Map(FEATURED_CERTIFICATES.map((certificate) => [certificate.id, certificate]));
 const MASTER_CERTIFICATE_ID = "ibm-isc2-cybersecurity-specialist-master";
+const HACKVISER_MASTER_ID = "hackviser-certifications-master";
 const INFOSEC_MASTER_ID = "infosec-cissp-specialization";
 const INFOSEC_MAIN_CERTIFICATE_IDS = [INFOSEC_MASTER_ID] as const;
 const MAIN_CERTIFICATE_IDS = [
   MASTER_CERTIFICATE_ID,
-  "hackviser-csoa",
+  HACKVISER_MASTER_ID,
   "cde-cybersecurity-professional-2025",
-  "hackviser-cwse",
-  "hackviser-capt",
   "cde-cybersecurity-professional",
   "opswat-icip",
   "cisco-introduction-cybersecurity",
   "google-network-security",
   "google-cybersecurity-jobs",
   "google-ai-professional",
-  "hackviser-core-cybersecurity",
   "one-million-prompters",
 ] as const;
 const KEY = "magrm-certificates";
@@ -151,15 +149,19 @@ function CertificatesPage() {
             {MAIN_CERTIFICATE_IDS.map((certificateId) => {
               const certificate = editableCertificateById.get(certificateId);
               if (!certificate) return null;
-              const isMaster = certificateId === MASTER_CERTIFICATE_ID;
-              const displayCertificate = isMaster
-                ? { ...certificate, title: sv(s, "certificateMasterTitle") || certificate.title, focus: sv(s, "certificateMasterDescription") || certificate.focus }
-                : certificate;
+                              const isMaster = certificateId === MASTER_CERTIFICATE_ID;
+                const isHackviserMaster = certificateId === HACKVISER_MASTER_ID;
+                const displayCertificate = isMaster
+                  ? { ...certificate, title: sv(s, "certificateMasterTitle") || certificate.title, focus: sv(s, "certificateMasterDescription") || certificate.focus }
+                  : isHackviserMaster
+                    ? { ...certificate, title: "Hackviser — مجموعة الشهادات المهنية العملية", focus: "مجموعة مستقلة تضم شهادات Hackviser في عمليات الأمن، اختبار الاختراق، وأمن تطبيقات الويب، مع صفحة تفاصيل تعرض كل شهادة وصورتها ووصفها." }
+                    : certificate;
+
               return (
                 <Link key={certificateId} to="/certificates/$certificateId" params={{ certificateId }} className="block transition-transform hover:-translate-y-1">
                   <CertificateCard certificate={displayCertificate} featured />
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 px-5 py-4 text-sm font-bold text-primary">
-                    <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
+                    <span>{isMaster ? "فتح الشهادة والدورات الـ12 التابعة" : isHackviserMaster ? "فتح مجموعة Hackviser والشهادات التابعة" : "فتح تفاصيل الشهادة وقوتها واعتمادها"}</span>
                     <span aria-hidden="true">←</span>
                   </div>
                 </Link>

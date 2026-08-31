@@ -6,6 +6,7 @@ import { useSiteSettings } from "@/lib/settings";
 const MASTER_ID = "ibm-isc2-cybersecurity-specialist-master";
 const INFOSEC_ID = "infosec-cissp-specialization";
 const CSOA_ID = "hackviser-csoa";
+const HACKVISER_ID = "hackviser-certifications-master";
 interface CourseCertificate {
   id: string;
   number: number;
@@ -94,6 +95,53 @@ const CSOA_CERTIFICATE = {
   description: "شهادة مهنية عملية متخصصة في عمليات الأمن السيبراني، صُممت لمن يريد بناء مهارات حقيقية كمحلل SOC. تجمع بين مراقبة الأحداث، اكتشاف التهديدات، تحليل السجلات، التحقيق الجنائي الرقمي، وصيد التهديدات داخل سيناريوهات تدريبية عملية.",
   recognition: "الشهادة صادرة من Hackviser وتستند إلى تدريب عملي واختبار تطبيقي وتحليل سجلات وتحديد تهديدات داخل بيئة مضبوطة. وتذكر الجهة المانحة أنها تحظى باعتراف مهني لدى أصحاب العمل، لكن هذه الصفحة لا تصفها كاعتماد حكومي أو كبديل لشهادات CISSP أو CC أو شهادات الجهات التنظيمية الرسمية.",
 };
+
+const HACKVISER_CERTIFICATE = {
+  title: "Hackviser — مجموعة الشهادات المهنية العملية",
+  issuer: "Hackviser",
+  image: "/certificates/hackviser-csoa.jpg",
+  description: "قسم مستقل يجمع شهادات Hackviser العملية في عمليات الأمن السيبراني، اختبار الاختراق، وأمن تطبيقات الويب، بحيث تظهر كل شهادة بصورتها ووصفها ومجالات المهارة التي تغطيها.",
+  recognition: "هذه شهادات مهنية صادرة من Hackviser كما تظهر في الصور والبيانات المتاحة. تُعرض بوضوح كمسارات تدريب وتقييم عملية، ولا تُقدَّم هنا على أنها اعتماد حكومي أو بديل عن الشهادات التنظيمية الرسمية مثل CISSP أو OSCP.",
+};
+
+const HACKVISER_CERTIFICATES = [
+  {
+    id: "hackviser-csoa",
+    number: 1,
+    title: "Certified Security Operations Analyst (CSOA)",
+    issuer: "Hackviser",
+    focus: "عمليات الأمن، اكتشاف التهديدات، تحليل السجلات، والتحقيق الجنائي الرقمي ضمن بيئات تدريبية عملية.",
+    strength: "عمليات الأمن وSOC",
+    image: "/certificates/hackviser-csoa.jpg",
+  },
+  {
+    id: "hackviser-capt",
+    number: 2,
+    title: "Certified Associate Penetration Tester (CAPT)",
+    issuer: "Hackviser",
+    focus: "منهجيات الاستطلاع والتقييم واختبار الاختراق الأخلاقي داخل بيئات تدريبية مصرّح بها.",
+    strength: "اختبار الاختراق",
+    image: "/certificates/hackviser-capt.jpg",
+  },
+  {
+    id: "hackviser-cwse",
+    number: 3,
+    title: "Certified Web Security Expert (CWSE)",
+    issuer: "Hackviser",
+    focus: "أمن تطبيقات الويب، تحليل سطح الهجوم، تقييم الثغرات، وكتابة التقارير الأمنية.",
+    strength: "أمن تطبيقات الويب",
+    image: "/certificates/hackviser-cwse.jpg",
+  },
+  {
+    id: "hackviser-core-cybersecurity",
+    number: 4,
+    title: "CORE — Certified Cybersecurity Foundations",
+    issuer: "Hackviser",
+    focus: "أساسيات الأمن السيبراني والمفاهيم الأولية التي تهيئ للانتقال إلى المسارات العملية المتقدمة.",
+    strength: "الأساسيات العملية",
+    image: "/certificates/hackviser-core-cybersecurity.jpg",
+  },
+];
 
 const CSOA_TOPICS = [
   "مبادئ SOC ونمذجة التهديدات",
@@ -309,15 +357,15 @@ const RELATED_COURSES: CourseCertificate[] = [
 
 export const Route = createFileRoute("/certificates_/$certificateId")({
   loader: ({ params }) => {
-    if (params.certificateId !== MASTER_ID && params.certificateId !== INFOSEC_ID && params.certificateId !== CSOA_ID && !GENERIC_CERTIFICATES[params.certificateId]) throw notFound();
+    if (params.certificateId !== MASTER_ID && params.certificateId !== INFOSEC_ID && params.certificateId !== CSOA_ID && params.certificateId !== HACKVISER_ID && !GENERIC_CERTIFICATES[params.certificateId]) throw notFound();
     return {
       certificateId: params.certificateId,
-      certificate: params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : MASTER_CERTIFICATE,
-      courses: params.certificateId === INFOSEC_ID ? INFOSEC_COURSES : RELATED_COURSES,
+      certificate: params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : params.certificateId === HACKVISER_ID ? HACKVISER_CERTIFICATE : MASTER_CERTIFICATE,
+      courses: params.certificateId === INFOSEC_ID ? INFOSEC_COURSES : params.certificateId === HACKVISER_ID ? HACKVISER_CERTIFICATES : RELATED_COURSES,
     };
   },
   head: ({ params }) => {
-    const detail = params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : params.certificateId === MASTER_ID ? MASTER_CERTIFICATE : params.certificateId === CSOA_ID ? CSOA_CERTIFICATE : GENERIC_CERTIFICATES[params.certificateId] ?? MASTER_CERTIFICATE;
+    const detail = params.certificateId === INFOSEC_ID ? INFOSEC_CERTIFICATE : params.certificateId === MASTER_ID ? MASTER_CERTIFICATE : params.certificateId === HACKVISER_ID ? HACKVISER_CERTIFICATE : params.certificateId === CSOA_ID ? CSOA_CERTIFICATE : GENERIC_CERTIFICATES[params.certificateId] ?? MASTER_CERTIFICATE;
     return {
       meta: [
         { title: `${detail.title} | Magrm` },
@@ -334,6 +382,7 @@ function CertificateDetailPage() {
   const { certificateId, certificate, courses } = Route.useLoaderData();
   const { settings: s } = useSiteSettings();
   if (certificateId === INFOSEC_ID) return <InfosecCertificateDetailPage />;
+  if (certificateId === HACKVISER_ID) return <HackviserCertificateDetailPage />;
   if (certificateId === CSOA_ID) return <CsoaCertificateDetailPage />;
   const generic = GENERIC_CERTIFICATES[certificateId];
   if (generic) return <GenericCertificateDetailPage certificate={generic} />;
@@ -482,6 +531,83 @@ function InfosecCertificateDetailPage() {
                     </a>
                   ) : null}
                   <p className="border-t border-border pt-3 text-xs leading-6 text-muted-foreground">شهادة دورة ضمن مسار InfoSec المهني عبر Coursera، وليست اعتمادًا مستقلًا منفصلًا.</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-10">
+          <Button asChild variant="outline" className="font-bold">
+            <Link to="/certificates">
+              <ArrowRight className="size-4" /> {s("certificateReturnButton") || "العودة إلى قسم الشهادات"}
+            </Link>
+          </Button>
+        </div>
+      </main>
+    </>
+  );
+}
+
+function HackviserCertificateDetailPage() {
+  const { settings: s } = useSiteSettings();
+  return (
+    <>
+      <section className="hero-bg border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
+          <Link to="/certificates" className="inline-flex items-center gap-2 text-sm font-bold text-primary">
+            <ArrowRight className="size-4" /> {s("certificateBackLabel") || "العودة إلى الشهادات"}
+          </Link>
+          <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">قسم Hackviser المستقل</p>
+              <h1 className="animate-rise mt-4 text-3xl font-black leading-tight md:text-5xl">
+                <span className="text-gradient">{HACKVISER_CERTIFICATE.title}</span>
+              </h1>
+              <p className="mt-5 text-base leading-8 text-muted-foreground">{HACKVISER_CERTIFICATE.description}</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold text-primary">{HACKVISER_CERTIFICATE.issuer}</span>
+                <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">{HACKVISER_CERTIFICATES.length} شهادات تابعة</span>
+                <span className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-bold">مسارات عملية</span>
+              </div>
+            </div>
+            <div className="card-surface overflow-hidden p-3 ring-1 ring-primary/45">
+              <img src={HACKVISER_CERTIFICATE.image} alt={HACKVISER_CERTIFICATE.title} className="w-full rounded-lg object-contain" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-4 py-12">
+        <section className="card-surface p-6 md:p-8">
+          <div className="flex items-center gap-3">
+            <Award className="size-5 text-primary" />
+            <h2 className="text-2xl font-black">قوة المجموعة وطبيعة الاعتماد</h2>
+          </div>
+          <p className="mt-4 max-w-4xl text-sm leading-8 text-muted-foreground">{HACKVISER_CERTIFICATE.recognition}</p>
+        </section>
+
+        <section className="mt-12" aria-labelledby="hackviser-certificates-heading">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">الشهادات التابعة لمجموعة Hackviser</p>
+              <h2 id="hackviser-certificates-heading" className="mt-2 text-2xl font-black">جميع شهادات Hackviser</h2>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">تظهر كل شهادة بصورة مستقلة مع اسمها والمهارات التي تركز عليها، مرتبة من المسارات التخصصية إلى الشهادة التأسيسية.</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-primary/30 px-3 py-1 text-xs font-bold text-primary">{HACKVISER_CERTIFICATES.length} شهادات</span>
+          </div>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {HACKVISER_CERTIFICATES.map((certificate) => (
+              <article key={certificate.id} className="card-surface animate-rise overflow-hidden">
+                <img src={certificate.image} alt={certificate.title} className="aspect-[4/3] w-full bg-surface-2 object-contain" loading="lazy" />
+                <div className="space-y-3 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-black text-primary">الشهادة {certificate.number}</span>
+                    <span className="text-xs font-bold text-muted-foreground">{certificate.strength}</span>
+                  </div>
+                  <p className="text-xs font-bold text-primary">{certificate.issuer}</p>
+                  <h3 className="font-bold leading-6">{certificate.title}</h3>
+                  <p className="text-sm leading-7 text-muted-foreground">{certificate.focus}</p>
                 </div>
               </article>
             ))}

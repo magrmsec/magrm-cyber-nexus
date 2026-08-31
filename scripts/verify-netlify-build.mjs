@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 if (process.env.NETLIFY !== "true") {
@@ -8,19 +8,42 @@ if (process.env.NETLIFY !== "true") {
 
 const root = process.cwd();
 const dist = join(root, "dist");
-const indexPath = join(dist, "index.html");
+const output = join(root, ".output");
+const netlify = join(root, ".netlify");
+const assetDirectories = [join(dist, "assets"), join(output, "public", "assets")];
+const runtimeCandidates = [
+  join(output, "server", "index.mjs"),
+  join(netlify, "functions-internal", "server.mjs"),
+  join(netlify, "functions", "server.mjs"),
+];
 
-if (!existsSync(dist) || !existsSync(indexPath)) {
-  console.error("Netlify build check failed: dist/index.html is missing.");
+const assetDirectory = assetDirectories.find((directory) => existsSync(directory));
+const assetFiles = assetDirectory
+  ? readdirSync(assetDirectory).filter((file) => /\.(js|mjs|css)$/i.test(file))
+  : [];
+const runtimePath = runtimeCandidates.find((file) => existsSync(file));
+
+if (!assetDirectory || assetFiles.length === 0) {
+  console.error("Netlify build check failed: no client assets were generated.");
   process.exit(1);
 }
 
-const html = readFileSync(indexPath, "utf8");
+if (!runtimePath) {
+  console.error("Netlify build check failed: no SSR runtime was generated.");
+  process.exit(1);
+}
+
+const assetText = assetFiles
+  .slice(0, 80)
+  .map((file) => readFileSync(join(assetDirectory, file), "utf8"))
+  .join("\n");
+const runtimeText = readFileSync(runtimePath, "utf8");
+const combinedText = `${assetText}\n${runtimeText}`;
 const checks = [
-  ["Magrm content", /Magrm/i.test(html)],
-  ["SSR document", html.length > 10000],
-  ["client hydration script", /<script[^>]+src=/i.test(html)],
-  ["no external redirect shell", !/window\.location\.replace|meta http-equiv=[\"']refresh/i.test(html)],
+  ["Magrm content", /Magrm|Cyber Security/i.test(combinedText)],
+  ["Hackviser certificate content", /hackviser-certifications-master|Hackviser/i.test(combinedText)],
+  ["SSR runtime", runtimeText.length > 5000],
+  ["client assets", assetFiles.length >= 5],
 ];
 
 const failed = checks.filter(([, passed]) => !passed).map(([name]) => name);
@@ -29,4 +52,4 @@ if (failed.length) {
   process.exit(1);
 }
 
-console.log(`Netlify build check passed: ${html.length} bytes in dist/index.html.`);
+console.log(`Netlify build check passed: ${assetFiles.length} client assets and SSR runtime ${runtimePath}.`);

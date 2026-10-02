@@ -24,16 +24,18 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "منصة Magrm للأمن السيبراني: 12 قسماً رئيسياً وأكثر من 12000 دورة، 700 فيديو، 1000 ثغرة CVE، 20 مختبر اختراق عملي، و60+ أداة احترافية.",
+          "مجرم Magrm Cyber Security منصة عربية متخصصة في تعلم الأمن السيبراني والهكر الأخلاقي واختبار الاختراق، الدورات والمختبرات العملية وأدوات الحماية وقاعدة ثغرات CVE ومكافحة الابتزاز الإلكتروني.",
       },
-      { property: "og:title", content: "Magrm Cyber Security" },
+      { property: "og:title", content: "Magrm Cyber Security | محمد العزاني | تعلم الأمن السيبراني" },
       {
         property: "og:description",
-        content: "تعلّم الاختراق الأخلاقي والأمن السيبراني بالعربي مع مختبرات عملية وأدوات احترافية.",
+        content: "تعلم الهكر الأخلاقي والأمن السيبراني بالعربي مع مختبرات عملية وأدوات احترافية وحماية حسابات التواصل الاجتماعي.",
       },
+      { property: "og:url", content: "https://magrm.com/" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://magrm.com/" }],
   }),
   component: Index,
 });

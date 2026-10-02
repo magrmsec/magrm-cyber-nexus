@@ -88,12 +88,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Magrm Cyber Security | منصة الأمن السيبراني" },
       {
         name: "description",
-        content: "منصة Magrm للأمن السيبراني: دورات، مختبرات اختراق، فيديوهات، أدوات، وقاعدة ثغرات CVE بالعربي.",
+        content:
+          "Magrm Cyber Security (مجرم) منصة عربية لتعلم الأمن السيبراني والهكر الأخلاقي واختبار الاختراق، مع دورات ومختبرات وأدوات وقاعدة ثغرات CVE وحماية الحسابات ومكافحة الابتزاز الإلكتروني.",
       },
-      { name: "author", content: "Magrm" },
-      { property: "og:title", content: "Magrm Cyber Security" },
-      { property: "og:description", content: "المرونة السيبرانية تبدأ من هنا — تعلّم الأمن السيبراني بالعربي." },
+      { name: "author", content: "Magrm Cyber Security - Mohammed Al-Azzani" },
+      { property: "og:title", content: "Magrm Cyber Security | منصة الأمن السيبراني" },
+      {
+        property: "og:description",
+        content: "تعلم الأمن السيبراني والهكر الأخلاقي بالعربي مع مختبرات عملية وأدوات احترافية وحماية رقمية.",
+      },
+      { property: "og:url", content: "https://magrm.com/" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Magrm Cyber Security" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     scripts: [
@@ -104,18 +110,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@graph": [
             {
               "@type": "Organization",
-              "@id": "https://magrm.blacksec.workers.dev/#organization",
+              "@id": "https://magrm.com/#organization",
               name: "Magrm Cyber Security",
-              url: "https://magrm.blacksec.workers.dev",
-              description: "منصة Magrm للأمن السيبراني: دورات، مختبرات اختراق، أدوات، وقاعدة ثغرات CVE بالعربي.",
+              alternateName: ["Magrm", "مجرم", "محمد العزاني", "Mohammed Al-Azzani", "محمد قائد العزاني"],
+              url: "https://magrm.com/",
+              description: "منصة عربية لتعلم الأمن السيبراني والهكر الأخلاقي واختبار الاختراق وحماية الأصول الرقمية.",
+              keywords:
+                "مجرم، هكر حسابات، هكر أخلاقي، هكر أجهزة، مجرم هكر، محمد العزاني، Mohammed Al-Azzani، محمد قائد العزاني، هكر حسابات انستجرام، هكر فيسبوك، هكر جميع منصات التواصل الاجتماعي، أفضل منصة للأمن السيبراني، منصة مختصة في أدوات الأمن السيبراني، منصة خاصة بالهكر، تعلم الهكر، أدوات اختراق، مكافحة الابتزاز الإلكتروني في اليمن، مكافحة الابتزاز الإلكتروني، مكافحة الفساد، هكر يمني، منصة خاصة بالأستاذ محمد قائد العزاني، المهندس محمد العزاني، أقوى هكر في الوطن العربي، تعلم الاختراق، تعلم الأمن السيبراني، الهكر محمد العزاني، المدير المعلوماتي محمد العزاني، Magrm Cyber Security، منصة الأمن السيبراني، دورات الأمن السيبراني، دورات اختبار الاختراق، اختبار اختراق المواقع، اختبار اختراق الشبكات، أمن المعلومات، أمن الشبكات، أمن تطبيقات الويب، الأمن السحابي، أمن قواعد البيانات، أدوات الأمن السيبراني، أدوات اختبار الاختراق، أدوات فحص الثغرات، أدوات OSINT، أدوات كالي لينكس، مختبرات الاختراق، تحديات CTF، ثغرات CVE، قاعدة بيانات الثغرات، OWASP Top 10، SQL Injection، XSS، CSRF، حماية المواقع، حماية الحسابات، حماية الخصوصية الرقمية، التوعية بالجرائم الإلكترونية",
             },
             {
               "@type": "WebSite",
-              "@id": "https://magrm.blacksec.workers.dev/#website",
+              "@id": "https://magrm.com/#website",
               name: "Magrm Cyber Security",
-              url: "https://magrm.blacksec.workers.dev",
+              alternateName: "منصة مجرم للأمن السيبراني",
+              url: "https://magrm.com/",
               inLanguage: "ar",
-              publisher: { "@id": "https://magrm.blacksec.workers.dev/#organization" },
+              publisher: { "@id": "https://magrm.com/#organization" },
+              keywords:
+                "Magrm، مجرم، Magrm Cyber Security، الأمن السيبراني، الهكر الأخلاقي، تعلم الاختراق، دورات الأمن السيبراني، اختبار الاختراق، أدوات الأمن السيبراني، مختبرات الأمن السيبراني، ثغرات CVE، مكافحة الابتزاز الإلكتروني",
             },
           ],
         }),
@@ -225,4 +237,3 @@ function MaintenanceScreen({ title, message, contact }: { title: string; message
     </main>
   );
 }
-

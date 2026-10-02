@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://magrm.blacksec.workers.dev";
+const BASE_URL = "https://magrm.com";
 
 interface SitemapEntry {
   path: string;
